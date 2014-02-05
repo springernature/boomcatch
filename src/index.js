@@ -12,8 +12,8 @@ defaults = {
     port: 80,
     path: '/beacon',
     log: function () {},
-    mapper: 'statsd',
-    forwarder: 'udp'
+    mapper: 'mappers/statsd',
+    forwarder: 'forwarders/udp'
 };
 
 /**
