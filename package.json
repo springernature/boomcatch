@@ -1,0 +1,47 @@
+{
+    "name": "boomcatch",
+    "version": "0.1.0",
+    "description": "Receives RUM metrics from boomerang/kylie and forwards them to a graphing backend.",
+    "homepage": "",
+    "bugs": "",
+    "license": "",
+    "author": "",
+    "main": "./src",
+    "bin": {
+        "boomcatch": "./src/cli.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "keywords": [
+        "boomerang",
+        "kylie",
+        "beacon",
+        "server",
+        "receiver",
+        "forwarder",
+        "mapper",
+        "marshaller",
+        "rum",
+        "metric",
+        "monitoring",
+        "performance"
+    ],
+    "dependencies": {
+        "check-types": "1.1.x",
+        "commander": "2.1.x"
+    },
+    "devDependencies": {
+        "jshint": "2.4.x",
+        "mocha": "1.17.x",
+        "chai": "1.9.x",
+        "mockery": "1.4.x",
+        "spooks": "0.5.x"
+    },
+    "scripts": {
+        "lint": "./node_modules/.bin/jshint src --config .jshintrc",
+        "test": "./node_modules/.bin/mocha --ui tdd --reporter spec --colors test"
+    }
+}
+
