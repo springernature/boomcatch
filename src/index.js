@@ -138,7 +138,7 @@ function send (log, state, mapper, forwarder, request, response) {
             return;
         }
 
-        data = mapper(qs.parse(url.parse(request.url).query));
+        data = mapper(normaliseData(qs.parse(url.parse(request.url).query)));
 
         log('boomcatch.send: ' + data);
 
@@ -152,6 +152,52 @@ function send (log, state, mapper, forwarder, request, response) {
     } catch (error) {
         request.socket.destroy();
         fail(log, response, 400, 'Invalid data');
+    }
+}
+
+function normaliseData (data) {
+    return {
+        boomerang: normaliseBoomerangData(data),
+        ntapi: normaliseNavigationTimingApiData(data)
+    };
+}
+
+function normaliseBoomerangData (data) {
+    /*jshint camelcase:false */
+
+    var timeToFirstByte = parseInt(data.t_resp), timeToLoad = parseInt(data.t_done);
+
+    check.verify.positiveNumber(timeToFirstByte);
+    check.verify.positiveNumber(timeToLoad);
+
+    return {
+        firstbyte: timeToFirstByte,
+        load: timeToLoad
+    };
+}
+
+function normaliseNavigationTimingApiData (data) {
+    /*jshint camelcase:false */
+
+    var timeToDns, timeToFirstByte, timeToDomLoad, timeToLoad;
+
+    timeToDns = parseInt(data.nt_dns_end) - parseInt(data.nt_fet_st);
+    timeToFirstByte = parseInt(data.nt_res_st) - parseInt(data.nt_fet_st);
+    timeToDomLoad = parseInt(data.nt_domcontloaded_st) - parseInt(data.nt_fet_st);
+    timeToLoad = parseInt(data.nt_load_st) - parseInt(data.nt_fet_st);
+
+    if (
+        check.number(timeToDns) &&
+        check.positiveNumber(timeToFirstByte) &&
+        check.positiveNumber(timeToDomLoad) &&
+        check.positiveNumber(timeToLoad)
+    ) {
+        return {
+            dns: timeToDns,
+            firstbyte: timeToFirstByte,
+            domload: timeToDomLoad,
+            load: timeToLoad
+        };
     }
 }
 

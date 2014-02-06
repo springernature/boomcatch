@@ -521,13 +521,10 @@ suite('boomcatch:', function () {
                         assert.isUndefined(log.these.mapper[0]);
                         assert.lengthOf(log.args.mapper[0], 1);
                         assert.isObject(log.args.mapper[0][0]);
-                        assert.strictEqual(log.args.mapper[0][0].t_resp, 1);
-                        assert.strictEqual(log.args.mapper[0][0].t_done, 2);
-                        assert.isUndefined(log.args.mapper[0][0].nt_fet_st);
-                        assert.isUndefined(log.args.mapper[0][0].nt_dns_end);
-                        assert.isUndefined(log.args.mapper[0][0].nt_res_st);
-                        assert.isUndefined(log.args.mapper[0][0].nt_domcontloaded_st);
-                        assert.isUndefined(log.args.mapper[0][0].nt_load_st);
+                        assert.isObject(log.args.mapper[0][0].boomerang);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 1);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 2);
+                        assert.isUndefined(log.args.mapper[0][0].ntapi);
                     });
 
                     test('forwarder was called once', function () {
@@ -695,13 +692,14 @@ suite('boomcatch:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.strictEqual(log.args.mapper[0][0].t_resp, 10);
-                        assert.strictEqual(log.args.mapper[0][0].t_done, 20);
-                        assert.strictEqual(log.args.mapper[0][0].nt_fet_st, 30);
-                        assert.strictEqual(log.args.mapper[0][0].nt_dns_end, 40);
-                        assert.strictEqual(log.args.mapper[0][0].nt_res_st, 50);
-                        assert.strictEqual(log.args.mapper[0][0].nt_domcontloaded_st, 60);
-                        assert.strictEqual(log.args.mapper[0][0].nt_load_st, 70);
+                        assert.isObject(log.args.mapper[0][0].boomerang);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 10);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
+                        assert.isObject(log.args.mapper[0][0].ntapi);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.dns, 10);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.firstbyte, 20);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.domload, 30);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.load, 40);
                     });
 
                     test('forwarder was called once', function () {
@@ -809,8 +807,8 @@ suite('boomcatch:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.strictEqual(log.args.mapper[0][0].t_resp, 100);
-                        assert.strictEqual(log.args.mapper[0][0].t_done, 200);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 100);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 200);
                     });
 
                     test('forwarder was called once', function () {
