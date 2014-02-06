@@ -21,7 +21,7 @@ defaults = {
  *
  * Forwards performance metrics calculated from Boomerang/Kylie beacon events.
  *
- * @option host {string}       HTTP hostname to accept connections on. Defaults to
+ * @option host {string}       HTTP host name to accept connections on. Defaults to
  *                             '0.0.0.0' (INADDR_ANY).
  * @option port {number}       HTTP port to accept connections on. Defaults to 80.
  * @option path {string}       URL path to accept requests to. Defaults to '/beacon'.
@@ -33,7 +33,7 @@ defaults = {
  * @option prefix {string}     Prefix to use for mapped metric names. Defaults to ''.
  * @option forwarder {string}  Forwarder used to send data, loaded with `require`.
  *                             Defaults to 'forwarders/udp'.
- * @option fwdHost {string}    Hostname to forward mapped data to.
+ * @option fwdHost {string}    Host name to forward mapped data to.
  * @option fwdPort {number}    Port to forward mapped data on.
  */
 exports.listen = function (options) {
