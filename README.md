@@ -240,6 +240,6 @@ npm test
 [require]: http://nodejs.org/api/globals.html#globals_require
 [mapper]: https://github.com/nature/boomcatch/blob/master/src/mappers/statsd.js
 [forwarder]: https://github.com/nature/boomcatch/blob/master/src/forwarders/udp.js
-[contrib]: https://github.com/nature/boomcatch/blob/master/src/CONTRIBUTING.md
-[license]: https://github.com/nature/boomcatch/blob/master/src/COPYING
+[contrib]: https://github.com/nature/boomcatch/blob/master/CONTRIBUTING.md
+[license]: https://github.com/nature/boomcatch/blob/master/COPYING
 
