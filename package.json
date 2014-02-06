@@ -1,11 +1,11 @@
 {
     "name": "boomcatch",
     "version": "0.1.0",
-    "description": "Receives RUM metrics from boomerang/kylie and forwards them to a graphing backend.",
-    "homepage": "",
-    "bugs": "",
-    "license": "",
-    "author": "",
+    "description": "Standalone beacon server for boomerang/kylie.",
+    "homepage": "https://github.com/nature/boomcatch",
+    "bugs": "https://github.com/nature/boomcatch/issues",
+    "license": "https://github.com/nature/boomcatch/blob/master/COPYING",
+    "author": "Nature Publishing Group (http://www.nature.com/npg)",
     "main": "./src",
     "bin": {
         "boomcatch": "./src/cli.js"
