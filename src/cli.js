@@ -15,7 +15,7 @@ function parseCommandLine () {
     cli.version(packageInfo.version)
         .option('-h, --host <hostname>', 'hostname to accept HTTP connections on, default is 0.0.0.0 (INADDR_ANY)')
         .option('-p, --port <port>', 'port to accept HTTP connections on, default is 8008', parseInt)
-        .option('-u, --path <path>', 'URL path to accept requests to, default is /kylie')
+        .option('-u, --path <path>', 'URL path to accept requests to, default is /beacon')
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
