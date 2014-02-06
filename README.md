@@ -26,8 +26,7 @@ First you must
 [install node][node].
 
 You can then
-install boomcatch via npm,
-like so:
+install boomcatch via npm:
 
 ```
 npm install -g boomcatch
@@ -37,7 +36,7 @@ npm install -g boomcatch
 
 Add boomcatch
 to the dependencies
-in your project's `package.json`
+in your project's `package.json`,
 then run:
 
 ```
@@ -127,7 +126,7 @@ Currently, one mapper is available out-of-the-box,
 which formats the metrics
 as [statsd] timers.
 
-Defining your own custom mapper
+Defining a custom data mapper
 is straightforward.
 The [source code for the statsd mapper][mapper]
 should be easy to follow,
@@ -232,7 +231,7 @@ npm test
 
 ## Change log
 
-[history]
+[History]
 
 ## License
 
@@ -242,6 +241,7 @@ npm test
 [ci-status]: http://travis-ci.org/#!/nature/boomcatch
 [node]: http://nodejs.org/download/
 [require]: http://nodejs.org/api/globals.html#globals_require
+[statsd]: https://github.com/etsy/statsd/
 [mapper]: https://github.com/nature/boomcatch/blob/master/src/mappers/statsd.js
 [forwarder]: https://github.com/nature/boomcatch/blob/master/src/forwarders/udp.js
 [contrib]: https://github.com/nature/boomcatch/blob/master/CONTRIBUTING.md
