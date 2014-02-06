@@ -12,8 +12,8 @@ defaults = {
     port: 80,
     path: '/beacon',
     log: function () {},
-    mapper: 'mappers/statsd',
-    forwarder: 'forwarders/udp'
+    mapper: 'statsd',
+    forwarder: 'udp'
 };
 
 /**
@@ -29,10 +29,10 @@ defaults = {
  *                             (without terminating newline character). Defaults to
  *                             `function () {}`.
  * @option mapper {string}     Data mapper used to transform data before forwarding,
- *                             loaded with `require`. Defaults to 'mappers/statsd'.
+ *                             loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}     Prefix to use for mapped metric names. Defaults to ''.
  * @option forwarder {string}  Forwarder used to send data, loaded with `require`.
- *                             Defaults to 'forwarders/udp'.
+ *                             Defaults to 'udp'.
  * @option fwdHost {string}    Host name to forward mapped data to.
  * @option fwdPort {number}    Port to forward mapped data on.
  */
@@ -46,8 +46,8 @@ exports.listen = function (options) {
     }
 
     log = getLog(options);
-    mapper = require(getMapper(options)).initialise(options);
-    forwarder = require(getForwarder(options)).initialise(options);
+    mapper = getMapper(options);
+    forwarder = getForwarder(options);
 
     log('boomcatch.listen: awaiting POST requests on ' + getHost(options) + ':' + getPort(options));
 
@@ -88,11 +88,23 @@ function getPath (options) {
 }
 
 function getMapper (options) {
-    return getOption('mapper', options);
+    return getExtension('mapper', options);
+}
+
+function getExtension (name, options) {
+    var path = getOption(name, options), extension;
+
+    try {
+        extension = require('./' + name + 's/' + path);
+    } catch (e) {
+        extension = require(path);
+    }
+
+    return extension.initialise(options);
 }
 
 function getForwarder (options) {
-    return getOption('forwarder', options);
+    return getExtension('forwarder', options);
 }
 
 function handleRequest (log, path, mapper, forwarder, request, response) {

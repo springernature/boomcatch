@@ -26,7 +26,7 @@ suite('boomcatch:', function () {
             log: log,
             chains: { createServer: true }
         }));
-        mockery.registerMock('mappers/statsd', spooks.obj({
+        mockery.registerMock('./mappers/statsd', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
@@ -37,7 +37,7 @@ suite('boomcatch:', function () {
                 })
             }
         }));
-        mockery.registerMock('forwarders/udp', spooks.obj({
+        mockery.registerMock('./forwarders/udp', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
@@ -47,7 +47,7 @@ suite('boomcatch:', function () {
                 })
             }
         }));
-        mockery.registerMock('mapper', spooks.obj({
+        mockery.registerMock('./mappers/mapper', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
@@ -58,7 +58,7 @@ suite('boomcatch:', function () {
                 })
             }
         }));
-        mockery.registerMock('forwarder', spooks.obj({
+        mockery.registerMock('./forwarders/forwarder', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
@@ -71,10 +71,10 @@ suite('boomcatch:', function () {
     });
 
     teardown(function () {
-        mockery.deregisterMock('forwarder');
-        mockery.deregisterMock('mapper');
-        mockery.deregisterMock('forwarders/udp');
-        mockery.deregisterMock('mappers/statsd');
+        mockery.deregisterMock('./forwarders/forwarder');
+        mockery.deregisterMock('./mappers/mapper');
+        mockery.deregisterMock('./forwarders/udp');
+        mockery.deregisterMock('./mappers/statsd');
         mockery.deregisterMock('http');
         mockery.disable();
         log = undefined;
@@ -297,14 +297,14 @@ suite('boomcatch:', function () {
             });
 
             test('mapper.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[0], require('mappers/statsd'));
+                assert.strictEqual(log.these.initialise[0], require('./mappers/statsd'));
                 assert.lengthOf(log.args.initialise[0], 1);
                 assert.isObject(log.args.initialise[0][0]);
                 assert.isUndefined(log.args.initialise[0][0].prefix);
             });
 
             test('forwarder.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[1], require('forwarders/udp'));
+                assert.strictEqual(log.these.initialise[1], require('./forwarders/udp'));
                 assert.lengthOf(log.args.initialise[1], 1);
                 assert.isObject(log.args.initialise[1][0]);
                 assert.isUndefined(log.args.initialise[1][0].fwdHost);
@@ -736,12 +736,12 @@ suite('boomcatch:', function () {
             });
 
             test('mapper.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[0], require('mapper'));
+                assert.strictEqual(log.these.initialise[0], require('./mappers/mapper'));
                 assert.strictEqual(log.args.initialise[0][0].prefix, 'foo prefix');
             });
 
             test('forwarder.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[1], require('forwarder'));
+                assert.strictEqual(log.these.initialise[1], require('./forwarders/forwarder'));
                 assert.strictEqual(log.args.initialise[1][0].fwdHost, 'bar host');
                 assert.strictEqual(log.args.initialise[1][0].fwdPort, 1234);
             });

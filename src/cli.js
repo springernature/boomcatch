@@ -19,7 +19,7 @@ function parseCommandLine () {
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
-        .option('-f, --forwarder <path>', 'forwarder to use, default is forwarders/udp')
+        .option('-f, --forwarder <path>', 'forwarder to use, default is udp')
         .option('-N, --fwdHost <name>', 'host name to forward data to')
         .option('-P, --fwdPort <port>', 'port to forward data on', parseInt)
         .parse(process.argv);
