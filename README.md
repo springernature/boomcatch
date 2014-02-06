@@ -230,6 +230,10 @@ To run the unit tests:
 npm test
 ```
 
+## Change log
+
+[history]
+
 ## License
 
 [MIT][license]
@@ -241,5 +245,6 @@ npm test
 [mapper]: https://github.com/nature/boomcatch/blob/master/src/mappers/statsd.js
 [forwarder]: https://github.com/nature/boomcatch/blob/master/src/forwarders/udp.js
 [contrib]: https://github.com/nature/boomcatch/blob/master/CONTRIBUTING.md
+[history]: https://github.com/nature/boomcatch/blob/master/HISTORY.md
 [license]: https://github.com/nature/boomcatch/blob/master/COPYING
 
