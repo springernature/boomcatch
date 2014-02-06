@@ -233,9 +233,12 @@ npm test
 
 [History]
 
-## License
 
-[MIT][license]
+License
+-------
+
+[Copyright 2013 Nature Publishing Group](LICENSE.txt).  
+pa11y is licensed under the [GNU General Public License 3.0][gpl].
 
 [ci-image]: https://secure.travis-ci.org/nature/boomcatch.png?branch=master
 [ci-status]: http://travis-ci.org/#!/nature/boomcatch
@@ -246,5 +249,4 @@ npm test
 [forwarder]: https://github.com/nature/boomcatch/blob/master/src/forwarders/udp.js
 [contrib]: https://github.com/nature/boomcatch/blob/master/CONTRIBUTING.md
 [history]: https://github.com/nature/boomcatch/blob/master/HISTORY.md
-[license]: https://github.com/nature/boomcatch/blob/master/COPYING
-
+[gpl]: http://www.gnu.org/licenses/gpl-3.0.html
