@@ -49,7 +49,7 @@ exports.listen = function (options) {
     mapper = require(getMapper(options)).initialise(options);
     forwarder = require(getForwarder(options)).initialise(options);
 
-    log('kylied.listen: awaiting POST requests on ' + getHost(options) + ':' + getPort(options));
+    log('boomcatch.listen: awaiting POST requests on ' + getHost(options) + ':' + getPort(options));
 
     http.createServer(handleRequest.bind(null, log, getPath(options), mapper, forwarder))
         .listen(getPort(options), getHost(options));
@@ -116,7 +116,7 @@ function handleRequest (log, path, mapper, forwarder, request, response) {
 }
 
 function fail (log, response, status, message) {
-    log('kylied.fail: ' + status + ' ' + message);
+    log('boomcatch.fail: ' + status + ' ' + message);
 
     response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
@@ -140,7 +140,7 @@ function send (log, state, mapper, forwarder, request, response) {
 
         data = mapper(qs.parse(url.parse(request.url).query));
 
-        log('kylied.send: ' + data);
+        log('boomcatch.send: ' + data);
 
         forwarder(data, function (error, bytesSent) {
             if (error) {
@@ -156,7 +156,7 @@ function send (log, state, mapper, forwarder, request, response) {
 }
 
 function pass (log, response, bytes) {
-    log('kylied.pass: Sent ' + bytes + ' bytes');
+    log('boomcatch.pass: Sent ' + bytes + ' bytes');
 
     response.statusCode = 204;
     response.end();
