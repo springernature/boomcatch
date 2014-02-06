@@ -118,9 +118,9 @@ suite('boomcatch:', function () {
                     port: 80,
                     path: '/foo',
                     log: function () {},
-                    mapper: 'bar',
-                    prefix: 'baz',
-                    forwarder: 'qux',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
                     fwdPort: 8125
                 });
@@ -134,9 +134,9 @@ suite('boomcatch:', function () {
                     port: '80',
                     path: '/foo',
                     log: function () {},
-                    mapper: 'bar',
-                    prefix: 'baz',
-                    forwarder: 'qux',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
                     fwdPort: 8125
                 });
@@ -150,9 +150,9 @@ suite('boomcatch:', function () {
                     port: 80,
                     path: '',
                     log: function () {},
-                    mapper: 'bar',
-                    prefix: 'baz',
-                    forwarder: 'qux',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
                     fwdPort: 8125
                 });
@@ -166,9 +166,9 @@ suite('boomcatch:', function () {
                     port: 80,
                     path: '/foo',
                     log: {},
-                    mapper: 'bar',
-                    prefix: 'baz',
-                    forwarder: 'qux',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
                     fwdPort: 8125
                 });
@@ -183,8 +183,8 @@ suite('boomcatch:', function () {
                     path: '/foo',
                     log: function () {},
                     mapper: '',
-                    prefix: 'baz',
-                    forwarder: 'qux',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
                     fwdPort: 8125
                 });
@@ -198,9 +198,9 @@ suite('boomcatch:', function () {
                     port: 80,
                     path: '/foo',
                     log: function () {},
-                    mapper: 'bar',
+                    mapper: 'mapper',
                     prefix: '',
-                    forwarder: 'qux',
+                    forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
                     fwdPort: 8125
                 });
@@ -214,8 +214,8 @@ suite('boomcatch:', function () {
                     port: 80,
                     path: '/foo',
                     log: function () {},
-                    mapper: 'bar',
-                    prefix: 'baz',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
                     forwarder: '',
                     fwdHost: '192.168.50.4',
                     fwdPort: 8125
@@ -230,9 +230,9 @@ suite('boomcatch:', function () {
                     port: 80,
                     path: '/foo',
                     log: function () {},
-                    mapper: 'bar',
-                    prefix: 'baz',
-                    forwarder: 'qux',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
                     fwdHost: '',
                     fwdPort: 8125
                 });
@@ -246,9 +246,9 @@ suite('boomcatch:', function () {
                     port: 80,
                     path: '/foo',
                     log: function () {},
-                    mapper: 'bar',
-                    prefix: 'baz',
-                    forwarder: 'qux',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
                     fwdPort: '8125'
                 });
@@ -262,9 +262,9 @@ suite('boomcatch:', function () {
                     port: 80,
                     path: '/foo',
                     log: function () {},
-                    mapper: 'bar',
-                    prefix: 'baz',
-                    forwarder: 'qux',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
                     fwdPort: 8125
                 });
@@ -304,11 +304,11 @@ suite('boomcatch:', function () {
             });
 
             test('forwarder.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[0], require('forwarders/udp'));
-                assert.lengthOf(log.args.initialise[0], 1);
-                assert.isObject(log.args.initialise[0][0]);
-                assert.isUndefined(log.args.initialise[0][0].fwdHost);
-                assert.isUndefined(log.args.initialise[0][0].fwdPort);
+                assert.strictEqual(log.these.initialise[1], require('forwarders/udp'));
+                assert.lengthOf(log.args.initialise[1], 1);
+                assert.isObject(log.args.initialise[1][0]);
+                assert.isUndefined(log.args.initialise[1][0].fwdHost);
+                assert.isUndefined(log.args.initialise[1][0].fwdPort);
             });
 
             test('http.createServer was called once', function () {
@@ -374,14 +374,6 @@ suite('boomcatch:', function () {
 
                 test('response.statusCode was set correctly', function () {
                     assert.strictEqual(response.statusCode, 404);
-                });
-
-                test('udp.createSocket was not called', function () {
-                    assert.strictEqual(log.counts.createSocket, 0);
-                });
-
-                test('socket.send was not called', function () {
-                    assert.strictEqual(log.counts.send, 0);
                 });
             });
 
@@ -510,18 +502,6 @@ suite('boomcatch:', function () {
                             log.args.on[1][1]();
                         });
 
-                        test('udp.createSocket was not called', function () {
-                            assert.strictEqual(log.counts.createSocket, 0);
-                        });
-
-                        test('socket.send was not called', function () {
-                            assert.strictEqual(log.counts.send, 0);
-                        });
-
-                        test('socket.close was not called', function () {
-                            assert.strictEqual(log.counts.close, 0);
-                        });
-
                         test('response.end was not called', function () {
                             assert.strictEqual(log.counts.end, 1);
                         });
@@ -538,7 +518,7 @@ suite('boomcatch:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.strictEqual(log.these.mapper[0], require('mappers/statsd').initialise());
+                        assert.isUndefined(log.these.mapper[0]);
                         assert.lengthOf(log.args.mapper[0], 1);
                         assert.isObject(log.args.mapper[0][0]);
                         assert.strictEqual(log.args.mapper[0][0].t_resp, 1);
@@ -555,14 +535,10 @@ suite('boomcatch:', function () {
                     });
 
                     test('forwarder was called correctly', function () {
-                        assert.strictEqual(log.these.forwarder[0], require('forwarders/udp').initialise());
+                        assert.isUndefined(log.these.forwarder[0]);
                         assert.lengthOf(log.args.forwarder[0], 2);
-                        assert.instanceOf(log.args.forwarder[0][0], 'default mapped data');
+                        assert.strictEqual(log.args.forwarder[0][0], 'default mapped data');
                         assert.isFunction(log.args.forwarder[0][1]);
-                    });
-
-                    test('socket.close was not called', function () {
-                        assert.strictEqual(log.counts.close, 0);
                     });
 
                     test('response.end was not called', function () {
@@ -572,14 +548,6 @@ suite('boomcatch:', function () {
                     suite('error:', function () {
                         setup(function () {
                             log.args.forwarder[0][1]('wibble');
-                        });
-
-                        test('socket.close was called once', function () {
-                            assert.strictEqual(log.counts.close, 1);
-                        });
-
-                        test('socket.close was called correctly', function () {
-                            assert.lengthOf(log.args.close[0], 0);
                         });
 
                         test('response.setHeader was called once', function () {
@@ -607,10 +575,6 @@ suite('boomcatch:', function () {
                     suite('success:', function () {
                         setup(function () {
                             log.args.forwarder[0][1](null, 1977);
-                        });
-
-                        test('socket.close was called once', function () {
-                            assert.strictEqual(log.counts.close, 1);
                         });
 
                         test('response.setHeader was not called', function () {
@@ -744,10 +708,6 @@ suite('boomcatch:', function () {
                         assert.strictEqual(log.counts.forwarder, 1);
                     });
 
-                    test('socket.close was not called', function () {
-                        assert.strictEqual(log.counts.close, 0);
-                    });
-
                     test('response.end was not called', function () {
                         assert.strictEqual(log.counts.end, 0);
                     });
@@ -769,7 +729,7 @@ suite('boomcatch:', function () {
                     prefix: 'foo prefix',
                     forwarder: 'forwarder',
                     fwdHost: 'bar host',
-                    fwdPort: 'baz port'
+                    fwdPort: 1234
                 });
             });
 
@@ -783,9 +743,9 @@ suite('boomcatch:', function () {
             });
 
             test('forwarder.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[0], require('forwarder'));
-                assert.strictEqual(log.args.initialise[0][0].fwdHost, 'bar host');
-                assert.strictEqual(log.args.initialise[0][0].fwdPort, 'baz port');
+                assert.strictEqual(log.these.initialise[1], require('forwarder'));
+                assert.strictEqual(log.args.initialise[1][0].fwdHost, 'bar host');
+                assert.strictEqual(log.args.initialise[1][0].fwdPort, 1234);
             });
 
             test('http.listen was called correctly', function () {
@@ -849,7 +809,6 @@ suite('boomcatch:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.strictEqual(log.these.mapper[0], require('mapper').initialise());
                         assert.strictEqual(log.args.mapper[0][0].t_resp, 100);
                         assert.strictEqual(log.args.mapper[0][0].t_done, 200);
                     });
@@ -859,12 +818,7 @@ suite('boomcatch:', function () {
                     });
 
                     test('forwarder was called correctly', function () {
-                        assert.strictEqual(log.these.forwarder[0], require('forwarder').initialise());
-                        assert.instanceOf(log.args.forwarder[0][0], 'alternative mapped data');
-                    });
-
-                    test('socket.close was not called', function () {
-                        assert.strictEqual(log.counts.close, 0);
+                        assert.strictEqual(log.args.forwarder[0][0], 'alternative mapped data');
                     });
 
                     test('response.end was not called', function () {
