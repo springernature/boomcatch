@@ -125,7 +125,7 @@ suite('forwarders/udp:', function () {
                     forwarder('foo bar', spooks.fn({
                         name: 'callback',
                         log: log
-                    });
+                    }));
                 });
 
                 test('dgram.createSocket was called once', function () {
@@ -194,7 +194,7 @@ suite('forwarders/udp:', function () {
                     forwarder('baz', spooks.fn({
                         name: 'callback',
                         log: log
-                    });
+                    }));
                 });
 
                 test('dgram.createSocket was called once', function () {
@@ -251,7 +251,7 @@ suite('forwarders/udp:', function () {
                     forwarder('foo bar', spooks.fn({
                         name: 'callback',
                         log: log
-                    });
+                    }));
                 });
 
                 test('socket.send was called correctly', function () {
