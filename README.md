@@ -4,7 +4,7 @@
 
 Standalone,
 node.js-based
-beacon server for boomerang/kylie.
+beacon server for [boomerang]/[kylie].
 
 * [Installation](#installation)
     * [At the system level](#at-the-system-level)
@@ -241,6 +241,8 @@ Copyright © 2014 Nature Publishing Group
 
 [ci-image]: https://secure.travis-ci.org/nature/boomcatch.png?branch=master
 [ci-status]: http://travis-ci.org/#!/nature/boomcatch
+[boomerang]: https://github.com/lognormal/boomerang
+[kylie]: https://github.com/forcedotcom/kylie
 [node]: http://nodejs.org/download/
 [require]: http://nodejs.org/api/globals.html#globals_require
 [statsd]: https://github.com/etsy/statsd/
