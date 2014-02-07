@@ -235,7 +235,7 @@ npm test
 
 ## License
 
-[MIT][license]
+[GPL 3][license]
 
 [ci-image]: https://secure.travis-ci.org/nature/boomcatch.png?branch=master
 [ci-status]: http://travis-ci.org/#!/nature/boomcatch

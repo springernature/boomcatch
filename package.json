@@ -4,7 +4,7 @@
     "description": "Standalone beacon server for boomerang/kylie.",
     "homepage": "https://github.com/nature/boomcatch",
     "bugs": "https://github.com/nature/boomcatch/issues",
-    "license": "https://github.com/nature/boomcatch/blob/master/COPYING",
+    "license": "GPL-3.0",
     "author": "Nature Publishing Group (http://www.nature.com/npg)",
     "main": "./src",
     "bin": {
