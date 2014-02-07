@@ -237,6 +237,8 @@ npm test
 
 [GPL 3][license]
 
+Copyright © 2014 Nature Publishing Group
+
 [ci-image]: https://secure.travis-ci.org/nature/boomcatch.png?branch=master
 [ci-status]: http://travis-ci.org/#!/nature/boomcatch
 [node]: http://nodejs.org/download/
