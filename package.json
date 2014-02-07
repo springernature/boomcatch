@@ -5,7 +5,7 @@
     "homepage": "https://github.com/nature/boomcatch",
     "bugs": "https://github.com/nature/boomcatch/issues",
     "license": "GPL-3.0",
-    "author": "Nature Publishing Group (http://www.nature.com/npg)",
+    "author": "Nature Publishing Group (https://github.com/nature)",
     "main": "./src",
     "bin": {
         "boomcatch": "./src/cli.js"
