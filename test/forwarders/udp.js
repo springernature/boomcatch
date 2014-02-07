@@ -106,9 +106,15 @@ suite('forwarders/udp:', function () {
                 assert.isFunction(forwarder);
             });
 
-            test('forwarder does not throw', function () {
-                assert.doesNotThrow(function () {
+            test('forwarder throws with no data', function () {
+                assert.throws(function () {
                     forwarder();
+                });
+            });
+
+            test('forwarder does not throw with data', function () {
+                assert.doesNotThrow(function () {
+                    forwarder('');
                 });
             });
 
@@ -172,8 +178,8 @@ suite('forwarders/udp:', function () {
                     });
 
                     test('socket.close was called correctly', function () {
-                        assert.strictEqual(log.these.callback[0], require('dgram').createSocket());
-                        assert.lengthOf(log.args.callback[0], 0);
+                        assert.strictEqual(log.these.close[0], require('dgram').createSocket());
+                        assert.lengthOf(log.args.close[0], 0);
                     });
 
                     test('callback was called once', function () {
@@ -181,10 +187,10 @@ suite('forwarders/udp:', function () {
                     });
 
                     test('callback was called correctly', function () {
-                        assert.isNull(log.these.callback[0]);
+                        assert.isUndefined(log.these.callback[0]);
                         assert.lengthOf(log.args.callback[0], 2);
                         assert.strictEqual(log.args.callback[0][0], 'foo');
-                        assert.strictEqual(log.args.callback[0][0], 'bar');
+                        assert.strictEqual(log.args.callback[0][1], 'bar');
                     });
                 });
             });
@@ -225,8 +231,8 @@ suite('forwarders/udp:', function () {
 
             setup(function () {
                 forwarder = udp.initialise({
-                    host: '192.168.50.4',
-                    port: 5001
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 5001
                 });
             });
 
