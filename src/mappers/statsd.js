@@ -42,7 +42,7 @@ function map (prefix, data) {
     var category, result = '';
 
     for (category in metrics) {
-        if (metrics.hasOwnProperty(category)) {
+        if (metrics.hasOwnProperty(category) && data.hasOwnProperty(category)) {
             result += mapMetrics(metrics[category], prefix + category + '.', data[category]);
         }
     }
@@ -52,7 +52,7 @@ function map (prefix, data) {
 
 function mapMetrics (metrics, prefix, data) {
     return metrics.map(function (metric) {
-        return prefix + metric + ':' + data[metric] + '|ms';
+        return prefix + metric + ':' + data[metric] + '|ms\n';
     });
 }
 
