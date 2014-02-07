@@ -53,6 +53,6 @@ function map (prefix, data) {
 function mapMetrics (metrics, prefix, data) {
     return metrics.map(function (metric) {
         return prefix + metric + ':' + data[metric] + '|ms\n';
-    });
+    }).join('');
 }
 
