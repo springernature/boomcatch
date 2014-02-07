@@ -32,7 +32,7 @@ mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
 mockery.registerAllowable('querystring');
 
-suite('boomcatch:', function () {
+suite('index:', function () {
     var log;
 
     setup(function () {
