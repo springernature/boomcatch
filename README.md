@@ -6,7 +6,7 @@ Standalone,
 node.js-based
 beacon server for [boomerang]/[kylie].
 
-* **boomcatch version**: *0.1.0*
+* **boomcatch version**: *1.0.0*
 * **node.js versions**: *0.8, 0.10, 0.11*
 
 ## Installation
