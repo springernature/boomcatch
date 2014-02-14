@@ -6,18 +6,6 @@ Standalone,
 node.js-based
 beacon server for [boomerang]/[kylie].
 
-* [Installation](#installation)
-    * [At the system level](#at-the-system-level)
-    * [Local to a node.js project](#local-to-a-nodejs-project)
-* [Usage](#usage)
-    * [From the command line](#from-the-command-line)
-    * [From a node.js project](#from-a-nodejs-project)
-    * [Data mappers](#data-mappers)
-    * [Data forwarders](#data-forwarders)
-* [Development](#development)
-* [Change log](#change-log)
-* [License](#license)
-
 ## Installation
 
 ### At the system level
