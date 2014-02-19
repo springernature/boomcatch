@@ -134,6 +134,7 @@ suite('index:', function () {
                     host: '',
                     port: 80,
                     path: '/foo',
+                    referer: /bar/,
                     log: function () {},
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -150,6 +151,7 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: '80',
                     path: '/foo',
+                    referer: /bar/,
                     log: function () {},
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -166,6 +168,24 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: 80,
                     path: '',
+                    referer: /bar/,
+                    log: function () {},
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125
+                });
+            });
+        });
+
+        test('listen throws if referer is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: 'bar',
                     log: function () {},
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -182,6 +202,7 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: 80,
                     path: '/foo',
+                    referer: /bar/,
                     log: {},
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -198,6 +219,7 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: 80,
                     path: '/foo',
+                    referer: /bar/,
                     log: function () {},
                     mapper: '',
                     prefix: 'prefix',
@@ -214,6 +236,7 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: 80,
                     path: '/foo',
+                    referer: /bar/,
                     log: function () {},
                     mapper: 'mapper',
                     prefix: '',
@@ -230,6 +253,7 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: 80,
                     path: '/foo',
+                    referer: /bar/,
                     log: function () {},
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -246,6 +270,7 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: 80,
                     path: '/foo',
+                    referer: /bar/,
                     log: function () {},
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -262,6 +287,7 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: 80,
                     path: '/foo',
+                    referer: /bar/,
                     log: function () {},
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -278,6 +304,7 @@ suite('index:', function () {
                     host: '127.0.0.1',
                     port: 80,
                     path: '/foo',
+                    referer: /bar/,
                     log: function () {},
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -294,6 +321,7 @@ suite('index:', function () {
                     host: null,
                     port: null,
                     path: null,
+                    referer: null,
                     log: null,
                     mapper: null,
                     prefix: null,
@@ -442,6 +470,7 @@ suite('index:', function () {
                     request = {
                         url: '/beacon?t_resp=1&t_done=2',
                         method: 'GET',
+                        headers: {},
                         on: spooks.fn({
                             name: 'on',
                             log: log
@@ -617,6 +646,7 @@ suite('index:', function () {
                     request = {
                         url: '/beacon?t_resp=1',
                         method: 'GET',
+                        headers: {},
                         on: spooks.fn({
                             name: 'on',
                             log: log
@@ -669,6 +699,9 @@ suite('index:', function () {
                     request = {
                         url: '/beacon?t_resp=10&t_done=20&nt_fet_st=30&nt_dns_end=40&nt_res_st=50&nt_domcontloaded_st=60&nt_load_st=70',
                         method: 'GET',
+                        headers: {
+                            referer: 'wibble'
+                        },
                         on: spooks.fn({
                             name: 'on',
                             log: log
@@ -736,6 +769,7 @@ suite('index:', function () {
                     host: '192.168.1.1',
                     port: 8080,
                     path: '/foo/bar',
+                    referer: /baz/,
                     log: spooks.fn({
                         name: 'log',
                         log: log
@@ -784,6 +818,9 @@ suite('index:', function () {
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
+                        headers: {
+                            referer: 'foo.bar.baz.qux'
+                        },
                         on: spooks.fn({
                             name: 'on',
                             log: log
@@ -839,6 +876,107 @@ suite('index:', function () {
                     test('response.end was not called', function () {
                         assert.strictEqual(log.counts.end, 0);
                     });
+                });
+            });
+
+            suite('valid request without referer:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/foo/bar?t_resp=100&t_done=200',
+                        method: 'GET',
+                        headers: {},
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was not called', function () {
+                    assert.strictEqual(log.counts.setHeader, 0);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+            });
+
+            suite('invalid referer:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/foo/bar?t_resp=100&t_done=200',
+                        method: 'GET',
+                        headers: {
+                            referer: 'foo.bar.bz.qux'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('response.setHeader was called correctly', function () {
+                    assert.strictEqual(log.these.setHeader[0], response);
+                    assert.lengthOf(log.args.setHeader[0], 2);
+                    assert.strictEqual(log.args.setHeader[0][0], 'Content-Type');
+                    assert.strictEqual(log.args.setHeader[0][1], 'application/json');
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.end was called correctly', function () {
+                    assert.strictEqual(log.these.end[0], response);
+                    assert.lengthOf(log.args.end[0], 1);
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid referer `foo.bar.bz.qux`" }');
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 403);
+                });
+
+                test('request.on was not called', function () {
+                    assert.strictEqual(log.counts.on, 0);
                 });
             });
         });

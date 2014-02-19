@@ -60,6 +60,10 @@ Available options are:
   URL path to accept requests to.
   The default is /beacon.
 
+* `--referer <regex>`:
+  HTTP referers to accept requests from.
+  The default is `.*`.
+
 * `--silent`:
   Prevent the command
   from logging output

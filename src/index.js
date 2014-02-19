@@ -28,6 +28,7 @@ defaults = {
     host: '0.0.0.0',
     port: 80,
     path: '/beacon',
+    referer: /.*/,
     log: function () {},
     mapper: 'statsd',
     forwarder: 'udp'
@@ -42,6 +43,7 @@ defaults = {
  *                             '0.0.0.0' (INADDR_ANY).
  * @option port {number}       HTTP port to accept connections on. Defaults to 80.
  * @option path {string}       URL path to accept requests to. Defaults to '/beacon'.
+ * @option referer {regexp}    HTTP referers to accept requests from. Defaults to `.*`.
  * @option log {function}      Log function that expects a single string argument
  *                             (without terminating newline character). Defaults to
  *                             `function () {}`.
@@ -68,7 +70,7 @@ exports.listen = function (options) {
 
     log('boomcatch.listen: awaiting POST requests on ' + getHost(options) + ':' + getPort(options));
 
-    http.createServer(handleRequest.bind(null, log, getPath(options), mapper, forwarder))
+    http.createServer(handleRequest.bind(null, log, getPath(options), getReferer(options), mapper, forwarder))
         .listen(getPort(options), getHost(options));
 };
 
@@ -76,6 +78,7 @@ function verifyOptions (options) {
     check.verify.maybe.unemptyString(options.host, 'Invalid host');
     check.verify.maybe.positiveNumber(options.port, 'Invalid port');
     check.verify.maybe.unemptyString(options.path, 'Invalid path');
+    check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
     check.verify.maybe.fn(options.log, 'Invalid log function');
     check.verify.maybe.unemptyString(options.mapper, 'Invalid data mapper');
     check.verify.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
@@ -104,6 +107,10 @@ function getPath (options) {
     return getOption('path', options);
 }
 
+function getReferer (options) {
+    return getOption('referer', options);
+}
+
 function getMapper (options) {
     return getExtension('mapper', options);
 }
@@ -124,7 +131,7 @@ function getForwarder (options) {
     return getExtension('forwarder', options);
 }
 
-function handleRequest (log, path, mapper, forwarder, request, response) {
+function handleRequest (log, path, referer, mapper, forwarder, request, response) {
     var queryIndex, requestPath, state;
 
     if (request.method !== 'GET') {
@@ -136,6 +143,10 @@ function handleRequest (log, path, mapper, forwarder, request, response) {
 
     if (requestPath !== path) {
         return fail(log, response, 404, 'Invalid path `' + requestPath + '`');
+    }
+
+    if (check.unemptyString(request.headers.referer) && !referer.test(request.headers.referer)) {
+        return fail(log, response, 403, 'Invalid referer `' + request.headers.referer + '`');
     }
 
     state = {};

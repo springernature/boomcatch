@@ -33,6 +33,7 @@ function parseCommandLine () {
         .option('-n, --host <name>', 'host name to accept HTTP connections on, default is 0.0.0.0 (INADDR_ANY)')
         .option('-p, --port <port>', 'port to accept HTTP connections on, default is 8008', parseInt)
         .option('-u, --path <path>', 'URL path to accept requests to, default is /beacon')
+        .option('-r, --referer <regex>', 'HTTP referers to accept requests from, default is .*', parseRegExp)
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
@@ -40,6 +41,10 @@ function parseCommandLine () {
         .option('-N, --fwdHost <name>', 'host name to forward data to')
         .option('-P, --fwdPort <port>', 'port to forward data on', parseInt)
         .parse(process.argv);
+}
+
+function parseRegExp (regExp) {
+    return new RegExp(regExp);
 }
 
 function runServer () {
