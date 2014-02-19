@@ -64,6 +64,11 @@ Available options are:
   HTTP referers to accept requests from.
   The default is `.*`.
 
+* `--limit <milliseconds>`:
+  Minimum elapsed time to allow
+  between requests from the same IP adderss.
+  The default is 0.
+
 * `--silent`:
   Prevent the command
   from logging output

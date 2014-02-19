@@ -29,6 +29,7 @@ defaults = {
     port: 80,
     path: '/beacon',
     referer: /.*/,
+    limit: 0,
     log: function () {},
     mapper: 'statsd',
     forwarder: 'udp'
@@ -39,21 +40,23 @@ defaults = {
  *
  * Forwards performance metrics calculated from Boomerang/Kylie beacon events.
  *
- * @option host {string}       HTTP host name to accept connections on. Defaults to
- *                             '0.0.0.0' (INADDR_ANY).
- * @option port {number}       HTTP port to accept connections on. Defaults to 80.
- * @option path {string}       URL path to accept requests to. Defaults to '/beacon'.
- * @option referer {regexp}    HTTP referers to accept requests from. Defaults to `.*`.
- * @option log {function}      Log function that expects a single string argument
- *                             (without terminating newline character). Defaults to
- *                             `function () {}`.
- * @option mapper {string}     Data mapper used to transform data before forwarding,
- *                             loaded with `require`. Defaults to 'statsd'.
- * @option prefix {string}     Prefix to use for mapped metric names. Defaults to ''.
- * @option forwarder {string}  Forwarder used to send data, loaded with `require`.
- *                             Defaults to 'udp'.
- * @option fwdHost {string}    Host name to forward mapped data to.
- * @option fwdPort {number}    Port to forward mapped data on.
+ * @option host {string}         HTTP host name to accept connections on. Defaults to
+ *                               '0.0.0.0' (INADDR_ANY).
+ * @option port {number}         HTTP port to accept connections on. Defaults to 80.
+ * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
+ * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
+ * @option limit {milliseconds}  Minimum elapsed time between requests from the same IP
+ *                               address. Defaults to 0.
+ * @option log {function}        Log function that expects a single string argument
+ *                               (without terminating newline character). Defaults to
+ *                               `function () {}`.
+ * @option mapper {string}       Data mapper used to transform data before forwarding,
+ *                               loaded with `require`. Defaults to 'statsd'.
+ * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
+ * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
+ *                               Defaults to 'udp'.
+ * @option fwdHost {string}      Host name to forward mapped data to.
+ * @option fwdPort {number}      Port to forward mapped data on.
  */
 exports.listen = function (options) {
     var log, mapper, forwarder;
@@ -70,7 +73,7 @@ exports.listen = function (options) {
 
     log('boomcatch.listen: awaiting POST requests on ' + getHost(options) + ':' + getPort(options));
 
-    http.createServer(handleRequest.bind(null, log, getPath(options), getReferer(options), mapper, forwarder))
+    http.createServer(handleRequest.bind(null, log, getPath(options), getReferer(options), getLimit(options), mapper, forwarder))
         .listen(getPort(options), getHost(options));
 };
 
@@ -79,6 +82,7 @@ function verifyOptions (options) {
     check.verify.maybe.positiveNumber(options.port, 'Invalid port');
     check.verify.maybe.unemptyString(options.path, 'Invalid path');
     check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
+    check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.fn(options.log, 'Invalid log function');
     check.verify.maybe.unemptyString(options.mapper, 'Invalid data mapper');
     check.verify.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
@@ -111,6 +115,19 @@ function getReferer (options) {
     return getOption('referer', options);
 }
 
+function getLimit (options) {
+    var limit = getOption('limit', options);
+
+    if (limit === 0) {
+        return null;
+    }
+
+    return {
+        time: limit,
+        requests: {}
+    };
+}
+
 function getMapper (options) {
     return getExtension('mapper', options);
 }
@@ -131,7 +148,7 @@ function getForwarder (options) {
     return getExtension('forwarder', options);
 }
 
-function handleRequest (log, path, referer, mapper, forwarder, request, response) {
+function handleRequest (log, path, referer, limit, mapper, forwarder, request, response) {
     var queryIndex, requestPath, state;
 
     if (request.method !== 'GET') {
@@ -149,6 +166,10 @@ function handleRequest (log, path, referer, mapper, forwarder, request, response
         return fail(log, response, 403, 'Invalid referer `' + request.headers.referer + '`');
     }
 
+    if (!checkLimit(limit, request)) {
+        return fail(log, response, 429, 'Exceeded rate `' + limit.time + '`');
+    }
+
     state = {};
 
     request.on('data', receive.bind(null, log, state, request, response));
@@ -161,6 +182,42 @@ function fail (log, response, status, message) {
     response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
     response.end('{ "error": "' + message + '" }');
+}
+
+function checkLimit (limit, request) {
+    var now, address, lastRequest, proxiedAddresses, proxy;
+
+    if (limit === null) {
+        return true;
+    }
+
+    now = Date.now();
+    address = request.socket.remoteAddress;
+    lastRequest = limit.requests[address];
+    proxiedAddresses = request.headers['x-forwarded-for'];
+
+    if (check.object(lastRequest)) {
+        proxy = lastRequest;
+        lastRequest = lastRequest[proxiedAddresses || 'self'];
+    }
+
+    if (check.positiveNumber(lastRequest) && now <= lastRequest + limit.time) {
+        return false;
+    }
+
+    if (proxiedAddresses) {
+        if (!proxy) {
+            proxy = limit.requests[address] = {
+                self: lastRequest
+            };
+        }
+
+        proxy[proxiedAddresses] = now;
+    } else {
+        limit.requests[address] = now;
+    }
+
+    return true;
 }
 
 function receive (log, state, request, response, data) {

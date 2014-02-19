@@ -34,6 +34,7 @@ function parseCommandLine () {
         .option('-p, --port <port>', 'port to accept HTTP connections on, default is 8008', parseInt)
         .option('-u, --path <path>', 'URL path to accept requests to, default is /beacon')
         .option('-r, --referer <regex>', 'HTTP referers to accept requests from, default is .*', parseRegExp)
+        .option('-l, --limit <milliseconds>', 'minimum elapsed time between requests from the same IP address, default is 0', parseInt)
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
