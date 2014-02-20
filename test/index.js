@@ -1174,9 +1174,9 @@ suite('index:', function () {
                         archetype: { setHeader: nop, end: nop },
                         log: log
                     });
-                    request['x-forwarded-for'] = 'wibble';
+                    request.headers['x-forwarded-for'] = 'wibble';
                     log.args.createServer[0][0](request, response);
-                    request['x-forwarded-for'] = 'wobble';
+                    request.headers['x-forwarded-for'] = 'wobble';
                     log.args.createServer[0][0](request, response);
                 });
 
@@ -1219,7 +1219,7 @@ suite('index:', function () {
                         archetype: { setHeader: nop, end: nop },
                         log: log
                     });
-                    request['x-forwarded-for'] = 'wibble';
+                    request.headers['x-forwarded-for'] = 'wibble';
                     log.args.createServer[0][0](request, response);
                     log.args.createServer[0][0](request, response);
                 });
