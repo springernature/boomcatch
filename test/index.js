@@ -31,6 +31,7 @@ mockery.registerAllowable(modulePath);
 mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
 mockery.registerAllowable('querystring');
+mockery.registerAllowable('get-off-my-log');
 
 suite('index:', function () {
     var log;
@@ -414,6 +415,7 @@ suite('index:', function () {
                     request = {
                         url: '/foo?t_resp=1&t_done=2',
                         method: 'GET',
+                        headers: {},
                         socket: {
                             destroy: spooks.fn({
                                 name: 'destroy',
@@ -474,6 +476,7 @@ suite('index:', function () {
                     request = {
                         url: '/beacon?t_resp=1&t_done=2',
                         method: 'POST',
+                        headers: {},
                         socket: {
                             destroy: spooks.fn({
                                 name: 'destroy',
@@ -926,13 +929,17 @@ suite('index:', function () {
                 assert.strictEqual(log.args.listen[0][1], '192.168.1.1');
             });
 
-            test('log was called once', function () {
+            test('log.info was called once', function () {
                 assert.strictEqual(log.counts.log, 1);
+                assert.lengthOf(log.args.log[0], 1);
+                assert.notEqual(log.args.log[0][0].indexOf('INFO'), -1);
             });
 
-            test('log was called correctly', function () {
-                assert.lengthOf(log.args.log[0], 1);
-                assert.strictEqual(log.args.log[0][0], 'boomcatch.listen: awaiting POST requests on 192.168.1.1:8080');
+            test('log.info was called correctly', function () {
+                assert.strictEqual(
+                    log.args.log[0][0].substr(log.args.log[0][0].indexOf('INFO')),
+                    'INFO boomcatch: listening for GET 192.168.1.1:8080/foo/bar'
+                );
             });
 
             suite('valid request:', function () {
@@ -974,6 +981,19 @@ suite('index:', function () {
 
                 test('request.socket.destroy was not called', function () {
                     assert.strictEqual(log.counts.destroy, 0);
+                });
+
+                test('log.info was called once', function () {
+                    assert.strictEqual(log.counts.log, 2);
+                    assert.lengthOf(log.args.log[1], 1);
+                    assert.notEqual(log.args.log[1][0].indexOf('INFO'), -1);
+                });
+
+                test('log.info was called correctly', function () {
+                    assert.strictEqual(
+                        log.args.log[1][0].substr(log.args.log[1][0].indexOf('INFO')),
+                        'INFO boomcatch: referer=foo.bar.baz.qux address=foo.bar[] method=GET url=/foo/bar?t_resp=100&t_done=200'
+                    );
                 });
 
                 test('request.on was called twice', function () {

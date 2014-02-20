@@ -23,6 +23,7 @@ var check = require('check-types'),
     http = require('http'),
     url = require('url'),
     qs = require('querystring'),
+    logger = require('get-off-my-log'),
 
 defaults = {
     host: '0.0.0.0',
@@ -59,7 +60,7 @@ defaults = {
  * @option fwdPort {number}      Port to forward mapped data on.
  */
 exports.listen = function (options) {
-    var log, mapper, forwarder;
+    var log, path, host, port, mapper, forwarder;
 
     if (options) {
         verifyOptions(options);
@@ -68,13 +69,16 @@ exports.listen = function (options) {
     }
 
     log = getLog(options);
+    path = getPath(options);
+    host = getHost(options);
+    port = getPort(options);
     mapper = getMapper(options);
     forwarder = getForwarder(options);
 
-    log('boomcatch.listen: awaiting POST requests on ' + getHost(options) + ':' + getPort(options));
+    log.info('listening for GET ' + host + ':' + port + path);
 
-    http.createServer(handleRequest.bind(null, log, getPath(options), getReferer(options), getLimit(options), mapper, forwarder))
-        .listen(getPort(options), getHost(options));
+    http.createServer(handleRequest.bind(null, log, path, getReferer(options), getLimit(options), mapper, forwarder))
+        .listen(port, host);
 };
 
 function verifyOptions (options) {
@@ -92,7 +96,7 @@ function verifyOptions (options) {
 }
 
 function getLog (options) {
-    return getOption('log', options);
+    return logger.initialise('boomcatch', getOption('log', options));
 }
 
 function getOption (name, options) {
@@ -151,6 +155,8 @@ function getForwarder (options) {
 function handleRequest (log, path, referer, limit, mapper, forwarder, request, response) {
     var queryIndex, requestPath, state;
 
+    logRequest(log, request);
+
     if (request.method !== 'GET') {
         return fail(log, request, response, 405, 'Invalid method `' + request.method + '`');
     }
@@ -176,8 +182,17 @@ function handleRequest (log, path, referer, limit, mapper, forwarder, request, r
     request.on('end', send.bind(null, log, state, mapper, forwarder, request, response));
 }
 
+function logRequest (log, request) {
+    log.info(
+        'referer=' + (request.headers.referer || '') + ' ' +
+        'address=' + request.socket.remoteAddress + '[' + (request.headers['x-forwarded-for'] || '') + ']' + ' ' +
+        'method=' + request.method + ' ' +
+        'url=' + request.url
+    );
+}
+
 function fail (log, request, response, status, message) {
-    log('boomcatch.fail: ' + status + ' ' + message);
+    log.error(status + ' ' + message);
 
     response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
@@ -238,7 +253,7 @@ function send (log, state, mapper, forwarder, request, response) {
 
         data = mapper(normaliseData(qs.parse(url.parse(request.url).query)));
 
-        log('boomcatch.send: ' + data);
+        log.info('sending ' + data);
 
         forwarder(data, function (error, bytesSent) {
             if (error) {
@@ -299,7 +314,7 @@ function normaliseNavigationTimingApiData (data) {
 }
 
 function pass (log, response, bytes) {
-    log('boomcatch.pass: Sent ' + bytes + ' bytes');
+    log.info('sent ' + bytes + ' bytes');
 
     response.statusCode = 204;
     response.end();
