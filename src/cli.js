@@ -31,7 +31,7 @@ runServer();
 function parseCommandLine () {
     cli.version(packageInfo.version)
         .option('-n, --host <name>', 'host name to accept HTTP connections on, default is 0.0.0.0 (INADDR_ANY)')
-        .option('-p, --port <port>', 'port to accept HTTP connections on, default is 8008', parseInt)
+        .option('-p, --port <port>', 'port to accept HTTP connections on, default is 80', parseInt)
         .option('-u, --path <path>', 'URL path to accept requests to, default is /beacon')
         .option('-r, --referer <regex>', 'HTTP referers to accept requests from, default is .*', parseRegExp)
         .option('-l, --limit <milliseconds>', 'minimum elapsed time between requests from the same IP address, default is 0', parseInt)
