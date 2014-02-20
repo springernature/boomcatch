@@ -844,7 +844,7 @@ suite('index:', function () {
                     port: 8080,
                     path: '/foo/bar',
                     referer: /baz/,
-                    limit: 10000,
+                    limit: 1000,
                     log: spooks.fn({
                         name: 'log',
                         log: log
@@ -1092,7 +1092,7 @@ suite('index:', function () {
                 });
 
                 test('response.end was called correctly', function () {
-                    assert.strictEqual(log.args.end[0][0], '{ "error": "Exceeded rate `10000`" }');
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Exceeded rate `1000`" }');
                 });
 
                 test('response.statusCode was set correctly', function () {
@@ -1237,7 +1237,7 @@ suite('index:', function () {
                 });
 
                 test('response.end was called correctly', function () {
-                    assert.strictEqual(log.args.end[0][0], '{ "error": "Exceeded rate `10000`" }');
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Exceeded rate `1000`" }');
                 });
 
                 test('response.statusCode was set correctly', function () {
