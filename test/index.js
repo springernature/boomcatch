@@ -413,7 +413,13 @@ suite('index:', function () {
                 setup(function () {
                     request = {
                         url: '/foo?t_resp=1&t_done=2',
-                        method: 'GET'
+                        method: 'GET',
+                        socket: {
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
                     };
                     response = spooks.obj({
                         archetype: { setHeader: nop, end: nop },
@@ -450,6 +456,15 @@ suite('index:', function () {
                 test('response.statusCode was set correctly', function () {
                     assert.strictEqual(response.statusCode, 404);
                 });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
+                test('request.socket.destroy was called correctly', function () {
+                    assert.strictEqual(log.these.destroy[0], request.socket);
+                    assert.lengthOf(log.args.destroy[0], 0);
+                });
             });
 
             suite('invalid method:', function () {
@@ -458,7 +473,13 @@ suite('index:', function () {
                 setup(function () {
                     request = {
                         url: '/beacon?t_resp=1&t_done=2',
-                        method: 'POST'
+                        method: 'POST',
+                        socket: {
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
                     };
                     response = spooks.obj({
                         archetype: { setHeader: nop, end: nop },
@@ -490,6 +511,10 @@ suite('index:', function () {
 
                 test('response.statusCode was set correctly', function () {
                     assert.strictEqual(response.statusCode, 405);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
                 });
             });
 
@@ -549,10 +574,6 @@ suite('index:', function () {
                         log.args.on[0][1]('x');
                     });
 
-                    test('request.socket.destroy was not called', function () {
-                        assert.strictEqual(log.counts.destroy, 0);
-                    });
-
                     test('response.setHeader was called once', function () {
                         assert.strictEqual(log.counts.setHeader, 1);
                     });
@@ -574,6 +595,10 @@ suite('index:', function () {
                         assert.strictEqual(response.statusCode, 413);
                     });
 
+                    test('request.socket.destroy was called once', function () {
+                        assert.strictEqual(log.counts.destroy, 1);
+                    });
+
                     suite('end data:', function () {
                         setup(function () {
                             log.args.on[1][1]();
@@ -581,6 +606,10 @@ suite('index:', function () {
 
                         test('response.end was not called', function () {
                             assert.strictEqual(log.counts.end, 1);
+                        });
+
+                        test('request.socket.destroy not called', function () {
+                            assert.strictEqual(log.counts.destroy, 1);
                         });
                     });
                 });
@@ -644,6 +673,10 @@ suite('index:', function () {
                         test('response.statusCode was set correctly', function () {
                             assert.strictEqual(response.statusCode, 502);
                         });
+
+                        test('request.socket.destroy was called once', function () {
+                            assert.strictEqual(log.counts.destroy, 1);
+                        });
                     });
 
                     suite('success:', function () {
@@ -665,6 +698,10 @@ suite('index:', function () {
 
                         test('response.statusCode was set correctly', function () {
                             assert.strictEqual(response.statusCode, 204);
+                        });
+
+                        test('request.socket.destroy was not called', function () {
+                            assert.strictEqual(log.counts.destroy, 0);
                         });
                     });
                 });
@@ -721,6 +758,10 @@ suite('index:', function () {
 
                 test('response.statusCode was set correctly', function () {
                     assert.strictEqual(response.statusCode, 400);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
                 });
             });
 
@@ -792,6 +833,10 @@ suite('index:', function () {
                     test('response.end was not called', function () {
                         assert.strictEqual(log.counts.end, 0);
                     });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
                 });
             });
 
@@ -829,6 +874,10 @@ suite('index:', function () {
 
                 test('response.setHeader was not called', function () {
                     assert.strictEqual(log.counts.setHeader, 0);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
                 });
 
                 test('request.on was called four times', function () {
@@ -923,6 +972,10 @@ suite('index:', function () {
                     assert.strictEqual(log.counts.setHeader, 0);
                 });
 
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
+                });
+
                 test('request.on was called twice', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
@@ -990,6 +1043,10 @@ suite('index:', function () {
                     assert.strictEqual(log.counts.setHeader, 0);
                 });
 
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
+                });
+
                 test('request.on was called twice', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
@@ -1042,6 +1099,10 @@ suite('index:', function () {
 
                 test('response.statusCode was set correctly', function () {
                     assert.strictEqual(response.statusCode, 403);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
                 });
 
                 test('request.on was not called', function () {
@@ -1099,6 +1160,10 @@ suite('index:', function () {
                     assert.strictEqual(response.statusCode, 429);
                 });
 
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
                 test('request.on was not called', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
@@ -1141,6 +1206,10 @@ suite('index:', function () {
 
                 test('response.setHeader was not called', function () {
                     assert.strictEqual(log.counts.setHeader, 0);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
                 });
 
                 test('request.on was called four times', function () {
@@ -1186,6 +1255,10 @@ suite('index:', function () {
 
                 test('response.setHeader was not called', function () {
                     assert.strictEqual(log.counts.setHeader, 0);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
                 });
 
                 test('request.on was called four times', function () {
@@ -1240,6 +1313,10 @@ suite('index:', function () {
                     assert.strictEqual(response.statusCode, 429);
                 });
 
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
                 test('request.on was not called', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
@@ -1292,6 +1369,10 @@ suite('index:', function () {
                     assert.strictEqual(response.statusCode, 429);
                 });
 
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
                 test('request.on was not called', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
@@ -1335,6 +1416,10 @@ suite('index:', function () {
 
                 test('response.setHeader was not called', function () {
                     assert.strictEqual(log.counts.setHeader, 0);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
                 });
 
                 test('request.on was called four times', function () {
@@ -1389,6 +1474,10 @@ suite('index:', function () {
 
                 test('response.statusCode was set correctly', function () {
                     assert.strictEqual(response.statusCode, 429);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
                 });
 
                 test('request.on was not called', function () {
@@ -1446,6 +1535,10 @@ suite('index:', function () {
 
                 test('response.statusCode was set correctly', function () {
                     assert.strictEqual(response.statusCode, 429);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
                 });
 
                 test('request.on was not called', function () {

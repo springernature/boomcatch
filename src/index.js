@@ -152,22 +152,22 @@ function handleRequest (log, path, referer, limit, mapper, forwarder, request, r
     var queryIndex, requestPath, state;
 
     if (request.method !== 'GET') {
-        return fail(log, response, 405, 'Invalid method `' + request.method + '`');
+        return fail(log, request, response, 405, 'Invalid method `' + request.method + '`');
     }
 
     queryIndex = request.url.indexOf('?');
     requestPath = queryIndex === -1 ? request.url : request.url.substr(0, queryIndex);
 
     if (requestPath !== path) {
-        return fail(log, response, 404, 'Invalid path `' + requestPath + '`');
+        return fail(log, request, response, 404, 'Invalid path `' + requestPath + '`');
     }
 
     if (check.unemptyString(request.headers.referer) && !referer.test(request.headers.referer)) {
-        return fail(log, response, 403, 'Invalid referer `' + request.headers.referer + '`');
+        return fail(log, request, response, 403, 'Invalid referer `' + request.headers.referer + '`');
     }
 
     if (!checkLimit(limit, request)) {
-        return fail(log, response, 429, 'Exceeded rate `' + limit.time + '`');
+        return fail(log, request, response, 429, 'Exceeded rate `' + limit.time + '`');
     }
 
     state = {};
@@ -176,12 +176,13 @@ function handleRequest (log, path, referer, limit, mapper, forwarder, request, r
     request.on('end', send.bind(null, log, state, mapper, forwarder, request, response));
 }
 
-function fail (log, response, status, message) {
+function fail (log, request, response, status, message) {
     log('boomcatch.fail: ' + status + ' ' + message);
 
     response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
     response.end('{ "error": "' + message + '" }');
+    request.socket.destroy();
 }
 
 function checkLimit (limit, request) {
@@ -223,7 +224,7 @@ function checkLimit (limit, request) {
 function receive (log, state, request, response, data) {
     if (data.length > 0) {
         state.failed = true;
-        fail(log, response, 413, 'Body too large');
+        fail(log, request, response, 413, 'Body too large');
     }
 }
 
@@ -241,14 +242,13 @@ function send (log, state, mapper, forwarder, request, response) {
 
         forwarder(data, function (error, bytesSent) {
             if (error) {
-                return fail(log, response, 502, error);
+                return fail(log, request, response, 502, error);
             }
 
             pass(log, response, bytesSent);
         });
     } catch (error) {
-        request.socket.destroy();
-        fail(log, response, 400, 'Invalid data');
+        fail(log, request, response, 400, 'Invalid data');
     }
 }
 
