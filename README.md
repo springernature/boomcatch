@@ -107,6 +107,8 @@ boomcatch.listen({
     host: 'rum.example.com',                  // Defaults to '0.0.0.0' (INADDR_ANY)
     port: 8080,                               // Defaults to 80
     path: '/perf',                            // Defaults to '/beacon'
+    referer: /^\w\.example\.com$/,            // Defaults to /.*/
+    limit: 100,                               // Defaults to 0
     log: console.log,                         // Defaults to `function () {}`
     mapper: path.resolve('./mymapper'),       // Defaults to 'statsd'
     prefix: 'mystats.rum.',                   // Defaults to ''
