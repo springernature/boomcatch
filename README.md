@@ -238,7 +238,7 @@ the `initialise` function
 should return a function
 that receives an object
 representing the parsed query string
-and returns either `true` or `false,
+and returns either `true` or `false`,
 signifying that the request
 is valid or invalid respectively.
 
