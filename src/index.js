@@ -40,7 +40,7 @@ defaults = {
 /**
  * Public function `listen`.
  *
- * Forwards performance metrics calculated from Boomerang/Kylie beacon events.
+ * Forwards performance metrics calculated from Boomerang/Kylie beacon requests.
  *
  * @option host {string}         HTTP host name to accept connections on. Defaults to
  *                               '0.0.0.0' (INADDR_ANY).
