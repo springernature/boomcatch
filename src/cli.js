@@ -36,6 +36,7 @@ function parseCommandLine () {
         .option('-r, --referer <regex>', 'HTTP referers to accept requests from, default is .*', parseRegExp)
         .option('-l, --limit <milliseconds>', 'minimum elapsed time between requests from the same IP address, default is 0', parseInt)
         .option('-s, --silent', 'prevent the command from logging output to the console')
+        .option('-v, --validator <path>', 'validator to use, default is permissive')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
         .option('-f, --forwarder <path>', 'forwarder to use, default is udp')

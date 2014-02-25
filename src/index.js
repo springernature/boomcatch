@@ -32,6 +32,7 @@ defaults = {
     referer: /.*/,
     limit: 0,
     log: function () {},
+    validator: 'permissive',
     mapper: 'statsd',
     forwarder: 'udp'
 };
@@ -51,6 +52,8 @@ defaults = {
  * @option log {function}        Log function that expects a single string argument
  *                               (without terminating newline character). Defaults to
  *                               `function () {}`.
+ * @option validator {string}    Validator used to accept or reject beacon requests.
+ *                               Defaults to 'permissive'
  * @option mapper {string}       Data mapper used to transform data before forwarding,
  *                               loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
@@ -60,7 +63,7 @@ defaults = {
  * @option fwdPort {number}      Port to forward mapped data on.
  */
 exports.listen = function (options) {
-    var log, path, host, port, mapper, forwarder;
+    var log, path, host, port, mapper, forwarder, validator;
 
     if (options) {
         verifyOptions(options);
@@ -72,12 +75,13 @@ exports.listen = function (options) {
     path = getPath(options);
     host = getHost(options);
     port = getPort(options);
+    validator = getValidator(options);
     mapper = getMapper(options);
     forwarder = getForwarder(options);
 
     log.info('listening for GET ' + host + ':' + port + path);
 
-    http.createServer(handleRequest.bind(null, log, path, getReferer(options), getLimit(options), mapper, forwarder))
+    http.createServer(handleRequest.bind(null, log, path, getReferer(options), getLimit(options), validator, mapper, forwarder))
         .listen(port, host);
 };
 
@@ -88,6 +92,7 @@ function verifyOptions (options) {
     check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.fn(options.log, 'Invalid log function');
+    check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
     check.verify.maybe.unemptyString(options.mapper, 'Invalid data mapper');
     check.verify.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
     check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
@@ -132,27 +137,33 @@ function getLimit (options) {
     };
 }
 
-function getMapper (options) {
-    return getExtension('mapper', options);
+function getValidator (options) {
+    return getExtension('validator', options);
 }
 
-function getExtension (name, options) {
-    var path = getOption(name, options), extension;
+function getExtension (type, options) {
+    var name, extension;
+
+    name = getOption(type, options);
 
     try {
-        extension = require('./' + name + 's/' + path);
+        extension = require('./' + type + 's/' + name);
     } catch (e) {
-        extension = require(path);
+        extension = require(name);
     }
 
     return extension.initialise(options);
+}
+
+function getMapper (options) {
+    return getExtension('mapper', options);
 }
 
 function getForwarder (options) {
     return getExtension('forwarder', options);
 }
 
-function handleRequest (log, path, referer, limit, mapper, forwarder, request, response) {
+function handleRequest (log, path, referer, limit, validator, mapper, forwarder, request, response) {
     var queryIndex, requestPath, state;
 
     logRequest(log, request);
@@ -179,7 +190,7 @@ function handleRequest (log, path, referer, limit, mapper, forwarder, request, r
     state = {};
 
     request.on('data', receive.bind(null, log, state, request, response));
-    request.on('end', send.bind(null, log, state, mapper, forwarder, request, response));
+    request.on('end', send.bind(null, log, state, validator, mapper, forwarder, request, response));
 }
 
 function logRequest (log, request) {
@@ -243,19 +254,25 @@ function receive (log, state, request, response, data) {
     }
 }
 
-function send (log, state, mapper, forwarder, request, response) {
+function send (log, state, validator, mapper, forwarder, request, response) {
     try {
-        var data;
+        var data, mappedData;
 
         if (state.failed) {
             return;
         }
 
-        data = mapper(normaliseData(qs.parse(url.parse(request.url).query)));
+        data = qs.parse(url.parse(request.url).query);
 
-        log.info('sending ' + data);
+        if (!validator(data)) {
+            throw null;
+        }
 
-        forwarder(data, function (error, bytesSent) {
+        mappedData = mapper(normaliseData(data));
+
+        log.info('sending ' + mappedData);
+
+        forwarder(mappedData, function (error, bytesSent) {
             if (error) {
                 return fail(log, request, response, 502, error);
             }

@@ -17,7 +17,7 @@
 
 'use strict';
 
-var assert, mockery, spooks, modulePath, nop;
+var assert, mockery, spooks, modulePath, nop, restrict;
 
 assert = require('chai').assert;
 mockery = require('mockery');
@@ -44,6 +44,17 @@ suite('index:', function () {
             log: log,
             chains: { createServer: true }
         }));
+        mockery.registerMock('./validators/permissive', spooks.obj({
+            archetype: { initialise: nop },
+            log: log,
+            results: {
+                initialise: spooks.fn({
+                    name: 'validator',
+                    log: log,
+                    result: true
+                })
+            }
+        }));
         mockery.registerMock('./mappers/statsd', spooks.obj({
             archetype: { initialise: nop },
             log: log,
@@ -63,6 +74,18 @@ suite('index:', function () {
                     name: 'forwarder',
                     log: log
                 })
+            }
+        }));
+        mockery.registerMock('./validators/restrictive', spooks.obj({
+            archetype: { initialise: nop },
+            log: log,
+            results: {
+                initialise: function () {
+                    log.counts.validator += 1;
+                    log.these.validator.push(this);
+                    log.args.validator.push(arguments);
+                    return !restrict;
+                }
             }
         }));
         mockery.registerMock('./mappers/mapper', spooks.obj({
@@ -91,8 +114,10 @@ suite('index:', function () {
     teardown(function () {
         mockery.deregisterMock('./forwarders/forwarder');
         mockery.deregisterMock('./mappers/mapper');
+        mockery.deregisterMock('./validators/restrictive');
         mockery.deregisterMock('./forwarders/udp');
         mockery.deregisterMock('./mappers/statsd');
+        mockery.deregisterMock('./validators/permissive');
         mockery.deregisterMock('http');
         mockery.disable();
         log = undefined;
@@ -138,6 +163,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -156,6 +182,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -174,6 +201,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -192,6 +220,7 @@ suite('index:', function () {
                     referer: 'bar',
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -210,6 +239,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: '100',
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -228,6 +258,26 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: {},
+                    validator: 'restrictive',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125
+                });
+            });
+        });
+
+        test('listen throws if validator is empty string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    limit: 100,
+                    log: function () {},
+                    validator: '',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -246,6 +296,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: '',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -264,6 +315,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: '',
                     forwarder: 'forwarder',
@@ -282,6 +334,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: '',
@@ -300,6 +353,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -318,6 +372,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -336,6 +391,7 @@ suite('index:', function () {
                     referer: /bar/,
                     limit: 100,
                     log: function () {},
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
                     forwarder: 'forwarder',
@@ -354,6 +410,7 @@ suite('index:', function () {
                     referer: null,
                     limit: null,
                     log: null,
+                    validator: null,
                     mapper: null,
                     prefix: null,
                     forwarder: null,
@@ -368,23 +425,29 @@ suite('index:', function () {
                 boomcatch.listen();
             });
 
-            test('?.initialise was called twice', function () {
-                assert.strictEqual(log.counts.initialise, 2);
+            test('?.initialise was called three times', function () {
+                assert.strictEqual(log.counts.initialise, 3);
+            });
+
+            test('validator.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[0], require('./validators/permissive'));
+                assert.lengthOf(log.args.initialise[0], 1);
+                assert.isObject(log.args.initialise[0][0]);
             });
 
             test('mapper.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[0], require('./mappers/statsd'));
-                assert.lengthOf(log.args.initialise[0], 1);
-                assert.isObject(log.args.initialise[0][0]);
-                assert.isUndefined(log.args.initialise[0][0].prefix);
+                assert.strictEqual(log.these.initialise[1], require('./mappers/statsd'));
+                assert.lengthOf(log.args.initialise[1], 1);
+                assert.isObject(log.args.initialise[1][0]);
+                assert.isUndefined(log.args.initialise[1][0].prefix);
             });
 
             test('forwarder.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[1], require('./forwarders/udp'));
-                assert.lengthOf(log.args.initialise[1], 1);
-                assert.isObject(log.args.initialise[1][0]);
-                assert.isUndefined(log.args.initialise[1][0].fwdHost);
-                assert.isUndefined(log.args.initialise[1][0].fwdPort);
+                assert.strictEqual(log.these.initialise[2], require('./forwarders/udp'));
+                assert.lengthOf(log.args.initialise[2], 1);
+                assert.isObject(log.args.initialise[2][0]);
+                assert.isUndefined(log.args.initialise[2][0].fwdHost);
+                assert.isUndefined(log.args.initialise[2][0].fwdPort);
             });
 
             test('http.createServer was called once', function () {
@@ -901,6 +964,7 @@ suite('index:', function () {
                         name: 'log',
                         log: log
                     }),
+                    validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'foo prefix',
                     forwarder: 'forwarder',
@@ -910,18 +974,23 @@ suite('index:', function () {
             });
 
             test('?.initialise was called twice', function () {
-                assert.strictEqual(log.counts.initialise, 2);
+                assert.strictEqual(log.counts.initialise, 3);
+            });
+
+            test('validator.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[0], require('./validators/restrictive'));
+                assert.isObject(log.args.initialise[0][0]);
             });
 
             test('mapper.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[0], require('./mappers/mapper'));
-                assert.strictEqual(log.args.initialise[0][0].prefix, 'foo prefix');
+                assert.strictEqual(log.these.initialise[1], require('./mappers/mapper'));
+                assert.strictEqual(log.args.initialise[1][0].prefix, 'foo prefix');
             });
 
             test('forwarder.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[1], require('./forwarders/forwarder'));
-                assert.strictEqual(log.args.initialise[1][0].fwdHost, 'bar host');
-                assert.strictEqual(log.args.initialise[1][0].fwdPort, 1234);
+                assert.strictEqual(log.these.initialise[2], require('./forwarders/forwarder'));
+                assert.strictEqual(log.args.initialise[2][0].fwdHost, 'bar host');
+                assert.strictEqual(log.args.initialise[2][0].fwdPort, 1234);
             });
 
             test('http.listen was called correctly', function () {
@@ -946,6 +1015,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1032,6 +1102,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1076,6 +1147,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1134,6 +1206,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1193,6 +1266,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1241,6 +1315,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1290,6 +1365,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1346,6 +1422,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1402,6 +1479,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1451,6 +1529,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1509,6 +1588,7 @@ suite('index:', function () {
                 var request, response;
 
                 setup(function () {
+                    restrict = false;
                     request = {
                         url: '/foo/bar?t_resp=100&t_done=200',
                         method: 'GET',
@@ -1563,6 +1643,66 @@ suite('index:', function () {
 
                 test('request.on was not called', function () {
                     assert.strictEqual(log.counts.on, 6);
+                });
+            });
+
+            suite('invalid request:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = true;
+                    request = {
+                        url: '/foo/bar?t_resp=100&t_done=200',
+                        method: 'GET',
+                        headers: {
+                            referer: 'foo.bar.baz.qux'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                    log.args.on[1][1]();
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.end was called correctly', function () {
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 400);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
                 });
             });
         });
