@@ -62,7 +62,7 @@ suite('mappers/statsd:', function () {
 
         test('initialise throws without options', function () {
             assert.throws(function () {
-                udp.initialise();
+                statsd.initialise();
             });
         });
 
