@@ -1,12 +1,12 @@
 # boomcatch
 
-[![Build status][ci-image]][ci-status]
-
 Standalone,
 node.js-based
 beacon server for [boomerang]/[kylie].
 
-* **boomcatch version**: *0.1.0*
+[![Build status][ci-image]][ci-status]
+
+* **boomcatch version**: *1.0.0*
 * **node.js versions**: *0.8, 0.10, 0.11*
 
 ## Installation
@@ -60,10 +60,24 @@ Available options are:
   URL path to accept requests to.
   The default is /beacon.
 
+* `--referer <regex>`:
+  HTTP referers to accept requests from.
+  The default is `.*`.
+
+* `--limit <milliseconds>`:
+  Minimum elapsed time to allow
+  between requests from the same IP adderss.
+  The default is 0.
+
 * `--silent`:
   Prevent the command
   from logging output
   to the console.
+
+* `--validator <path>`:
+  Validator used to accept or reject request data.
+  The default is permissive
+  (always accept requests).
 
 * `--mapper <path>`:
   Data mapper used to transform data before forwarding,
@@ -98,7 +112,10 @@ boomcatch.listen({
     host: 'rum.example.com',                  // Defaults to '0.0.0.0' (INADDR_ANY)
     port: 8080,                               // Defaults to 80
     path: '/perf',                            // Defaults to '/beacon'
-    log: console.log,                         // Defaults to `function () {}`
+    referer: /^\w+\.example\.com$/,           // Defaults to /.*/
+    limit: 100,                               // Defaults to 0
+    log: console.log,                         // Defaults to function () {}
+    validator: path.resolve('./myvalidator'), // Defaults to 'permissive'
     mapper: path.resolve('./mymapper'),       // Defaults to 'statsd'
     prefix: 'mystats.rum.',                   // Defaults to ''
     forwarder: path.resolve('./myforwarder'), // Defaults to 'udp'
@@ -189,6 +206,44 @@ the number of bytes that were sent.
 Once your custom forwarder is ready,
 you can specify the path to it
 using the `forwarder` option.
+
+### Request validators
+
+Validators are used
+to test whether each request
+should be accepted or rejected.
+Typically, they check
+for the presence
+of a valid nonce
+in the query string,
+as a preventative measure
+against denial-of-service attacks.
+One validator is available out-of-the-box,
+which simply accepts all requests.
+
+As with mappers and forwarders,
+defining your own validator is easy
+and the basic interface
+looks the same:
+
+```javscript
+{
+    initialise: function (options) {
+    }
+}
+```
+
+Here,
+the `initialise` function
+should return a function
+that receives an object
+representing the parsed query string
+and returns either `true` or `false`,
+signifying that the request
+is valid or invalid respectively.
+
+Requests that are identified as invalid
+will fail with an HTTP 400 status.
 
 ## Development
 

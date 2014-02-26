@@ -23,12 +23,16 @@ var check = require('check-types'),
     http = require('http'),
     url = require('url'),
     qs = require('querystring'),
+    logger = require('get-off-my-log'),
 
 defaults = {
     host: '0.0.0.0',
     port: 80,
     path: '/beacon',
+    referer: /.*/,
+    limit: 0,
     log: function () {},
+    validator: 'permissive',
     mapper: 'statsd',
     forwarder: 'udp'
 };
@@ -36,25 +40,30 @@ defaults = {
 /**
  * Public function `listen`.
  *
- * Forwards performance metrics calculated from Boomerang/Kylie beacon events.
+ * Forwards performance metrics calculated from Boomerang/Kylie beacon requests.
  *
- * @option host {string}       HTTP host name to accept connections on. Defaults to
- *                             '0.0.0.0' (INADDR_ANY).
- * @option port {number}       HTTP port to accept connections on. Defaults to 80.
- * @option path {string}       URL path to accept requests to. Defaults to '/beacon'.
- * @option log {function}      Log function that expects a single string argument
- *                             (without terminating newline character). Defaults to
- *                             `function () {}`.
- * @option mapper {string}     Data mapper used to transform data before forwarding,
- *                             loaded with `require`. Defaults to 'statsd'.
- * @option prefix {string}     Prefix to use for mapped metric names. Defaults to ''.
- * @option forwarder {string}  Forwarder used to send data, loaded with `require`.
- *                             Defaults to 'udp'.
- * @option fwdHost {string}    Host name to forward mapped data to.
- * @option fwdPort {number}    Port to forward mapped data on.
+ * @option host {string}         HTTP host name to accept connections on. Defaults to
+ *                               '0.0.0.0' (INADDR_ANY).
+ * @option port {number}         HTTP port to accept connections on. Defaults to 80.
+ * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
+ * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
+ * @option limit {milliseconds}  Minimum elapsed time between requests from the same IP
+ *                               address. Defaults to 0.
+ * @option log {function}        Log function that expects a single string argument
+ *                               (without terminating newline character). Defaults to
+ *                               `function () {}`.
+ * @option validator {string}    Validator used to accept or reject beacon requests.
+ *                               Defaults to 'permissive'
+ * @option mapper {string}       Data mapper used to transform data before forwarding,
+ *                               loaded with `require`. Defaults to 'statsd'.
+ * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
+ * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
+ *                               Defaults to 'udp'.
+ * @option fwdHost {string}      Host name to forward mapped data to.
+ * @option fwdPort {number}      Port to forward mapped data on.
  */
 exports.listen = function (options) {
-    var log, mapper, forwarder;
+    var log, path, host, port, mapper, forwarder, validator;
 
     if (options) {
         verifyOptions(options);
@@ -63,20 +72,27 @@ exports.listen = function (options) {
     }
 
     log = getLog(options);
+    path = getPath(options);
+    host = getHost(options);
+    port = getPort(options);
+    validator = getValidator(options);
     mapper = getMapper(options);
     forwarder = getForwarder(options);
 
-    log('boomcatch.listen: awaiting POST requests on ' + getHost(options) + ':' + getPort(options));
+    log.info('listening for GET ' + host + ':' + port + path);
 
-    http.createServer(handleRequest.bind(null, log, getPath(options), mapper, forwarder))
-        .listen(getPort(options), getHost(options));
+    http.createServer(handleRequest.bind(null, log, path, getReferer(options), getLimit(options), validator, mapper, forwarder))
+        .listen(port, host);
 };
 
 function verifyOptions (options) {
     check.verify.maybe.unemptyString(options.host, 'Invalid host');
     check.verify.maybe.positiveNumber(options.port, 'Invalid port');
     check.verify.maybe.unemptyString(options.path, 'Invalid path');
+    check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
+    check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.fn(options.log, 'Invalid log function');
+    check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
     check.verify.maybe.unemptyString(options.mapper, 'Invalid data mapper');
     check.verify.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
     check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
@@ -85,7 +101,7 @@ function verifyOptions (options) {
 }
 
 function getLog (options) {
-    return getOption('log', options);
+    return logger.initialise('boomcatch', getOption('log', options));
 }
 
 function getOption (name, options) {
@@ -104,83 +120,167 @@ function getPath (options) {
     return getOption('path', options);
 }
 
-function getMapper (options) {
-    return getExtension('mapper', options);
+function getReferer (options) {
+    return getOption('referer', options);
 }
 
-function getExtension (name, options) {
-    var path = getOption(name, options), extension;
+function getLimit (options) {
+    var limit = getOption('limit', options);
+
+    if (limit === 0) {
+        return null;
+    }
+
+    return {
+        time: limit,
+        requests: {}
+    };
+}
+
+function getValidator (options) {
+    return getExtension('validator', options);
+}
+
+function getExtension (type, options) {
+    var name, extension;
+
+    name = getOption(type, options);
 
     try {
-        extension = require('./' + name + 's/' + path);
+        extension = require('./' + type + 's/' + name);
     } catch (e) {
-        extension = require(path);
+        extension = require(name);
     }
 
     return extension.initialise(options);
+}
+
+function getMapper (options) {
+    return getExtension('mapper', options);
 }
 
 function getForwarder (options) {
     return getExtension('forwarder', options);
 }
 
-function handleRequest (log, path, mapper, forwarder, request, response) {
+function handleRequest (log, path, referer, limit, validator, mapper, forwarder, request, response) {
     var queryIndex, requestPath, state;
 
+    logRequest(log, request);
+
     if (request.method !== 'GET') {
-        return fail(log, response, 405, 'Invalid method `' + request.method + '`');
+        return fail(log, request, response, 405, 'Invalid method `' + request.method + '`');
     }
 
     queryIndex = request.url.indexOf('?');
     requestPath = queryIndex === -1 ? request.url : request.url.substr(0, queryIndex);
 
     if (requestPath !== path) {
-        return fail(log, response, 404, 'Invalid path `' + requestPath + '`');
+        return fail(log, request, response, 404, 'Invalid path `' + requestPath + '`');
+    }
+
+    if (check.unemptyString(request.headers.referer) && !referer.test(request.headers.referer)) {
+        return fail(log, request, response, 403, 'Invalid referer `' + request.headers.referer + '`');
+    }
+
+    if (!checkLimit(limit, request)) {
+        return fail(log, request, response, 429, 'Exceeded rate `' + limit.time + '`');
     }
 
     state = {};
 
     request.on('data', receive.bind(null, log, state, request, response));
-    request.on('end', send.bind(null, log, state, mapper, forwarder, request, response));
+    request.on('end', send.bind(null, log, state, validator, mapper, forwarder, request, response));
 }
 
-function fail (log, response, status, message) {
-    log('boomcatch.fail: ' + status + ' ' + message);
+function logRequest (log, request) {
+    log.info(
+        'referer=' + (request.headers.referer || '') + ' ' +
+        'address=' + request.socket.remoteAddress + '[' + (request.headers['x-forwarded-for'] || '') + ']' + ' ' +
+        'method=' + request.method + ' ' +
+        'url=' + request.url
+    );
+}
+
+function fail (log, request, response, status, message) {
+    log.error(status + ' ' + message);
 
     response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
     response.end('{ "error": "' + message + '" }');
+    request.socket.destroy();
+}
+
+function checkLimit (limit, request) {
+    var now, address, lastRequest, proxiedAddresses, proxy;
+
+    if (limit === null) {
+        return true;
+    }
+
+    now = Date.now();
+    address = request.socket.remoteAddress;
+    lastRequest = limit.requests[address];
+    proxiedAddresses = request.headers['x-forwarded-for'];
+
+    if (check.object(lastRequest)) {
+        proxy = lastRequest;
+        lastRequest = lastRequest[proxiedAddresses || 'self'];
+    }
+
+    if (check.positiveNumber(lastRequest) && now <= lastRequest + limit.time) {
+        return false;
+    }
+
+    if (proxiedAddresses) {
+        if (!proxy) {
+            proxy = limit.requests[address] = {
+                self: lastRequest
+            };
+        }
+
+        proxy[proxiedAddresses] = now;
+    } else {
+        limit.requests[address] = now;
+    }
+
+    return true;
 }
 
 function receive (log, state, request, response, data) {
     if (data.length > 0) {
         state.failed = true;
-        fail(log, response, 413, 'Body too large');
+        fail(log, request, response, 413, 'Body too large');
     }
 }
 
-function send (log, state, mapper, forwarder, request, response) {
+function send (log, state, validator, mapper, forwarder, request, response) {
     try {
-        var data;
+        var data, mappedData;
 
         if (state.failed) {
             return;
         }
 
-        data = mapper(normaliseData(qs.parse(url.parse(request.url).query)));
+        data = qs.parse(url.parse(request.url).query);
 
-        log('boomcatch.send: ' + data);
+        if (!validator(data)) {
+            throw null;
+        }
 
-        forwarder(data, function (error, bytesSent) {
+        mappedData = mapper(normaliseData(data));
+
+        log.info('sending ' + mappedData);
+
+        forwarder(mappedData, function (error, bytesSent) {
             if (error) {
-                return fail(log, response, 502, error);
+                return fail(log, request, response, 502, error);
             }
 
             pass(log, response, bytesSent);
         });
     } catch (error) {
-        request.socket.destroy();
-        fail(log, response, 400, 'Invalid data');
+        fail(log, request, response, 400, 'Invalid data');
     }
 }
 
@@ -231,7 +331,7 @@ function normaliseNavigationTimingApiData (data) {
 }
 
 function pass (log, response, bytes) {
-    log('boomcatch.pass: Sent ' + bytes + ' bytes');
+    log.info('sent ' + bytes + ' bytes');
 
     response.statusCode = 204;
     response.end();
