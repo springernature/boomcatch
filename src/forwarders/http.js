@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals require, exports, Buffer */
+/*globals require, exports */
 
 'use strict';
 
 var url = require('url'),
+    querystring = require('querystring'),
     check = require('check-types');
 
 exports.initialise = function (options) {
@@ -59,9 +60,8 @@ function send (protocol, url, method, data, callback) {
             request.write(data);
         }
 
-        request.end():
+        request.end();
 
-        // TODO: Check whether this is also emitted after request::error
         response.on('close', callback.bind(null, null, data.length));
     });
 
