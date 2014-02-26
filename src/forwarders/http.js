@@ -28,8 +28,6 @@ exports.initialise = function (options) {
 };
 
 function getProtocol (url) {
-    check.verify.webUrl(url);
-
     return require(url.substr(0, url.indexOf(':')));
 }
 

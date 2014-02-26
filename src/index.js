@@ -95,13 +95,28 @@ function verifyOptions (options) {
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.fn(options.log, 'Invalid log function');
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
+
+    verifyMapperOptions(options);
+    verifyForwarderOptions(options);
+}
+
+function verifyMapperOptions (options) {
     check.verify.maybe.unemptyString(options.mapper, 'Invalid data mapper');
     check.verify.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
+}
+
+function verifyForwarderOptions (options) {
     check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
-    check.verify.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
-    check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
-    check.verify.maybe.unemptyString(options.fwdUrl, 'Invalid forwarding URL');
-    check.verify.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
+
+    switch (options.forwarder) {
+        case 'http':
+            check.verify.webUrl(options.fwdUrl, 'Invalid forwarding URL');
+            check.verify.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
+            break;
+        default:
+            check.verify.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
+            check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
+    }
 }
 
 function getLog (options) {
