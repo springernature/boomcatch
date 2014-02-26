@@ -113,6 +113,7 @@ Available options are:
 
 * `--fwdMethod <method>`:
   Method to forward mapped data with.
+  The default is GET.
   This option is only effective
   with the HTTP forwarder.
 
