@@ -40,11 +40,13 @@ function normaliseMethod (method) {
 }
 
 function send (protocol, url, method, data, callback) {
-    var request;
+    var length, request;
 
     if (check.object(data)) {
         data = querystring.stringify(data);
     }
+
+    length = data.length;
 
     if (method === 'GET') {
         url.path += '?' + data;
@@ -60,7 +62,7 @@ function send (protocol, url, method, data, callback) {
 
         request.end();
 
-        response.on('close', callback.bind(null, null, data.length));
+        response.on('close', callback.bind(null, null, length));
     });
 
     request.on('error', callback);
