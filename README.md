@@ -1,10 +1,10 @@
 # boomcatch
 
-[![Build status][ci-image]][ci-status]
-
 Standalone,
 node.js-based
 beacon server for [boomerang]/[kylie].
+
+[![Build status][ci-image]][ci-status]
 
 * **boomcatch version**: *1.0.0*
 * **node.js versions**: *0.8, 0.10, 0.11*
@@ -114,7 +114,7 @@ boomcatch.listen({
     path: '/perf',                            // Defaults to '/beacon'
     referer: /^\w+\.example\.com$/,           // Defaults to /.*/
     limit: 100,                               // Defaults to 0
-    log: console.log,                         // Defaults to `function () {}`
+    log: console.log,                         // Defaults to function () {}
     validator: path.resolve('./myvalidator'), // Defaults to 'permissive'
     mapper: path.resolve('./mymapper'),       // Defaults to 'statsd'
     prefix: 'mystats.rum.',                   // Defaults to ''
