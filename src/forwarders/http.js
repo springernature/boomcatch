@@ -47,7 +47,7 @@ function send (protocol, url, method, data, callback) {
     }
 
     if (method === 'GET') {
-        url.path += '&' + data;
+        url.path += '?' + data;
         data = null;
     }
 
