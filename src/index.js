@@ -53,14 +53,16 @@ defaults = {
  *                               (without terminating newline character). Defaults to
  *                               `function () {}`.
  * @option validator {string}    Validator used to accept or reject beacon requests.
- *                               Defaults to 'permissive'
+ *                               Defaults to 'permissive'.
  * @option mapper {string}       Data mapper used to transform data before forwarding,
  *                               loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
  * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
  *                               Defaults to 'udp'.
- * @option fwdHost {string}      Host name to forward mapped data to.
- * @option fwdPort {number}      Port to forward mapped data on.
+ * @option fwdHost {string}      Host name to forward mapped data to (UDP only).
+ * @option fwdPort {number}      Port to forward mapped data on (UDP only).
+ * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
+ * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  */
 exports.listen = function (options) {
     var log, path, host, port, mapper, forwarder, validator;
@@ -98,6 +100,8 @@ function verifyOptions (options) {
     check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
     check.verify.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
     check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
+    check.verify.maybe.unemptyString(options.fwdUrl, 'Invalid forwarding URL');
+    check.verify.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
 }
 
 function getLog (options) {
