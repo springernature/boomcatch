@@ -97,10 +97,25 @@ Available options are:
 * `--fwdHost <name>`:
   Host name to forward mapped data to.
   The default is 127.0.0.1.
+  This option is only effective
+  with the UDP forwarder.
 
 * `--fwdPort <port>`:
   Port to forward mapped data on.
   The default is 8125.
+  This option is only effective
+  with the UDP forwarder.
+
+* `--fwdUrl <url>`:
+  URL to forward mapped data to.
+  This option is only effective
+  with the HTTP forwarder.
+
+* `--fwdMethod <method>`:
+  Method to forward mapped data with.
+  The default is GET.
+  This option is only effective
+  with the HTTP forwarder.
 
 ### From a node.js project
 
@@ -118,9 +133,9 @@ boomcatch.listen({
     validator: path.resolve('./myvalidator'), // Defaults to 'permissive'
     mapper: path.resolve('./mymapper'),       // Defaults to 'statsd'
     prefix: 'mystats.rum.',                   // Defaults to ''
-    forwarder: path.resolve('./myforwarder'), // Defaults to 'udp'
-    fwdHost: '192.168.50.4',                  // Defaults to '127.0.0.1'
-    fwdPort: 5001                             // Defaults to 8125
+    forwarder: 'http',                        // Defaults to 'udp'
+    fwdUrl: 'https://stats.example.com/',     // No default
+    fwdMethod: 'POST'                         // Defaults to 'GET'
 });
 ```
 
@@ -170,8 +185,8 @@ using the path that you specified verbatim.
 Forwarders are used
 to send mapped data
 to back-end stats consumers.
-Currently, one forwarder is available out-of-the-box,
-which dispatches the data over UDP.
+At the moment, two forwarders are implemented,
+dispatching the data over UDP or HTTP.
 
 Defining a custom forwarder
 takes broadly the same form

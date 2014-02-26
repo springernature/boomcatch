@@ -40,8 +40,10 @@ function parseCommandLine () {
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
         .option('-f, --forwarder <path>', 'forwarder to use, default is udp')
-        .option('-N, --fwdHost <name>', 'host name to forward data to')
-        .option('-P, --fwdPort <port>', 'port to forward data on', parseInt)
+        .option('-N, --fwdHost <name>', 'host name to forward data to (UDP only)')
+        .option('-P, --fwdPort <port>', 'port to forward data on (UDP only)', parseInt)
+        .option('-U, --fwdUrl <name>', 'URL to forward data to (HTTP only)')
+        .option('-M, --fwdMethod <name>', 'method to forward data with (HTTP only)')
         .parse(process.argv);
 }
 
