@@ -39,13 +39,13 @@ function normalisePrefix (prefix) {
 }
 
 function map (prefix, data) {
-    var category, result = '';
+    var result = '';
 
-    for (category in metrics) {
-        if (metrics.hasOwnProperty(category) && data.hasOwnProperty(category)) {
+    Object.keys(metrics).forEach(function (category) {
+        if (data.hasOwnProperty(category)) {
             result += mapMetrics(metrics[category], prefix + category + '.', data[category]);
         }
-    }
+    });
 
     return result;
 }
