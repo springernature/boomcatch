@@ -102,6 +102,25 @@ suite('validators/permissive:', function () {
                     assert.isTrue(result);
                 });
             });
+
+            suite('call validator with data:', function () {
+                var result;
+
+                setup(function () {
+                    result = validator({
+                        foo: 'bar',
+                        baz: 'qux'
+                    });
+                });
+
+                teardown(function () {
+                    result = undefined;
+                });
+
+                test('result was correct', function () {
+                    assert.isTrue(result);
+                });
+            });
         });
     });
 });
