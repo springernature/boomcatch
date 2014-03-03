@@ -312,4 +312,3 @@ Copyright © 2014 Nature Publishing Group
 [contrib]: https://github.com/nature/boomcatch/blob/master/CONTRIBUTING.md
 [history]: https://github.com/nature/boomcatch/blob/master/HISTORY.md
 [license]: https://github.com/nature/boomcatch/blob/master/COPYING
-
