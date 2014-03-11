@@ -2,7 +2,7 @@
 
 Standalone,
 node.js-based
-beacon server for [boomerang]/[kylie].
+beacon server for [boomerang].
 [Read more][blog].
 
 [![Build status][ci-image]][ci-status]
@@ -302,7 +302,6 @@ npm test
 Copyright © 2014 Nature Publishing Group
 
 [boomerang]: https://github.com/lognormal/boomerang
-[kylie]: https://github.com/forcedotcom/kylie
 [blog]: http://cruft.io/posts/introducing-boomcatch/
 [ci-image]: https://secure.travis-ci.org/nature/boomcatch.png?branch=master
 [ci-status]: http://travis-ci.org/#!/nature/boomcatch
