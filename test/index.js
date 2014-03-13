@@ -697,6 +697,7 @@ suite('index:', function () {
                         assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 1);
                         assert.strictEqual(log.args.mapper[0][0].boomerang.load, 2);
                         assert.isUndefined(log.args.mapper[0][0].ntapi);
+                        assert.isUndefined(log.args.mapper[0][0].rtapi);
                     });
 
                     test('forwarder was called once', function () {
@@ -885,7 +886,6 @@ suite('index:', function () {
                         assert.isObject(log.args.mapper[0][0].boomerang);
                         assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 10);
                         assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
-                        console.log(log.args.mapper[0][0]);
                         assert.isObject(log.args.mapper[0][0].ntapi);
                         assert.strictEqual(log.args.mapper[0][0].ntapi.start, 30);
                         assert.strictEqual(log.args.mapper[0][0].ntapi.redirect, 10);
@@ -894,6 +894,99 @@ suite('index:', function () {
                         assert.strictEqual(log.args.mapper[0][0].ntapi.firstbyte, 50);
                         assert.strictEqual(log.args.mapper[0][0].ntapi.domload, 60);
                         assert.strictEqual(log.args.mapper[0][0].ntapi.load, 70);
+                        assert.isUndefined(log.args.mapper[0][0].rtapi);
+                    });
+
+                    test('forwarder was called once', function () {
+                        assert.strictEqual(log.counts.forwarder, 1);
+                    });
+
+                    test('response.end was not called', function () {
+                        assert.strictEqual(log.counts.end, 0);
+                    });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
+                });
+            });
+
+            // TODO: Also test POST requests and requests without restricted parameters
+            suite('request with resource timing API parameters:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon?t_resp=10&t_done=20&restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_nav_st%5D=30&restiming%5B0%5D%5Brt_red_st%5D=40&restiming%5B0%5D%5Brt_red_end%5D=50&restiming%5B0%5D%5Brt_fet_st%5D=60&restiming%5B0%5D%5Brt_dns_st%5D=70&restiming%5B0%5D%5Brt_dns_end%5D=80&restiming%5B0%5D%5Brt_con_st%5D=90&restiming%5B0%5D%5Brt_con_end%5D=100&restiming%5B0%5D%5Brt_res_st%5D=110&restiming%5B0%5D%5Brt_domcortloaded_st%5D=120&restiming%5B0%5D%5Brt_load_st%5D=130&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_nav_st%5D=140&restiming%5B1%5D%5Brt_red_st%5D=150&restiming%5B1%5D%5Brt_red_end%5D=160&restiming%5B1%5D%5Brt_fet_st%5D=170&restiming%5B1%5D%5Brt_dns_st%5D=180&restiming%5B1%5D%5Brt_dns_end%5D=190&restiming%5B1%5D%5Brt_con_st%5D=200&restiming%5B1%5D%5Brt_con_end%5D=210&restiming%5B1%5D%5Brt_res_st%5D=220&restiming%5B1%5D%5Brt_domcortloaded_st%5D=230&restiming%5B1%5D%5Brt_load_st%5D=240',
+                        method: 'GET',
+                        headers: {
+                            referer: 'wibble'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was not called', function () {
+                    assert.strictEqual(log.counts.setHeader, 0);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('end data:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('mapper was called correctly', function () {
+                        assert.isObject(log.args.mapper[0][0].boomerang);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 10);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
+                        assert.isUndefined(log.args.mapper[0][0].ntapi);
+                        // PHIL!!! YOU ARE HERE!!!
+                        console.log(log.args.mapper[0][0]);
+                        assert.isArray(log.args.mapper[0][0].rtapi);
+                        assert.lengthOf(log.args.mapper[0][0].rtapi, 2);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[0].name, 'foo');
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[0].type, 'css');
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[0].start, 30);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[0].redirect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[0].dns, 10);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[0].connect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[0].firstbyte, 50);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[0].load, 60);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[1].name, 'bar');
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[1].type, 'img');
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[1].start, 70);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[1].redirect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[1].dns, 10);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[1].connect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[1].firstbyte, 90);
+                        assert.strictEqual(log.args.mapper[0][0].rtapi[1].load, 100);
                     });
 
                     test('forwarder was called once', function () {
