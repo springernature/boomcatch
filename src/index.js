@@ -306,7 +306,8 @@ function send (log, state, validator, mapper, forwarder, request, response) {
 function normaliseData (data) {
     return {
         boomerang: normaliseBoomerangData(data),
-        ntapi: normaliseNavigationTimingApiData(data)
+        ntapi: normaliseNavigationTimingApiData(data),
+        rtapi: normaliseResourceTimingApiData(data)
     };
 }
 
@@ -327,8 +328,9 @@ function normaliseBoomerangData (data) {
 function normaliseNavigationTimingApiData (data) {
     /*jshint camelcase:false */
 
-    var redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToDomLoad, timeToLoad;
+    var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToDomLoad, timeToLoad;
 
+    startTime = parseInt(data.nt_nav_st);
     redirectDuration = parseInt(data.nt_red_end) - parseInt(data.nt_red_st);
     dnsDuration = parseInt(data.nt_dns_end) - parseInt(data.nt_dns_st);
     connectDuration = parseInt(data.nt_con_end) - parseInt(data.nt_con_st);
@@ -337,6 +339,7 @@ function normaliseNavigationTimingApiData (data) {
     timeToLoad = parseInt(data.nt_load_st) - parseInt(data.nt_fet_st);
 
     if (
+        check.positiveNumber(startTime) &&
         check.number(redirectDuration) &&
         check.number(dnsDuration) &&
         check.number(connectDuration) &&
@@ -345,6 +348,7 @@ function normaliseNavigationTimingApiData (data) {
         check.positiveNumber(timeToLoad)
     ) {
         return {
+            start: startTime,
             redirect: redirectDuration,
             dns: dnsDuration,
             connect: connectDuration,
@@ -352,6 +356,50 @@ function normaliseNavigationTimingApiData (data) {
             domload: timeToDomLoad,
             load: timeToLoad
         };
+    }
+}
+
+function normaliseResourceTimingApiData (data) {
+    /*jshint camelcase:false */
+
+    var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToLoad;
+
+    if (check.isArray(data.restiming)) {
+        return data.restiming.map(function (resource) {
+            // NOTE: We are wilfully reducing precision here from 1/1000th of a millisecond,
+            //       for consistency with the Navigation Timing API. Open a pull request if
+            //       you think that is the wrong decision! :)
+            startTime = parseInt(resource.rt_st);
+            redirectDuration = getOptionalResourceTiming(resource, 'rt_red_end', 'rt_red_st');
+            dnsDuration = getOptionalResourceTiming(resource, 'rt_dns_end', 'rt_dns_st');
+            connectDuration = getOptionalResourceTiming(resource, 'rt_con_end', 'rt_con_st');
+            timeToFirstByte = getOptionalResourceTiming(resource, 'rt_res_st', 'rt_st');
+            timeToLoad = parseInt(resource.rt_dur);
+
+            if (
+                check.positiveNumber(startTime) &&
+                check.number(redirectDuration) &&
+                check.number(dnsDuration) &&
+                check.number(connectDuration) &&
+                check.positiveNumber(timeToFirstByte) &&
+                check.positiveNumber(timeToLoad)
+            ) {
+                return {
+                    start: startTime,
+                    redirect: redirectDuration,
+                    dns: dnsDuration,
+                    connect: connectDuration,
+                    firstbyte: timeToFirstByte,
+                    load: timeToLoad
+                };
+            }
+        });
+    }
+}
+
+function getOptionalResourceTiming (data, endKey, startKey) {
+    if (data[endKey] && data[startKey]) {
+        return parseInt(data[endKey]) - parseInt(data[startKey]);
     }
 }
 
