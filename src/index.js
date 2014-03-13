@@ -327,21 +327,27 @@ function normaliseBoomerangData (data) {
 function normaliseNavigationTimingApiData (data) {
     /*jshint camelcase:false */
 
-    var timeToDns, timeToFirstByte, timeToDomLoad, timeToLoad;
+    var redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToDomLoad, timeToLoad;
 
-    timeToDns = parseInt(data.nt_dns_end) - parseInt(data.nt_fet_st);
+    redirectDuration = parseInt(data.nt_red_end) - parseInt(data.nt_red_st);
+    dnsDuration = parseInt(data.nt_dns_end) - parseInt(data.nt_dns_st);
+    connectDuration = parseInt(data.nt_con_end) - parseInt(data.nt_con_st);
     timeToFirstByte = parseInt(data.nt_res_st) - parseInt(data.nt_fet_st);
     timeToDomLoad = parseInt(data.nt_domcontloaded_st) - parseInt(data.nt_fet_st);
     timeToLoad = parseInt(data.nt_load_st) - parseInt(data.nt_fet_st);
 
     if (
-        check.number(timeToDns) &&
+        check.number(redirectDuration) &&
+        check.number(dnsDuration) &&
+        check.number(connectDuration) &&
         check.positiveNumber(timeToFirstByte) &&
         check.positiveNumber(timeToDomLoad) &&
         check.positiveNumber(timeToLoad)
     ) {
         return {
-            dns: timeToDns,
+            redirect: redirectDuration,
+            dns: dnsDuration,
+            connect: connectDuration,
             firstbyte: timeToFirstByte,
             domload: timeToDomLoad,
             load: timeToLoad
