@@ -385,6 +385,8 @@ function normaliseResourceTimingApiData (data) {
                 check.positiveNumber(timeToLoad)
             ) {
                 return {
+                    name: resource.rt_name,
+                    type: resource.rt_in_type,
                     start: startTime,
                     redirect: redirectDuration,
                     dns: dnsDuration,
