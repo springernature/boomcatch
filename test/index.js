@@ -836,7 +836,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=10&t_done=20&nt_fet_st=30&nt_dns_end=40&nt_res_st=50&nt_domcontloaded_st=60&nt_load_st=70',
+                        url: '/beacon?t_resp=10&t_done=20&nt_nav_st=30&nt_red_st=40&nt_red_end=50&nt_fet_st=60&nt_dns_st=70&nt_dns_end=80&nt_con_st=90&nt_con_end=100&nt_res_st=110&nt_domcontloaded_st=120&nt_load_st=130',
                         method: 'GET',
                         headers: {
                             referer: 'wibble'
@@ -885,11 +885,15 @@ suite('index:', function () {
                         assert.isObject(log.args.mapper[0][0].boomerang);
                         assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 10);
                         assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
+                        console.log(log.args.mapper[0][0]);
                         assert.isObject(log.args.mapper[0][0].ntapi);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.start, 30);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.redirect, 10);
                         assert.strictEqual(log.args.mapper[0][0].ntapi.dns, 10);
-                        assert.strictEqual(log.args.mapper[0][0].ntapi.firstbyte, 20);
-                        assert.strictEqual(log.args.mapper[0][0].ntapi.domload, 30);
-                        assert.strictEqual(log.args.mapper[0][0].ntapi.load, 40);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.connect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.firstbyte, 50);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.domload, 60);
+                        assert.strictEqual(log.args.mapper[0][0].ntapi.load, 70);
                     });
 
                     test('forwarder was called once', function () {

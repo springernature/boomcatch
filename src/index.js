@@ -364,7 +364,7 @@ function normaliseResourceTimingApiData (data) {
 
     var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToLoad;
 
-    if (check.isArray(data.restiming)) {
+    if (check.array(data.restiming)) {
         return data.restiming.map(function (resource) {
             // NOTE: We are wilfully reducing precision here from 1/1000th of a millisecond,
             //       for consistency with the Navigation Timing API. Open a pull request if
