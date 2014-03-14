@@ -314,15 +314,26 @@ function normaliseData (data) {
 function normaliseBoomerangData (data) {
     /*jshint camelcase:false */
 
-    var timeToFirstByte = parseInt(data.t_resp), timeToLoad = parseInt(data.t_done);
+    var startTime, timeToFirstByte, timeToLoad;
 
-    check.verify.positiveNumber(timeToFirstByte);
-    check.verify.positiveNumber(timeToLoad);
+    if (data['rt.tstart']) {
+        startTime = parseInt(data['rt.tstart']);
+    }
 
-    return {
-        firstbyte: timeToFirstByte,
-        load: timeToLoad
-    };
+    timeToFirstByte = parseInt(data.t_resp);
+    timeToLoad = parseInt(data.t_done);
+
+    if (
+        check.maybe.positiveNumber(startTime) &&
+        check.positiveNumber(timeToFirstByte) &&
+        check.positiveNumber(timeToLoad)
+    ) {
+        return {
+            start: startTime,
+            firstbyte: timeToFirstByte,
+            load: timeToLoad
+        };
+    }
 }
 
 function normaliseNavigationTimingApiData (data) {
@@ -378,10 +389,10 @@ function normaliseResourceTimingApiData (data) {
 
             if (
                 check.positiveNumber(startTime) &&
-                check.number(redirectDuration) &&
-                check.number(dnsDuration) &&
-                check.number(connectDuration) &&
-                check.positiveNumber(timeToFirstByte) &&
+                check.maybe.number(redirectDuration) &&
+                check.maybe.number(dnsDuration) &&
+                check.maybe.number(connectDuration) &&
+                check.maybe.positiveNumber(timeToFirstByte) &&
                 check.positiveNumber(timeToLoad)
             ) {
                 return {

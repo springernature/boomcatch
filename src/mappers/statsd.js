@@ -43,6 +43,7 @@ function map (prefix, data) {
 
     Object.keys(metrics).forEach(function (category) {
         if (data.hasOwnProperty(category)) {
+            // TODO: Check for rtapi, iterate through data[category], add encoded index, url, name and type to prefix
             result += mapMetrics(metrics[category], prefix + category + '.', data[category]);
         }
     });
@@ -51,8 +52,24 @@ function map (prefix, data) {
 }
 
 function mapMetrics (metrics, prefix, data) {
+    return mapTimestamps(metrics, prefix, data) + mapDurations(metrics, prefix, data);
+}
+
+function mapTimestamps (metrics, prefix, data) {
+    return mapStuff(metrics.timestamps, prefix, data, 'g');
+}
+
+function mapStuff (metrics, prefix, data, suffix) {
     return metrics.map(function (metric) {
-        return prefix + metric + ':' + data[metric] + '|ms\n';
+        if (check.number(data[metric])) {
+            return prefix + metric + ':' + data[metric] + '|' + suffix + '\n';
+        }
+
+        return '';
     }).join('');
+}
+
+function mapDurations (metrics, prefix, data) {
+    return mapStuff(metrics.durations, prefix, data, 'ms');
 }
 
