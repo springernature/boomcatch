@@ -22,7 +22,7 @@
 var check = require('check-types'),
     http = require('http'),
     url = require('url'),
-    qs = require('querystring'),
+    qs = require('qs'),
     logger = require('get-off-my-log'),
 
 defaults = {

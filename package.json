@@ -31,7 +31,8 @@
     "dependencies": {
         "check-types": "1.2.x",
         "commander": "2.1.x",
-        "get-off-my-log": "0.1.x"
+        "get-off-my-log": "0.1.x",
+        "qs": "0.6.x"
     },
     "devDependencies": {
         "jshint": "2.4.x",
