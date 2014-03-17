@@ -306,8 +306,8 @@ function send (log, state, validator, mapper, forwarder, request, response) {
 function normaliseData (data) {
     return {
         boomerang: normaliseBoomerangData(data),
-        ntapi: normaliseNavigationTimingApiData(data),
-        rtapi: normaliseResourceTimingApiData(data)
+        navtiming: normaliseNavigationTimingApiData(data),
+        restiming: normaliseResourceTimingApiData(data)
     };
 }
 

@@ -43,7 +43,7 @@ function map (prefix, data, referer) {
 
     Object.keys(metrics).forEach(function (category) {
         if (data.hasOwnProperty(category)) {
-            if (category === 'rtapi') {
+            if (category === 'restiming') {
                 mapper = mapResourceTimingMetrics;
             } else {
                 mapper = mapMetrics;

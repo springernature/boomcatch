@@ -24,11 +24,11 @@ module.exports = {
         timestamps: [ 'start' ],
         durations: [ 'firstbyte', 'load' ]
     },
-    ntapi: {
+    navtiming: {
         timestamps: [ 'start' ],
         durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'domload', 'load' ]
     },
-    rtapi: {
+    restiming: {
         timestamps: [ 'start' ],
         durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'load' ]
     }
