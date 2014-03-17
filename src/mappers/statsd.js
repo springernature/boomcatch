@@ -62,8 +62,8 @@ function mapResourceTimingMetrics (metrics, prefix, data, referer) {
         return mapMetrics(metrics, [
             prefix + base36Encode(referer),
             index,
-            resource.rt_in_type,
-            base36Encode(resource.rt_name)
+            resource.type,
+            base36Encode(resource.name)
         ].join('.') + '.', resource);
     }).join('');
 }
