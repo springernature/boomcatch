@@ -30,7 +30,9 @@ defaults = {
     port: 80,
     path: '/beacon',
     referer: /.*/,
+    origin: '*',
     limit: 0,
+    maxSize: -1,
     log: function () {},
     validator: 'permissive',
     mapper: 'statsd',
@@ -47,8 +49,10 @@ defaults = {
  * @option port {number}         HTTP port to accept connections on. Defaults to 80.
  * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
  * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
- * @option limit {milliseconds}  Minimum elapsed time between requests from the same IP
+ * @option origin {string|array} URL(s) for the Access-Control-Allow-Origin header.
+ * @option limit {number}        Minimum elapsed time between requests from the same IP
  *                               address. Defaults to 0.
+ * @option maxSize {number}      Maximum body size for POST requests.
  * @option log {function}        Log function that expects a single string argument
  *                               (without terminating newline character). Defaults to
  *                               `function () {}`.
@@ -83,8 +87,20 @@ exports.listen = function (options) {
 
     log.info('listening for GET ' + host + ':' + port + path);
 
-    http.createServer(handleRequest.bind(null, log, path, getReferer(options), getLimit(options), validator, mapper, forwarder))
-        .listen(port, host);
+    http.createServer(
+        handleRequest.bind(
+            null,
+            log,
+            path,
+            getReferer(options),
+            getOrigin(options),
+            getLimit(options),
+            getMaxSize(options),
+            validator,
+            mapper,
+            forwarder
+        )
+    ).listen(port, host);
 };
 
 function verifyOptions (options) {
@@ -93,11 +109,28 @@ function verifyOptions (options) {
     check.verify.maybe.unemptyString(options.path, 'Invalid path');
     check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
+    check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
     check.verify.maybe.fn(options.log, 'Invalid log function');
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
 
+    verifyOrigin(options.origin);
+
     verifyMapperOptions(options);
     verifyForwarderOptions(options);
+}
+
+function verifyOrigin (origin) {
+    if (check.string(origin)) {
+        if (origin !== '*' && origin !== 'null') {
+            check.verify.webUrl(origin, 'Invalid access control origin');
+        }
+    } else if (check.array(origin)) {
+        origin.forEach(function (o) {
+            check.verify.webUrl(o, 'Invalid access control origin');
+        });
+    } else if (origin) {
+        throw new Error('Invalid access control origin');
+    }
 }
 
 function verifyMapperOptions (options) {
@@ -143,6 +176,10 @@ function getReferer (options) {
     return getOption('referer', options);
 }
 
+function getOrigin (options) {
+    return getOption('origin', options);
+}
+
 function getLimit (options) {
     var limit = getOption('limit', options);
 
@@ -154,6 +191,10 @@ function getLimit (options) {
         time: limit,
         requests: {}
     };
+}
+
+function getMaxSize (options) {
+    return getOption('maxSize', options);
 }
 
 function getValidator (options) {
@@ -182,12 +223,14 @@ function getForwarder (options) {
     return getExtension('forwarder', options);
 }
 
-function handleRequest (log, path, referer, limit, validator, mapper, forwarder, request, response) {
+function handleRequest (log, path, referer, origin, limit, maxSize, validator, mapper, forwarder, request, response) {
     var queryIndex, requestPath, state;
 
     logRequest(log, request);
 
-    if (request.method !== 'GET') {
+    response.setHeader('Access-Control-Allow-Origin', getAccessControlOrigin(request.headers, origin));
+
+    if (request.method !== 'GET' && request.method !== 'POST') {
         return fail(log, request, response, 405, 'Invalid method `' + request.method + '`');
     }
 
@@ -202,13 +245,19 @@ function handleRequest (log, path, referer, limit, validator, mapper, forwarder,
         return fail(log, request, response, 403, 'Invalid referer `' + request.headers.referer + '`');
     }
 
+    if (request.method === 'POST' && !isValidContentType(request.headers['content-type'])) {
+        return fail(log, request, response, 415, 'Invalid content type `' + request.headers['content-type'] + '`');
+    }
+
     if (!checkLimit(limit, request)) {
         return fail(log, request, response, 429, 'Exceeded rate `' + limit.time + '`');
     }
 
-    state = {};
+    state = {
+        body: ''
+    };
 
-    request.on('data', receive.bind(null, log, state, request, response));
+    request.on('data', receive.bind(null, log, state, maxSize, request, response));
     request.on('end', send.bind(null, log, state, validator, mapper, forwarder, request, response));
 }
 
@@ -221,6 +270,24 @@ function logRequest (log, request) {
     );
 }
 
+function getAccessControlOrigin (headers, origin) {
+    if (check.array(origin)) {
+        if (headers.origin && contains(origin, headers.origin)) {
+            return headers.origin;
+        }
+
+        return 'null';
+    }
+
+    return origin;
+}
+
+function contains (array, value) {
+    return array.reduce(function (match, candidate) {
+        return match || candidate === value;
+    }, false);
+}
+
 function fail (log, request, response, status, message) {
     log.error(status + ' ' + message);
 
@@ -228,6 +295,18 @@ function fail (log, request, response, status, message) {
     response.setHeader('Content-Type', 'application/json');
     response.end('{ "error": "' + message + '" }');
     request.socket.destroy();
+}
+
+function isValidContentType (contentType) {
+    if (!contentType) {
+        return false;
+    }
+
+    if (contentType === 'application/x-www-form-urlencoded' || contentType === 'text/plain') {
+        return true;
+    }
+
+    return isValidContentType(contentType.substr(0, contentType.indexOf(';')));
 }
 
 function checkLimit (limit, request) {
@@ -266,11 +345,16 @@ function checkLimit (limit, request) {
     return true;
 }
 
-function receive (log, state, request, response, data) {
-    if (data.length > 0) {
+function receive (log, state, maxSize, request, response, data) {
+    if (
+        (request.method === 'GET' && data.length > 0) ||
+        (request.method === 'POST' && maxSize >= 0 && state.body.length + data.length > maxSize)
+    ) {
         state.failed = true;
-        fail(log, request, response, 413, 'Body too large');
+        return fail(log, request, response, 413, 'Body too large');
     }
+
+    state.body += data;
 }
 
 function send (log, state, validator, mapper, forwarder, request, response) {
@@ -281,7 +365,21 @@ function send (log, state, validator, mapper, forwarder, request, response) {
             return;
         }
 
-        data = qs.parse(url.parse(request.url).query);
+        if (request.method === 'GET') {
+            data = qs.parse(url.parse(request.url).query);
+        } else {
+            if (state.body.substr(0, 5) === 'data=') {
+                state.body = state.body.substr(5);
+            }
+
+            state.body = decodeURIComponent(state.body);
+
+            if (request.headers['content-type'] === 'text/plain') {
+                data = JSON.parse(state.body);
+            } else {
+                data = qs.parse(state.body);
+            }
+        }
 
         if (!validator(data)) {
             throw null;
@@ -376,7 +474,7 @@ function normaliseResourceTimingApiData (data) {
     var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToLoad;
 
     if (check.array(data.restiming)) {
-        return data.restiming.map(function (resource, index) {
+        return data.restiming.map(function (resource) {
             // NOTE: We are wilfully reducing precision here from 1/1000th of a millisecond,
             //       for consistency with the Navigation Timing API. Open a pull request if
             //       you think that is the wrong decision! :)
@@ -387,10 +485,10 @@ function normaliseResourceTimingApiData (data) {
             timeToFirstByte = getOptionalResourceTiming(resource, 'rt_res_st', 'rt_st');
             timeToLoad = parseInt(resource.rt_dur);
 
-            // HACK: Google Chrome sometimes reports a zero responseEnd timestamp (which is
-            //       not conformant behaviour), leading to a negative duration. A negative
-            //       duration is manifestly nonsense, so force it zero instead. Bug report:
-            //       https://code.google.com/p/chromium/issues/detail?id=346960
+            // HACK: Google Chrome sometimes reports a zero responseEnd timestamp (which is not
+            //       conformant behaviour), leading to a negative duration. A negative duration
+            //       is manifestly nonsense, so force it to zero instead. Bug report:
+            //           https://code.google.com/p/chromium/issues/detail?id=346960
             if (timeToLoad < 0) {
                 timeToLoad = 0;
             }
