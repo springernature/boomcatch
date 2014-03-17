@@ -168,8 +168,10 @@ that looks like this:
 The `initialise` function
 should return a function
 that is passed a data object
-as its only parameter
-and returns the mapped data.
+and a referring URL
+as parameters,
+and returns the mapped data
+as its result.
 
 If you then specify
 the path to your new mapper

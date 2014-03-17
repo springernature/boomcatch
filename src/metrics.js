@@ -29,7 +29,6 @@ module.exports = {
         durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'domload', 'load' ]
     },
     rtapi: {
-        isArray: true,
         timestamps: [ 'start' ],
         durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'load' ]
     }

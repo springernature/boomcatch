@@ -287,7 +287,7 @@ function send (log, state, validator, mapper, forwarder, request, response) {
             throw null;
         }
 
-        mappedData = mapper(normaliseData(data));
+        mappedData = mapper(normaliseData(data), request.headers.referer);
 
         log.info('sending ' + mappedData);
 

@@ -38,17 +38,40 @@ function normalisePrefix (prefix) {
     return '';
 }
 
-function map (prefix, data) {
-    var result = '';
+function map (prefix, data, referer) {
+    var result = '', mapper;
 
     Object.keys(metrics).forEach(function (category) {
         if (data.hasOwnProperty(category)) {
-            // TODO: Check for rtapi, iterate through data[category], add encoded index, url, name and type to prefix
-            result += mapMetrics(metrics[category], prefix + category + '.', data[category]);
+            if (category === 'rtapi') {
+                mapper = mapResourceTimingMetrics;
+            } else {
+                mapper = mapMetrics;
+            }
+
+            result += mapper(metrics[category], prefix + category + '.', data[category], referer);
         }
     });
 
     return result;
+}
+
+function mapResourceTimingMetrics (metrics, prefix, data, referer) {
+    return data.map(function (resource, index) {
+        /*jshint camelcase:false */
+        return mapMetrics(metrics, [
+            prefix + base36Encode(referer),
+            index,
+            resource.rt_in_type,
+            base36Encode(resource.rt_name)
+        ].join('.') + '.', resource);
+    }).join('');
+}
+
+function base36Encode (string) {
+    return Array.prototype.map.call(string, function (character) {
+        return character.charCodeAt(0).toString(36);
+    }).join('');
 }
 
 function mapMetrics (metrics, prefix, data) {
