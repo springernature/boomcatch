@@ -376,7 +376,7 @@ function normaliseResourceTimingApiData (data) {
     var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToLoad;
 
     if (check.array(data.restiming)) {
-        return data.restiming.map(function (resource) {
+        return data.restiming.map(function (resource, index) {
             // NOTE: We are wilfully reducing precision here from 1/1000th of a millisecond,
             //       for consistency with the Navigation Timing API. Open a pull request if
             //       you think that is the wrong decision! :)
@@ -387,13 +387,21 @@ function normaliseResourceTimingApiData (data) {
             timeToFirstByte = getOptionalResourceTiming(resource, 'rt_res_st', 'rt_st');
             timeToLoad = parseInt(resource.rt_dur);
 
+            // HACK: Google Chrome sometimes reports a zero responseEnd timestamp (which is
+            //       not conformant behaviour), leading to a negative duration. A negative
+            //       duration is manifestly nonsense, so force it zero instead. Bug report:
+            //       https://code.google.com/p/chromium/issues/detail?id=346960
+            if (timeToLoad < 0) {
+                timeToLoad = 0;
+            }
+
             if (
                 check.positiveNumber(startTime) &&
                 check.maybe.number(redirectDuration) &&
                 check.maybe.number(dnsDuration) &&
                 check.maybe.number(connectDuration) &&
                 check.maybe.positiveNumber(timeToFirstByte) &&
-                check.positiveNumber(timeToLoad)
+                check.number(timeToLoad)
             ) {
                 return {
                     name: resource.rt_name,
