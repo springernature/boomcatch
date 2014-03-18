@@ -42,7 +42,7 @@ defaults = {
 /**
  * Public function `listen`.
  *
- * Forwards performance metrics calculated from Boomerang/Kylie beacon requests.
+ * Forwards performance metrics calculated from Boomerang beacon requests.
  *
  * @option host {string}         HTTP host name to accept connections on. Defaults to
  *                               '0.0.0.0' (INADDR_ANY).
@@ -386,6 +386,9 @@ function send (log, state, validator, mapper, forwarder, request, response) {
         }
 
         mappedData = mapper(normaliseData(data), request.headers.referer);
+        if (mappedData === '') {
+            throw null;
+        }
 
         log.info('sending ' + mappedData);
 
@@ -418,12 +421,15 @@ function normaliseBoomerangData (data) {
         startTime = parseInt(data['rt.tstart']);
     }
 
-    timeToFirstByte = parseInt(data.t_resp);
+    if (data.t_resp) {
+        timeToFirstByte = parseInt(data.t_resp);
+    }
+
     timeToLoad = parseInt(data.t_done);
 
     if (
         check.maybe.positiveNumber(startTime) &&
-        check.positiveNumber(timeToFirstByte) &&
+        check.maybe.positiveNumber(timeToFirstByte) &&
         check.positiveNumber(timeToLoad)
     ) {
         return {

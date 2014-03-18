@@ -109,9 +109,21 @@ suite('index:', function () {
                 })
             }
         }));
+        mockery.registerMock('./mappers/failing', spooks.obj({
+            archetype: { initialise: nop },
+            log: log,
+            results: {
+                initialise: spooks.fn({
+                    name: 'mapper',
+                    log: log,
+                    result: ''
+                })
+            }
+        }));
     });
 
     teardown(function () {
+        mockery.deregisterMock('./mappers/failing');
         mockery.deregisterMock('./forwarders/forwarder');
         mockery.deregisterMock('./mappers/mapper');
         mockery.deregisterMock('./validators/restrictive');
@@ -546,7 +558,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/foo?t_resp=1&t_done=2',
+                        url: '/foo?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {},
                         socket: {
@@ -614,7 +626,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=1&t_done=2',
+                        url: '/beacon?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'PUT',
                         headers: {},
                         socket: {
@@ -661,7 +673,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=1&t_done=2',
+                        url: '/beacon?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'blah'
@@ -775,8 +787,9 @@ suite('index:', function () {
                         assert.lengthOf(log.args.mapper[0], 2);
                         assert.isObject(log.args.mapper[0][0]);
                         assert.isObject(log.args.mapper[0][0].boomerang);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 1);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 2);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.start, 1);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 2);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 3);
                         assert.isUndefined(log.args.mapper[0][0].navtiming);
                         assert.isUndefined(log.args.mapper[0][0].restiming);
                         assert.strictEqual(log.args.mapper[0][1], 'blah');
@@ -862,9 +875,11 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=1',
+                        url: '/beacon?rt.tstart=1&t_resp=2',
                         method: 'GET',
-                        headers: {},
+                        headers: {
+                            referer: 'wibble'
+                        },
                         on: spooks.fn({
                             name: 'on',
                             log: log
@@ -889,24 +904,35 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called twice', function () {
-                    assert.strictEqual(log.counts.setHeader, 2);
+                test('response.setHeader was not called', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
-                test('response.end was called once', function () {
-                    assert.strictEqual(log.counts.end, 1);
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
                 });
 
-                test('response.end was called correctly', function () {
-                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                test('mapper was called once', function () {
+                    assert.strictEqual(log.counts.mapper, 1);
                 });
 
-                test('response.statusCode was set correctly', function () {
-                    assert.strictEqual(response.statusCode, 400);
+                test('mapper was called correctly', function () {
+                    assert.isUndefined(log.args.mapper[0][0].boomerang);
+                    assert.isUndefined(log.args.mapper[0][0].navtiming);
+                    assert.isUndefined(log.args.mapper[0][0].restiming);
+                    assert.strictEqual(log.args.mapper[0][1], 'wibble');
                 });
 
-                test('request.socket.destroy was called once', function () {
-                    assert.strictEqual(log.counts.destroy, 1);
+                test('forwarder was called once', function () {
+                    assert.strictEqual(log.counts.forwarder, 1);
+                });
+
+                test('response.end was not called', function () {
+                    assert.strictEqual(log.counts.end, 0);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
                 });
             });
 
@@ -944,7 +970,7 @@ suite('index:', function () {
                 });
 
                 test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
                 test('request.on was called twice', function () {
@@ -995,7 +1021,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=10&t_done=20&restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=30&restiming%5B0%5D%5Brt_dur%5D=40&restiming%5B0%5D%5Brt_red_st%5D=50&restiming%5B0%5D%5Brt_red_end%5D=60&restiming%5B0%5D%5Brt_fet_st%5D=70&restiming%5B0%5D%5Brt_dns_st%5D=80&restiming%5B0%5D%5Brt_dns_end%5D=90&restiming%5B0%5D%5Brt_con_st%5D=100&restiming%5B0%5D%5Brt_con_end%5D=110&restiming%5B0%5D%5Brt_scon_st%5D=120&restiming%5B0%5D%5Brt_req_st%5D=130&restiming%5B0%5D%5Brt_res_st%5D=140&restiming%5B0%5D%5Brt_res_end%5D=150&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=160&restiming%5B1%5D%5Brt_red_st%5D=170&restiming%5B1%5D%5Brt_dur%5D=180&restiming%5B1%5D%5Brt_red_end%5D=190&restiming%5B1%5D%5Brt_fet_st%5D=200&restiming%5B1%5D%5Brt_dns_st%5D=210&restiming%5B1%5D%5Brt_dns_end%5D=220&restiming%5B1%5D%5Brt_con_st%5D=230&restiming%5B1%5D%5Brt_con_end%5D=240&restiming%5B1%5D%5Brt_scon_st%5D=250&restiming%5B1%5D%5Brt_req_st%5D=260&restiming%5B1%5D%5Brt_res_st%5D=270&restiming%5B1%5D%5Brt_res_end%5D=280',
+                        url: '/beacon?rt.tstart=10&t_done=20&restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=30&restiming%5B0%5D%5Brt_dur%5D=40&restiming%5B0%5D%5Brt_red_st%5D=50&restiming%5B0%5D%5Brt_red_end%5D=60&restiming%5B0%5D%5Brt_fet_st%5D=70&restiming%5B0%5D%5Brt_dns_st%5D=80&restiming%5B0%5D%5Brt_dns_end%5D=90&restiming%5B0%5D%5Brt_con_st%5D=100&restiming%5B0%5D%5Brt_con_end%5D=110&restiming%5B0%5D%5Brt_scon_st%5D=120&restiming%5B0%5D%5Brt_req_st%5D=130&restiming%5B0%5D%5Brt_res_st%5D=140&restiming%5B0%5D%5Brt_res_end%5D=150&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=160&restiming%5B1%5D%5Brt_dur%5D=170&restiming%5B1%5D%5Brt_red_st%5D=180&restiming%5B1%5D%5Brt_red_end%5D=190&restiming%5B1%5D%5Brt_fet_st%5D=200&restiming%5B1%5D%5Brt_dns_st%5D=210&restiming%5B1%5D%5Brt_dns_end%5D=220&restiming%5B1%5D%5Brt_con_st%5D=230&restiming%5B1%5D%5Brt_con_end%5D=240&restiming%5B1%5D%5Brt_scon_st%5D=250&restiming%5B1%5D%5Brt_req_st%5D=260&restiming%5B1%5D%5Brt_res_st%5D=270&restiming%5B1%5D%5Brt_res_end%5D=280',
                         method: 'GET',
                         headers: {
                             referer: 'wibble'
@@ -1024,7 +1050,7 @@ suite('index:', function () {
                 });
 
                 test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
                 test('request.on was called twice', function () {
@@ -1042,11 +1068,9 @@ suite('index:', function () {
 
                     test('mapper was called correctly', function () {
                         assert.isObject(log.args.mapper[0][0].boomerang);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 10);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.start, 10);
                         assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
                         assert.isUndefined(log.args.mapper[0][0].navtiming);
-                        // PHIL!!! YOU ARE HERE!!!
-                        console.log(log.args.mapper[0][0]);
                         assert.isArray(log.args.mapper[0][0].restiming);
                         assert.lengthOf(log.args.mapper[0][0].restiming, 2);
                         assert.strictEqual(log.args.mapper[0][0].restiming[0].name, 'foo');
@@ -1055,16 +1079,16 @@ suite('index:', function () {
                         assert.strictEqual(log.args.mapper[0][0].restiming[0].redirect, 10);
                         assert.strictEqual(log.args.mapper[0][0].restiming[0].dns, 10);
                         assert.strictEqual(log.args.mapper[0][0].restiming[0].connect, 10);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].firstbyte, 50);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].load, 60);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].firstbyte, 110);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].load, 40);
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].name, 'bar');
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].type, 'img');
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].start, 70);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].start, 160);
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].redirect, 10);
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].dns, 10);
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].connect, 10);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].firstbyte, 90);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].load, 100);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].firstbyte, 110);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].load, 170);
                     });
 
                     test('forwarder was called once', function () {
@@ -1086,7 +1110,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=1&t_done=2',
+                        url: '/beacon?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {},
                         on: spooks.fn({
@@ -1194,7 +1218,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?t_done=100',
                         method: 'GET',
                         headers: {
                             referer: 'foo.bar.baz.qux'
@@ -1239,7 +1263,7 @@ suite('index:', function () {
                 test('log.info was called correctly', function () {
                     assert.strictEqual(
                         log.args.log[1][0].substr(log.args.log[1][0].indexOf('INFO')),
-                        'INFO boomcatch: referer=foo.bar.baz.qux address=foo.bar[] method=GET url=/foo/bar?t_resp=100&t_done=200'
+                        'INFO boomcatch: referer=foo.bar.baz.qux address=foo.bar[] method=GET url=/foo/bar?t_done=100'
                     );
                 });
 
@@ -1281,7 +1305,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {},
                         on: spooks.fn({
@@ -1326,7 +1350,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'foo.bar.bz.qux'
@@ -1385,7 +1409,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1445,7 +1469,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1494,7 +1518,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1544,7 +1568,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1601,7 +1625,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1658,7 +1682,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1708,7 +1732,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1767,7 +1791,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1829,7 +1853,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = true;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'foo.bar.baz.qux'
@@ -1883,6 +1907,8 @@ suite('index:', function () {
                 });
             });
         });
+
+        // TODO: Call listen with failing mapper
     });
 });
 
