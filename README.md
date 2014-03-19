@@ -139,7 +139,7 @@ boomcatch.listen({
     port: 8080,                               // Defaults to 80
     path: '/perf',                            // Defaults to '/beacon'
     referer: /^\w+\.example\.com$/,           // Defaults to /.*/
-    origin: [                                 // Defaults to *
+    origin: [                                 // Defaults to '*'
       'http://foo.example.com',
       'http://bar.example.com'
     ],
