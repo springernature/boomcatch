@@ -85,7 +85,7 @@ exports.listen = function (options) {
     mapper = getMapper(options);
     forwarder = getForwarder(options);
 
-    log.info('listening for GET ' + host + ':' + port + path);
+    log.info('listening for ' + host + ':' + port + path);
 
     http.createServer(
         handleRequest.bind(
