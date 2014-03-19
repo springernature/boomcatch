@@ -1,5 +1,9 @@
 # History
 
+## 1.1.1
+
+* Return HTTP status 200 from successful POST requests.
+
 ## 1.1.0
 
 * Support boomerang's restiming plugin.
