@@ -1273,6 +1273,28 @@ suite('index:', function () {
                         test('request.socket.destroy was not called', function () {
                             assert.strictEqual(log.counts.destroy, 0);
                         });
+
+                        suite('success:', function () {
+                            setup(function () {
+                                log.args.forwarder[0][1](null, 1);
+                            });
+
+                            test('response.setHeader was not called', function () {
+                                assert.strictEqual(log.counts.setHeader, 1);
+                            });
+
+                            test('response.end was called once', function () {
+                                assert.strictEqual(log.counts.end, 1);
+                            });
+
+                            test('response.statusCode was set correctly', function () {
+                                assert.strictEqual(response.statusCode, 200);
+                            });
+
+                            test('request.socket.destroy was not called', function () {
+                                assert.strictEqual(log.counts.destroy, 0);
+                            });
+                        });
                     });
                 });
 
