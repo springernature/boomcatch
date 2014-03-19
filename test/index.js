@@ -1559,9 +1559,9 @@ suite('index:', function () {
                     port: 8080,
                     path: '/foo/bar',
                     referer: /baz/,
-                    // TODO: origin
+                    origin: [ 'http://foo', 'http://bar' ],
                     limit: 1000,
-                    // TODO: maxSize
+                    maxSize: 15,
                     log: spooks.fn({
                         name: 'log',
                         log: log
@@ -1619,10 +1619,12 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_done=100',
-                        method: 'GET',
+                        url: '/foo/bar',
+                        method: 'POST',
                         headers: {
-                            referer: 'foo.bar.baz.qux'
+                            referer: 'foo.bar.baz.qux',
+                            origin: 'http://bar',
+                            'content-type': 'application/x-www-form-urlencoded'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -1647,8 +1649,13 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was not called', function () {
+                test('response.setHeader was called once', function () {
                     assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('response.setHeader was called correctly', function () {
+                    assert.strictEqual(log.args.setHeader[0][0], 'Access-Control-Allow-Origin');
+                    assert.strictEqual(log.args.setHeader[0][1], 'http://bar');
                 });
 
                 test('request.socket.destroy was not called', function () {
@@ -1664,7 +1671,7 @@ suite('index:', function () {
                 test('log.info was called correctly', function () {
                     assert.strictEqual(
                         log.args.log[1][0].substr(log.args.log[1][0].indexOf('INFO')),
-                        'INFO boomcatch: referer=foo.bar.baz.qux address=foo.bar[] method=GET url=/foo/bar?t_done=100'
+                        'INFO boomcatch: referer=foo.bar.baz.qux address=foo.bar[] method=POST url=/foo/bar'
                     );
                 });
 
@@ -1672,29 +1679,69 @@ suite('index:', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
 
-                suite('end data:', function () {
+                suite('receive valid body data:', function () {
                     setup(function () {
-                        log.args.on[1][1]();
+                        log.args.on[0][1]('data=t_done%3d1');
                     });
 
-                    test('mapper was called once', function () {
-                        assert.strictEqual(log.counts.mapper, 1);
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
                     });
 
-                    test('mapper was called correctly', function () {
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 100);
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 1);
+                        });
+
+                        test('forwarder was called once', function () {
+                            assert.strictEqual(log.counts.forwarder, 1);
+                        });
+
+                        test('forwarder was called correctly', function () {
+                            assert.strictEqual(log.args.forwarder[0][0], 'alternative mapped data');
+                        });
+
+                        test('response.end was not called', function () {
+                            assert.strictEqual(log.counts.end, 0);
+                        });
+
+                        test('request.socket.destroy was not called', function () {
+                            assert.strictEqual(log.counts.destroy, 0);
+                        });
+                    });
+                });
+
+                suite('receive too much body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=t_done%3d10');
                     });
 
-                    test('forwarder was called once', function () {
-                        assert.strictEqual(log.counts.forwarder, 1);
+                    test('response.setHeader was called once', function () {
+                        assert.strictEqual(log.counts.setHeader, 2);
                     });
 
-                    test('forwarder was called correctly', function () {
-                        assert.strictEqual(log.args.forwarder[0][0], 'alternative mapped data');
+                    test('response.end was called once', function () {
+                        assert.strictEqual(log.counts.end, 1);
                     });
 
-                    test('response.end was not called', function () {
-                        assert.strictEqual(log.counts.end, 0);
+                    test('response.end was called correctly', function () {
+                        assert.strictEqual(log.args.end[0][0], '{ "error": "Body too large" }');
+                    });
+
+                    test('response.statusCode was set correctly', function () {
+                        assert.strictEqual(response.statusCode, 413);
+                    });
+
+                    test('request.socket.destroy was called once', function () {
+                        assert.strictEqual(log.counts.destroy, 1);
                     });
                 });
             });
