@@ -30,7 +30,7 @@ nop = function () {};
 mockery.registerAllowable(modulePath);
 mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
-mockery.registerAllowable('querystring');
+mockery.registerAllowable('qs');
 mockery.registerAllowable('get-off-my-log');
 
 suite('index:', function () {
@@ -109,9 +109,21 @@ suite('index:', function () {
                 })
             }
         }));
+        mockery.registerMock('./mappers/failing', spooks.obj({
+            archetype: { initialise: nop },
+            log: log,
+            results: {
+                initialise: spooks.fn({
+                    name: 'mapper',
+                    log: log,
+                    result: ''
+                })
+            }
+        }));
     });
 
     teardown(function () {
+        mockery.deregisterMock('./mappers/failing');
         mockery.deregisterMock('./forwarders/forwarder');
         mockery.deregisterMock('./mappers/mapper');
         mockery.deregisterMock('./validators/restrictive');
@@ -161,7 +173,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -180,7 +194,9 @@ suite('index:', function () {
                     port: '80',
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -199,7 +215,9 @@ suite('index:', function () {
                     port: 80,
                     path: '',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -218,7 +236,30 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: 'bar',
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125
+                });
+            });
+        });
+
+        test('listen throws if origin is not a URL', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'baz',
+                    limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -237,7 +278,30 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: '100',
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125
+                });
+            });
+        });
+
+        test('listen throws if maxSize is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: '1024',
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -256,7 +320,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -275,7 +341,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: '',
                     mapper: 'mapper',
@@ -294,7 +362,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: '',
@@ -313,7 +383,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -332,7 +404,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -351,7 +425,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -370,7 +446,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -389,7 +467,9 @@ suite('index:', function () {
                     port: 80,
                     path: '/foo',
                     referer: /bar/,
+                    origin: 'http://example.com/',
                     limit: 100,
+                    maxSize: 1024,
                     log: function () {},
                     validator: 'restrictive',
                     mapper: 'mapper',
@@ -408,7 +488,9 @@ suite('index:', function () {
                     port: null,
                     path: null,
                     referer: null,
+                    origin: null,
                     limit: null,
+                    maxSize: null,
                     log: null,
                     validator: null,
                     mapper: null,
@@ -476,7 +558,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/foo?t_resp=1&t_done=2',
+                        url: '/foo?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {},
                         socket: {
@@ -497,15 +579,22 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
-                test('response.setHeader was called correctly', function () {
+                test('response.setHeader was called correctly first time', function () {
                     assert.strictEqual(log.these.setHeader[0], response);
                     assert.lengthOf(log.args.setHeader[0], 2);
-                    assert.strictEqual(log.args.setHeader[0][0], 'Content-Type');
-                    assert.strictEqual(log.args.setHeader[0][1], 'application/json');
+                    assert.strictEqual(log.args.setHeader[0][0], 'Access-Control-Allow-Origin');
+                    assert.strictEqual(log.args.setHeader[0][1], '*');
+                });
+
+                test('response.setHeader was called correctly second time', function () {
+                    assert.strictEqual(log.these.setHeader[1], response);
+                    assert.lengthOf(log.args.setHeader[1], 2);
+                    assert.strictEqual(log.args.setHeader[1][0], 'Content-Type');
+                    assert.strictEqual(log.args.setHeader[1][1], 'application/json');
                 });
 
                 test('response.end was called once', function () {
@@ -537,8 +626,8 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=1&t_done=2',
-                        method: 'POST',
+                        url: '/beacon?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'PUT',
                         headers: {},
                         socket: {
                             destroy: spooks.fn({
@@ -558,13 +647,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
-                });
-
-                test('response.setHeader was called correctly', function () {
-                    assert.strictEqual(log.args.setHeader[0][0], 'Content-Type');
-                    assert.strictEqual(log.args.setHeader[0][1], 'application/json');
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('response.end was called once', function () {
@@ -572,7 +656,7 @@ suite('index:', function () {
                 });
 
                 test('response.end was called correctly', function () {
-                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid method `POST`" }');
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid method `PUT`" }');
                 });
 
                 test('response.statusCode was set correctly', function () {
@@ -589,9 +673,11 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=1&t_done=2',
+                        url: '/beacon?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
-                        headers: {},
+                        headers: {
+                            referer: 'blah'
+                        },
                         on: spooks.fn({
                             name: 'on',
                             log: log
@@ -615,8 +701,15 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('response.setHeader was called correctly', function () {
+                    assert.strictEqual(log.these.setHeader[0], response);
+                    assert.lengthOf(log.args.setHeader[0], 2);
+                    assert.strictEqual(log.args.setHeader[0][0], 'Access-Control-Allow-Origin');
+                    assert.strictEqual(log.args.setHeader[0][1], '*');
                 });
 
                 test('request.on was called twice', function () {
@@ -641,12 +734,12 @@ suite('index:', function () {
                     });
 
                     test('response.setHeader was called once', function () {
-                        assert.strictEqual(log.counts.setHeader, 1);
+                        assert.strictEqual(log.counts.setHeader, 2);
                     });
 
                     test('response.setHeader was called correctly', function () {
-                        assert.strictEqual(log.args.setHeader[0][0], 'Content-Type');
-                        assert.strictEqual(log.args.setHeader[0][1], 'application/json');
+                        assert.strictEqual(log.args.setHeader[1][0], 'Content-Type');
+                        assert.strictEqual(log.args.setHeader[1][1], 'application/json');
                     });
 
                     test('response.end was called once', function () {
@@ -691,12 +784,15 @@ suite('index:', function () {
 
                     test('mapper was called correctly', function () {
                         assert.isUndefined(log.these.mapper[0]);
-                        assert.lengthOf(log.args.mapper[0], 1);
+                        assert.lengthOf(log.args.mapper[0], 2);
                         assert.isObject(log.args.mapper[0][0]);
                         assert.isObject(log.args.mapper[0][0].boomerang);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 1);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 2);
-                        assert.isUndefined(log.args.mapper[0][0].ntapi);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.start, 1);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 2);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 3);
+                        assert.isUndefined(log.args.mapper[0][0].navtiming);
+                        assert.isUndefined(log.args.mapper[0][0].restiming);
+                        assert.strictEqual(log.args.mapper[0][1], 'blah');
                     });
 
                     test('forwarder was called once', function () {
@@ -720,12 +816,12 @@ suite('index:', function () {
                         });
 
                         test('response.setHeader was called once', function () {
-                            assert.strictEqual(log.counts.setHeader, 1);
+                            assert.strictEqual(log.counts.setHeader, 2);
                         });
 
                         test('response.setHeader was called correctly', function () {
-                            assert.strictEqual(log.args.setHeader[0][0], 'Content-Type');
-                            assert.strictEqual(log.args.setHeader[0][1], 'application/json');
+                            assert.strictEqual(log.args.setHeader[1][0], 'Content-Type');
+                            assert.strictEqual(log.args.setHeader[1][1], 'application/json');
                         });
 
                         test('response.end was called once', function () {
@@ -751,7 +847,7 @@ suite('index:', function () {
                         });
 
                         test('response.setHeader was not called', function () {
-                            assert.strictEqual(log.counts.setHeader, 0);
+                            assert.strictEqual(log.counts.setHeader, 1);
                         });
 
                         test('response.end was called once', function () {
@@ -778,9 +874,11 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=1',
+                        url: '/beacon?rt.tstart=1&t_resp=2',
                         method: 'GET',
-                        headers: {},
+                        headers: {
+                            referer: 'wibble'
+                        },
                         on: spooks.fn({
                             name: 'on',
                             log: log
@@ -805,29 +903,35 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
+                test('response.setHeader was not called', function () {
                     assert.strictEqual(log.counts.setHeader, 1);
                 });
 
-                test('response.setHeader was called correctly', function () {
-                    assert.strictEqual(log.args.setHeader[0][0], 'Content-Type');
-                    assert.strictEqual(log.args.setHeader[0][1], 'application/json');
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
                 });
 
-                test('response.end was called once', function () {
-                    assert.strictEqual(log.counts.end, 1);
+                test('mapper was called once', function () {
+                    assert.strictEqual(log.counts.mapper, 1);
                 });
 
-                test('response.end was called correctly', function () {
-                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                test('mapper was called correctly', function () {
+                    assert.isUndefined(log.args.mapper[0][0].boomerang);
+                    assert.isUndefined(log.args.mapper[0][0].navtiming);
+                    assert.isUndefined(log.args.mapper[0][0].restiming);
+                    assert.strictEqual(log.args.mapper[0][1], 'wibble');
                 });
 
-                test('response.statusCode was set correctly', function () {
-                    assert.strictEqual(response.statusCode, 400);
+                test('forwarder was called once', function () {
+                    assert.strictEqual(log.counts.forwarder, 1);
                 });
 
-                test('request.socket.destroy was called once', function () {
-                    assert.strictEqual(log.counts.destroy, 1);
+                test('response.end was not called', function () {
+                    assert.strictEqual(log.counts.end, 0);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
                 });
             });
 
@@ -836,7 +940,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=10&t_done=20&nt_fet_st=30&nt_dns_end=40&nt_res_st=50&nt_domcontloaded_st=60&nt_load_st=70',
+                        url: '/beacon?t_resp=10&t_done=20&nt_nav_st=30&nt_red_st=40&nt_red_end=50&nt_fet_st=60&nt_dns_st=70&nt_dns_end=80&nt_con_st=90&nt_con_end=100&nt_res_st=110&nt_domcontloaded_st=120&nt_load_st=130',
                         method: 'GET',
                         headers: {
                             referer: 'wibble'
@@ -865,7 +969,7 @@ suite('index:', function () {
                 });
 
                 test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
                 test('request.on was called twice', function () {
@@ -885,11 +989,15 @@ suite('index:', function () {
                         assert.isObject(log.args.mapper[0][0].boomerang);
                         assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 10);
                         assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
-                        assert.isObject(log.args.mapper[0][0].ntapi);
-                        assert.strictEqual(log.args.mapper[0][0].ntapi.dns, 10);
-                        assert.strictEqual(log.args.mapper[0][0].ntapi.firstbyte, 20);
-                        assert.strictEqual(log.args.mapper[0][0].ntapi.domload, 30);
-                        assert.strictEqual(log.args.mapper[0][0].ntapi.load, 40);
+                        assert.isObject(log.args.mapper[0][0].navtiming);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.start, 30);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.redirect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.dns, 10);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.connect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.firstbyte, 50);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.domload, 60);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.load, 70);
+                        assert.isUndefined(log.args.mapper[0][0].restiming);
                     });
 
                     test('forwarder was called once', function () {
@@ -906,12 +1014,504 @@ suite('index:', function () {
                 });
             });
 
+            suite('request with resource timing API parameters:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon?rt.tstart=10&t_done=20&restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=30&restiming%5B0%5D%5Brt_dur%5D=40&restiming%5B0%5D%5Brt_red_st%5D=50&restiming%5B0%5D%5Brt_red_end%5D=60&restiming%5B0%5D%5Brt_fet_st%5D=70&restiming%5B0%5D%5Brt_dns_st%5D=80&restiming%5B0%5D%5Brt_dns_end%5D=90&restiming%5B0%5D%5Brt_con_st%5D=100&restiming%5B0%5D%5Brt_con_end%5D=110&restiming%5B0%5D%5Brt_scon_st%5D=120&restiming%5B0%5D%5Brt_req_st%5D=130&restiming%5B0%5D%5Brt_res_st%5D=140&restiming%5B0%5D%5Brt_res_end%5D=150&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=160&restiming%5B1%5D%5Brt_dur%5D=170&restiming%5B1%5D%5Brt_red_st%5D=180&restiming%5B1%5D%5Brt_red_end%5D=190&restiming%5B1%5D%5Brt_fet_st%5D=200&restiming%5B1%5D%5Brt_dns_st%5D=210&restiming%5B1%5D%5Brt_dns_end%5D=220&restiming%5B1%5D%5Brt_con_st%5D=230&restiming%5B1%5D%5Brt_con_end%5D=240&restiming%5B1%5D%5Brt_scon_st%5D=250&restiming%5B1%5D%5Brt_req_st%5D=260&restiming%5B1%5D%5Brt_res_st%5D=270&restiming%5B1%5D%5Brt_res_end%5D=280',
+                        method: 'GET',
+                        headers: {
+                            referer: 'wibble'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was not called', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('end data:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('mapper was called correctly', function () {
+                        assert.isObject(log.args.mapper[0][0].boomerang);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.start, 10);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
+                        assert.isUndefined(log.args.mapper[0][0].navtiming);
+                        assert.isArray(log.args.mapper[0][0].restiming);
+                        assert.lengthOf(log.args.mapper[0][0].restiming, 2);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].name, 'foo');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].type, 'css');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].start, 30);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].redirect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].dns, 10);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].connect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].firstbyte, 110);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].load, 40);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].name, 'bar');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].type, 'img');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].start, 160);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].redirect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].dns, 10);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].connect, 10);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].firstbyte, 110);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].load, 170);
+                    });
+
+                    test('forwarder was called once', function () {
+                        assert.strictEqual(log.counts.forwarder, 1);
+                    });
+
+                    test('response.end was not called', function () {
+                        assert.strictEqual(log.counts.end, 0);
+                    });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
+                });
+            });
+
+            suite('request without restricted resource timing API parameters:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon?t_done=10&restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=20&restiming%5B0%5D%5Brt_dur%5D=30&restiming%5B0%5D%5Brt_fet_st%5D=40&restiming%5B0%5D%5Brt_req_st%5D=50&restiming%5B0%5D%5Brt_res_end%5D=60&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=70&restiming%5B1%5D%5Brt_dur%5D=80&restiming%5B1%5D%5Brt_fet_st%5D=90&restiming%5B1%5D%5Brt_req_st%5D=100&restiming%5B1%5D%5Brt_res_end%5D=110',
+                        method: 'GET',
+                        headers: {
+                            referer: 'wibble'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('end data:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('mapper was called correctly', function () {
+                        assert.isObject(log.args.mapper[0][0].boomerang);
+                        assert.isUndefined(log.args.mapper[0][0].boomerang.start);
+                        assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 10);
+                        assert.isUndefined(log.args.mapper[0][0].navtiming);
+                        assert.isArray(log.args.mapper[0][0].restiming);
+                        assert.lengthOf(log.args.mapper[0][0].restiming, 2);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].name, 'foo');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].type, 'css');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].start, 20);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[0].redirect);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[0].dns);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[0].connect);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[0].firstbyte);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].load, 30);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].name, 'bar');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].type, 'img');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].start, 70);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[1].redirect);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[1].dns);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[1].connect);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[1].firstbyte);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].load, 80);
+                    });
+
+                    test('forwarder was called once', function () {
+                        assert.strictEqual(log.counts.forwarder, 1);
+                    });
+
+                    test('response.end was not called', function () {
+                        assert.strictEqual(log.counts.end, 0);
+                    });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
+                });
+            });
+
+            suite('application/x-www-form-urlencoded POST request', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'application/x-www-form-urlencoded'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('receive valid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=t_done%3d1');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.isObject(log.args.mapper[0][0].boomerang);
+                            assert.isUndefined(log.args.mapper[0][0].boomerang.start);
+                            assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
+                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 1);
+                            assert.isUndefined(log.args.mapper[0][0].navtiming);
+                            assert.isUndefined(log.args.mapper[0][0].restiming);
+                        });
+
+                        test('forwarder was called once', function () {
+                            assert.strictEqual(log.counts.forwarder, 1);
+                        });
+
+                        test('response.end was not called', function () {
+                            assert.strictEqual(log.counts.end, 0);
+                        });
+
+                        test('request.socket.destroy was not called', function () {
+                            assert.strictEqual(log.counts.destroy, 0);
+                        });
+                    });
+                });
+
+                suite('receive invalid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=%7Bt_done%3A1%7D');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    test('response.end was not called', function () {
+                        assert.strictEqual(log.counts.end, 0);
+                    });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.isUndefined(log.args.mapper[0][0].boomerang);
+                            assert.isUndefined(log.args.mapper[0][0].navtiming);
+                            assert.isUndefined(log.args.mapper[0][0].restiming);
+                        });
+                    });
+                });
+            });
+
+            suite('text/plain POST request', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'text/plain'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('receive valid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=%7B%22t_done%22%3A10%7D');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.isObject(log.args.mapper[0][0].boomerang);
+                            assert.isUndefined(log.args.mapper[0][0].boomerang.start);
+                            assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
+                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 10);
+                            assert.isUndefined(log.args.mapper[0][0].navtiming);
+                            assert.isUndefined(log.args.mapper[0][0].restiming);
+                        });
+
+                        test('forwarder was called once', function () {
+                            assert.strictEqual(log.counts.forwarder, 1);
+                        });
+
+                        test('response.end was not called', function () {
+                            assert.strictEqual(log.counts.end, 0);
+                        });
+
+                        test('request.socket.destroy was not called', function () {
+                            assert.strictEqual(log.counts.destroy, 0);
+                        });
+                    });
+                });
+
+                suite('receive invalid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=t_done%3d10');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    test('response.end was not called', function () {
+                        assert.strictEqual(log.counts.end, 0);
+                    });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was not called', function () {
+                            assert.strictEqual(log.counts.mapper, 0);
+                        });
+
+                        test('forwarder was not called', function () {
+                            assert.strictEqual(log.counts.forwarder, 0);
+                        });
+
+                        test('response.setHeader was called once', function () {
+                            assert.strictEqual(log.counts.setHeader, 2);
+                        });
+
+                        test('response.end was called once', function () {
+                            assert.strictEqual(log.counts.end, 1);
+                        });
+
+                        test('response.end was called correctly', function () {
+                            assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                        });
+
+                        test('response.statusCode was set correctly', function () {
+                            assert.strictEqual(response.statusCode, 400);
+                        });
+
+                        test('request.socket.destroy was called once', function () {
+                            assert.strictEqual(log.counts.destroy, 1);
+                        });
+                    });
+                });
+            });
+
+            suite('invalid POST request', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'application/json'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('request.on was not called', function () {
+                    assert.strictEqual(log.counts.on, 0);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.end was called correctly', function () {
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid content type `application/json`" }');
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 415);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+            });
+
             suite('immediately repeated request:', function () {
                 var request, response;
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_resp=1&t_done=2',
+                        url: '/beacon?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {},
                         on: spooks.fn({
@@ -938,8 +1538,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('request.socket.destroy was not called', function () {
@@ -959,7 +1559,9 @@ suite('index:', function () {
                     port: 8080,
                     path: '/foo/bar',
                     referer: /baz/,
+                    origin: [ 'http://foo', 'http://bar' ],
                     limit: 1000,
+                    maxSize: 15,
                     log: spooks.fn({
                         name: 'log',
                         log: log
@@ -1007,7 +1609,7 @@ suite('index:', function () {
             test('log.info was called correctly', function () {
                 assert.strictEqual(
                     log.args.log[0][0].substr(log.args.log[0][0].indexOf('INFO')),
-                    'INFO boomcatch: listening for GET 192.168.1.1:8080/foo/bar'
+                    'INFO boomcatch: listening for 192.168.1.1:8080/foo/bar'
                 );
             });
 
@@ -1017,10 +1619,12 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
-                        method: 'GET',
+                        url: '/foo/bar',
+                        method: 'POST',
                         headers: {
-                            referer: 'foo.bar.baz.qux'
+                            referer: 'foo.bar.baz.qux',
+                            origin: 'http://bar',
+                            'content-type': 'application/x-www-form-urlencoded'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -1045,8 +1649,13 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('response.setHeader was called correctly', function () {
+                    assert.strictEqual(log.args.setHeader[0][0], 'Access-Control-Allow-Origin');
+                    assert.strictEqual(log.args.setHeader[0][1], 'http://bar');
                 });
 
                 test('request.socket.destroy was not called', function () {
@@ -1062,7 +1671,7 @@ suite('index:', function () {
                 test('log.info was called correctly', function () {
                     assert.strictEqual(
                         log.args.log[1][0].substr(log.args.log[1][0].indexOf('INFO')),
-                        'INFO boomcatch: referer=foo.bar.baz.qux address=foo.bar[] method=GET url=/foo/bar?t_resp=100&t_done=200'
+                        'INFO boomcatch: referer=foo.bar.baz.qux address=foo.bar[] method=POST url=/foo/bar'
                     );
                 });
 
@@ -1070,30 +1679,69 @@ suite('index:', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
 
-                suite('end data:', function () {
+                suite('receive valid body data:', function () {
                     setup(function () {
-                        log.args.on[1][1]();
+                        log.args.on[0][1]('data=t_done%3d1');
                     });
 
-                    test('mapper was called once', function () {
-                        assert.strictEqual(log.counts.mapper, 1);
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
                     });
 
-                    test('mapper was called correctly', function () {
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 100);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 200);
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 1);
+                        });
+
+                        test('forwarder was called once', function () {
+                            assert.strictEqual(log.counts.forwarder, 1);
+                        });
+
+                        test('forwarder was called correctly', function () {
+                            assert.strictEqual(log.args.forwarder[0][0], 'alternative mapped data');
+                        });
+
+                        test('response.end was not called', function () {
+                            assert.strictEqual(log.counts.end, 0);
+                        });
+
+                        test('request.socket.destroy was not called', function () {
+                            assert.strictEqual(log.counts.destroy, 0);
+                        });
+                    });
+                });
+
+                suite('receive too much body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=t_done%3d10');
                     });
 
-                    test('forwarder was called once', function () {
-                        assert.strictEqual(log.counts.forwarder, 1);
+                    test('response.setHeader was called once', function () {
+                        assert.strictEqual(log.counts.setHeader, 2);
                     });
 
-                    test('forwarder was called correctly', function () {
-                        assert.strictEqual(log.args.forwarder[0][0], 'alternative mapped data');
+                    test('response.end was called once', function () {
+                        assert.strictEqual(log.counts.end, 1);
                     });
 
-                    test('response.end was not called', function () {
-                        assert.strictEqual(log.counts.end, 0);
+                    test('response.end was called correctly', function () {
+                        assert.strictEqual(log.args.end[0][0], '{ "error": "Body too large" }');
+                    });
+
+                    test('response.statusCode was set correctly', function () {
+                        assert.strictEqual(response.statusCode, 413);
+                    });
+
+                    test('request.socket.destroy was called once', function () {
+                        assert.strictEqual(log.counts.destroy, 1);
                     });
                 });
             });
@@ -1104,7 +1752,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {},
                         on: spooks.fn({
@@ -1130,8 +1778,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
                 test('request.socket.destroy was not called', function () {
@@ -1149,7 +1797,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'foo.bar.bz.qux'
@@ -1177,8 +1825,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('response.end was called once', function () {
@@ -1208,7 +1856,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1237,8 +1885,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
+                test('response.setHeader was called three times', function () {
+                    assert.strictEqual(log.counts.setHeader, 3);
                 });
 
                 test('response.end was called once', function () {
@@ -1268,7 +1916,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1298,8 +1946,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('request.socket.destroy was not called', function () {
@@ -1317,7 +1965,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1348,8 +1996,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('request.socket.destroy was not called', function () {
@@ -1367,7 +2015,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1397,8 +2045,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
+                test('response.setHeader was called three times', function () {
+                    assert.strictEqual(log.counts.setHeader, 3);
                 });
 
                 test('response.end was called once', function () {
@@ -1424,7 +2072,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1454,8 +2102,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
+                test('response.setHeader was called three times', function () {
+                    assert.strictEqual(log.counts.setHeader, 3);
                 });
 
                 test('response.end was called once', function () {
@@ -1481,7 +2129,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1512,8 +2160,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was not called', function () {
-                    assert.strictEqual(log.counts.setHeader, 0);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('request.socket.destroy was not called', function () {
@@ -1531,7 +2179,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1563,8 +2211,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
+                test('response.setHeader was called four times', function () {
+                    assert.strictEqual(log.counts.setHeader, 4);
                 });
 
                 test('response.end was called once', function () {
@@ -1590,7 +2238,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = false;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'baz'
@@ -1625,8 +2273,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
+                test('response.setHeader was called five times', function () {
+                    assert.strictEqual(log.counts.setHeader, 5);
                 });
 
                 test('response.end was called once', function () {
@@ -1652,7 +2300,7 @@ suite('index:', function () {
                 setup(function () {
                     restrict = true;
                     request = {
-                        url: '/foo/bar?t_resp=100&t_done=200',
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
                         method: 'GET',
                         headers: {
                             referer: 'foo.bar.baz.qux'
@@ -1685,8 +2333,8 @@ suite('index:', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
 
-                test('response.setHeader was called once', function () {
-                    assert.strictEqual(log.counts.setHeader, 1);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('response.end was called once', function () {
@@ -1703,6 +2351,92 @@ suite('index:', function () {
 
                 test('request.socket.destroy was called once', function () {
                     assert.strictEqual(log.counts.destroy, 1);
+                });
+            });
+        });
+
+        suite('call listen with failing mapper:', function () {
+            setup(function () {
+                boomcatch.listen({ mapper: 'failing' });
+            });
+
+            test('?.initialise was called three times', function () {
+                assert.strictEqual(log.counts.initialise, 3);
+            });
+
+            test('mapper.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[1], require('./mappers/failing'));
+            });
+
+            suite('valid request:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon?t_done=1',
+                        method: 'GET',
+                        headers: {
+                            referer: 'blah'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                suite('end request:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('forwarder was not called', function () {
+                        assert.strictEqual(log.counts.forwarder, 0);
+                    });
+
+                    test('response.setHeader was called once', function () {
+                        assert.strictEqual(log.counts.setHeader, 2);
+                    });
+
+                    test('response.end was called once', function () {
+                        assert.strictEqual(log.counts.end, 1);
+                    });
+
+                    test('response.end was called correctly', function () {
+                        assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                    });
+
+                    test('response.statusCode was set correctly', function () {
+                        assert.strictEqual(response.statusCode, 400);
+                    });
+
+                    test('request.socket.destroy was called once', function () {
+                        assert.strictEqual(log.counts.destroy, 1);
+                    });
                 });
             });
         });

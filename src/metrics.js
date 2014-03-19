@@ -20,7 +20,17 @@
 'use strict';
 
 module.exports = {
-    ntapi: [ 'dns', 'firstbyte', 'domload', 'load' ],
-    boomerang: [ 'firstbyte', 'load' ]
+    boomerang: {
+        timestamps: [ 'start' ],
+        durations: [ 'firstbyte', 'load' ]
+    },
+    navtiming: {
+        timestamps: [ 'start' ],
+        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'domload', 'load' ]
+    },
+    restiming: {
+        timestamps: [ 'start' ],
+        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'load' ]
+    }
 };
 

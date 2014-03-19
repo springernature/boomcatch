@@ -38,21 +38,61 @@ function normalisePrefix (prefix) {
     return '';
 }
 
-function map (prefix, data) {
-    var result = '';
+function map (prefix, data, referer) {
+    var result = '', mapper;
 
     Object.keys(metrics).forEach(function (category) {
         if (data.hasOwnProperty(category)) {
-            result += mapMetrics(metrics[category], prefix + category + '.', data[category]);
+            if (category === 'restiming') {
+                mapper = mapResourceTimingMetrics;
+            } else {
+                mapper = mapMetrics;
+            }
+
+            result += mapper(metrics[category], prefix + category + '.', data[category], referer);
         }
     });
 
     return result;
 }
 
-function mapMetrics (metrics, prefix, data) {
-    return metrics.map(function (metric) {
-        return prefix + metric + ':' + data[metric] + '|ms\n';
+function mapResourceTimingMetrics (metrics, prefix, data, referer) {
+    return data.map(function (resource, index) {
+        /*jshint camelcase:false */
+        return mapMetrics(metrics, [
+            prefix + base36Encode(referer),
+            index,
+            resource.type,
+            base36Encode(resource.name)
+        ].join('.') + '.', resource);
     }).join('');
+}
+
+function base36Encode (string) {
+    return Array.prototype.map.call(string, function (character) {
+        return character.charCodeAt(0).toString(36);
+    }).join('');
+}
+
+function mapMetrics (metrics, prefix, data) {
+    return mapTimestamps(metrics, prefix, data) + mapDurations(metrics, prefix, data);
+}
+
+function mapTimestamps (metrics, prefix, data) {
+    return mapStuff(metrics.timestamps, prefix, data, 'g');
+}
+
+function mapStuff (metrics, prefix, data, suffix) {
+    return metrics.map(function (metric) {
+        if (check.number(data[metric])) {
+            return prefix + metric + ':' + data[metric] + '|' + suffix + '\n';
+        }
+
+        return '';
+    }).join('');
+}
+
+function mapDurations (metrics, prefix, data) {
+    return mapStuff(metrics.durations, prefix, data, 'ms');
 }
 

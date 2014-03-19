@@ -1,7 +1,7 @@
 {
     "name": "boomcatch",
-    "version": "1.0.0",
-    "description": "Standalone beacon server for boomerang/kylie.",
+    "version": "1.1.0",
+    "description": "Standalone beacon server for boomerang.",
     "homepage": "https://github.com/nature/boomcatch",
     "bugs": "https://github.com/nature/boomcatch/issues",
     "license": "GPL-3.0+",
@@ -31,11 +31,12 @@
     "dependencies": {
         "check-types": "1.2.x",
         "commander": "2.1.x",
-        "get-off-my-log": "0.1.x"
+        "get-off-my-log": "0.1.x",
+        "qs": "0.6.x"
     },
     "devDependencies": {
         "jshint": "2.4.x",
-        "mocha": "1.17.x",
+        "mocha": "1.18.x",
         "chai": "1.9.x",
         "mockery": "1.4.x",
         "spooks": "0.5.x"

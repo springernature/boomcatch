@@ -104,17 +104,43 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        ntapi: {
-                            dns: 0,
-                            firstbyte: 1,
-                            domload: 2,
+                        boomerang: {
+                            start: 1,
+                            firstbyte: 2,
                             load: 3
                         },
-                        boomerang: {
-                            firstbyte: 4,
-                            load: 5
-                        }
-                    });
+                        navtiming: {
+                            start: 4,
+                            redirect: 5,
+                            dns: 6,
+                            connect: 7,
+                            firstbyte: 8,
+                            domload: 9,
+                            load: 10
+                        },
+                        restiming: [
+                            {
+                                name: 'http://www.example.com/foo',
+                                type: 'css',
+                                start: 11,
+                                redirect: 12,
+                                dns: 13,
+                                connect: 14,
+                                firstbyte: 15,
+                                load: 16
+                            },
+                            {
+                                name: 'foo bar baz qux',
+                                type: 'img',
+                                start: 17,
+                                redirect: 18,
+                                dns: 19,
+                                connect: 20,
+                                firstbyte: 21,
+                                load: 22
+                            }
+                        ]
+                    }, 'wibble');
                 });
 
                 teardown(function () {
@@ -123,12 +149,28 @@ suite('mappers/statsd:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, [
-                        'ntapi.dns:0|ms',
-                        'ntapi.firstbyte:1|ms',
-                        'ntapi.domload:2|ms',
-                        'ntapi.load:3|ms',
-                        'boomerang.firstbyte:4|ms',
-                        'boomerang.load:5|ms',
+                        'boomerang.start:1|g',
+                        'boomerang.firstbyte:2|ms',
+                        'boomerang.load:3|ms',
+                        'navtiming.start:4|g',
+                        'navtiming.redirect:5|ms',
+                        'navtiming.dns:6|ms',
+                        'navtiming.connect:7|ms',
+                        'navtiming.firstbyte:8|ms',
+                        'navtiming.domload:9|ms',
+                        'navtiming.load:10|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.start:11|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.redirect:12|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.dns:13|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.connect:14|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.firstbyte:15|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.load:16|ms',
+                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.start:17|g',
+                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.redirect:18|ms',
+                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.dns:19|ms',
+                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.connect:20|ms',
+                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.firstbyte:21|ms',
+                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.load:22|ms',
                         ''
                     ].join('\n'));
                 });
@@ -139,15 +181,17 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        ntapi: {
-                            dns: 111,
-                            firstbyte: 222,
-                            domload: 333,
-                            load: 444
+                        navtiming: {
+                            start: 111,
+                            redirect: 222,
+                            dns: 333,
+                            connect: 444,
+                            firstbyte: 555,
+                            domload: 666,
+                            load: 777
                         },
                         boomerang: {
-                            firstbyte: 555,
-                            load: 666
+                            load: 888
                         }
                     });
                 });
@@ -158,14 +202,32 @@ suite('mappers/statsd:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, [
-                        'ntapi.dns:111|ms',
-                        'ntapi.firstbyte:222|ms',
-                        'ntapi.domload:333|ms',
-                        'ntapi.load:444|ms',
-                        'boomerang.firstbyte:555|ms',
-                        'boomerang.load:666|ms',
+                        'boomerang.load:888|ms',
+                        'navtiming.start:111|g',
+                        'navtiming.redirect:222|ms',
+                        'navtiming.dns:333|ms',
+                        'navtiming.connect:444|ms',
+                        'navtiming.firstbyte:555|ms',
+                        'navtiming.domload:666|ms',
+                        'navtiming.load:777|ms',
                         ''
                     ].join('\n'));
+                });
+            });
+
+            suite('call mapper with no data:', function () {
+                var result;
+
+                setup(function () {
+                    result = mapper({});
+                });
+
+                teardown(function () {
+                    result = undefined;
+                });
+
+                test('result was correct', function () {
+                    assert.strictEqual(result, '');
                 });
             });
         });
@@ -192,15 +254,8 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        ntapi: {
-                            dns: 0,
-                            firstbyte: 1,
-                            domload: 2,
-                            load: 3
-                        },
                         boomerang: {
-                            firstbyte: 4,
-                            load: 5
+                            load: 1
                         }
                     });
                 });
@@ -210,15 +265,7 @@ suite('mappers/statsd:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, [
-                        'foo.ntapi.dns:0|ms',
-                        'foo.ntapi.firstbyte:1|ms',
-                        'foo.ntapi.domload:2|ms',
-                        'foo.ntapi.load:3|ms',
-                        'foo.boomerang.firstbyte:4|ms',
-                        'foo.boomerang.load:5|ms',
-                        ''
-                    ].join('\n'));
+                    assert.strictEqual(result, 'foo.boomerang.load:1|ms\n');
                 });
             });
         });
@@ -245,15 +292,8 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        ntapi: {
-                            dns: 0,
-                            firstbyte: 1,
-                            domload: 2,
-                            load: 3
-                        },
                         boomerang: {
-                            firstbyte: 4,
-                            load: 5
+                            load: 2
                         }
                     });
                 });
@@ -263,15 +303,7 @@ suite('mappers/statsd:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, [
-                        'bar.ntapi.dns:0|ms',
-                        'bar.ntapi.firstbyte:1|ms',
-                        'bar.ntapi.domload:2|ms',
-                        'bar.ntapi.load:3|ms',
-                        'bar.boomerang.firstbyte:4|ms',
-                        'bar.boomerang.load:5|ms',
-                        ''
-                    ].join('\n'));
+                    assert.strictEqual(result, 'bar.boomerang.load:2|ms\n');
                 });
             });
         });

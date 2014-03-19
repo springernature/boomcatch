@@ -34,7 +34,9 @@ function parseCommandLine () {
         .option('-p, --port <port>', 'port to accept HTTP connections on, default is 80', parseInt)
         .option('-u, --path <path>', 'URL path to accept requests to, default is /beacon')
         .option('-r, --referer <regex>', 'HTTP referers to accept requests from, default is .*', parseRegExp)
+        .option('-o, --origin <origin>', 'URL(s) for the Access-Control-Allow-Origin header, default is * (any origin), specify null to force same origin', parseOrigin)
         .option('-l, --limit <milliseconds>', 'minimum elapsed time between requests from the same IP address, default is 0', parseInt)
+        .option('-z, --maxSize <bytes>', 'maximum allowable body size for POST requests, default is -1 (unlimited)', parseInt)
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-v, --validator <path>', 'validator to use, default is permissive')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
@@ -49,6 +51,18 @@ function parseCommandLine () {
 
 function parseRegExp (regExp) {
     return new RegExp(regExp);
+}
+
+function parseOrigin (origin) {
+    var array = origin.split(',');
+
+    if (array.length === 1) {
+        return origin;
+    }
+
+    return array.map(function (item) {
+        return item.trim();
+    });
 }
 
 function runServer () {
