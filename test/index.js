@@ -2355,7 +2355,91 @@ suite('index:', function () {
             });
         });
 
-        // TODO: Call listen with failing mapper
+        suite('call listen with failing mapper:', function () {
+            setup(function () {
+                boomcatch.listen({ mapper: 'failing' });
+            });
+
+            test('?.initialise was called three times', function () {
+                assert.strictEqual(log.counts.initialise, 3);
+            });
+
+            test('mapper.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[1], require('./mappers/failing'));
+            });
+
+            suite('valid request:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon?t_done=1',
+                        method: 'GET',
+                        headers: {
+                            referer: 'blah'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                suite('end request:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('forwarder was not called', function () {
+                        assert.strictEqual(log.counts.forwarder, 0);
+                    });
+
+                    test('response.setHeader was called once', function () {
+                        assert.strictEqual(log.counts.setHeader, 2);
+                    });
+
+                    test('response.end was called once', function () {
+                        assert.strictEqual(log.counts.end, 1);
+                    });
+
+                    test('response.end was called correctly', function () {
+                        assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                    });
+
+                    test('response.statusCode was set correctly', function () {
+                        assert.strictEqual(response.statusCode, 400);
+                    });
+
+                    test('request.socket.destroy was called once', function () {
+                        assert.strictEqual(log.counts.destroy, 1);
+                    });
+                });
+            });
+        });
     });
 });
 
