@@ -869,7 +869,6 @@ suite('index:', function () {
                 });
             });
 
-            // TODO: This case is not fatal any more, have a think about whether that's right or not
             suite('invalid query string:', function () {
                 var request, response;
 
@@ -1015,7 +1014,6 @@ suite('index:', function () {
                 });
             });
 
-            // TODO: Also test POST requests and requests without restricted parameters
             suite('request with resource timing API parameters:', function () {
                 var request, response;
 
@@ -1102,6 +1100,409 @@ suite('index:', function () {
                     test('request.socket.destroy was not called', function () {
                         assert.strictEqual(log.counts.destroy, 0);
                     });
+                });
+            });
+
+            suite('request without restricted resource timing API parameters:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon?t_done=10&restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=20&restiming%5B0%5D%5Brt_dur%5D=30&restiming%5B0%5D%5Brt_fet_st%5D=40&restiming%5B0%5D%5Brt_req_st%5D=50&restiming%5B0%5D%5Brt_res_end%5D=60&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=70&restiming%5B1%5D%5Brt_dur%5D=80&restiming%5B1%5D%5Brt_fet_st%5D=90&restiming%5B1%5D%5Brt_req_st%5D=100&restiming%5B1%5D%5Brt_res_end%5D=110',
+                        method: 'GET',
+                        headers: {
+                            referer: 'wibble'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('end data:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('mapper was called correctly', function () {
+                        assert.isObject(log.args.mapper[0][0].boomerang);
+                        assert.isUndefined(log.args.mapper[0][0].boomerang.start);
+                        assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
+                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 10);
+                        assert.isUndefined(log.args.mapper[0][0].navtiming);
+                        assert.isArray(log.args.mapper[0][0].restiming);
+                        assert.lengthOf(log.args.mapper[0][0].restiming, 2);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].name, 'foo');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].type, 'css');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].start, 20);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[0].redirect);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[0].dns);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[0].connect);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[0].firstbyte);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].load, 30);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].name, 'bar');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].type, 'img');
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].start, 70);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[1].redirect);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[1].dns);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[1].connect);
+                        assert.isUndefined(log.args.mapper[0][0].restiming[1].firstbyte);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].load, 80);
+                    });
+
+                    test('forwarder was called once', function () {
+                        assert.strictEqual(log.counts.forwarder, 1);
+                    });
+
+                    test('response.end was not called', function () {
+                        assert.strictEqual(log.counts.end, 0);
+                    });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
+                });
+            });
+
+            suite('application/x-www-form-urlencoded POST request', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'application/x-www-form-urlencoded'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('receive valid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=t_done%3d1');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.isObject(log.args.mapper[0][0].boomerang);
+                            assert.isUndefined(log.args.mapper[0][0].boomerang.start);
+                            assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
+                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 1);
+                            assert.isUndefined(log.args.mapper[0][0].navtiming);
+                            assert.isUndefined(log.args.mapper[0][0].restiming);
+                        });
+
+                        test('forwarder was called once', function () {
+                            assert.strictEqual(log.counts.forwarder, 1);
+                        });
+
+                        test('response.end was not called', function () {
+                            assert.strictEqual(log.counts.end, 0);
+                        });
+
+                        test('request.socket.destroy was not called', function () {
+                            assert.strictEqual(log.counts.destroy, 0);
+                        });
+                    });
+                });
+
+                suite('receive invalid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=%7Bt_done%3A1%7D');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    test('response.end was not called', function () {
+                        assert.strictEqual(log.counts.end, 0);
+                    });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.isUndefined(log.args.mapper[0][0].boomerang);
+                            assert.isUndefined(log.args.mapper[0][0].navtiming);
+                            assert.isUndefined(log.args.mapper[0][0].restiming);
+                        });
+                    });
+                });
+            });
+
+            suite('text/plain POST request', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'text/plain'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('receive valid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=%7B%22t_done%22%3A10%7D');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.isObject(log.args.mapper[0][0].boomerang);
+                            assert.isUndefined(log.args.mapper[0][0].boomerang.start);
+                            assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
+                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 10);
+                            assert.isUndefined(log.args.mapper[0][0].navtiming);
+                            assert.isUndefined(log.args.mapper[0][0].restiming);
+                        });
+
+                        test('forwarder was called once', function () {
+                            assert.strictEqual(log.counts.forwarder, 1);
+                        });
+
+                        test('response.end was not called', function () {
+                            assert.strictEqual(log.counts.end, 0);
+                        });
+
+                        test('request.socket.destroy was not called', function () {
+                            assert.strictEqual(log.counts.destroy, 0);
+                        });
+                    });
+                });
+
+                suite('receive invalid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=t_done%3d10');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    test('response.end was not called', function () {
+                        assert.strictEqual(log.counts.end, 0);
+                    });
+
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was not called', function () {
+                            assert.strictEqual(log.counts.mapper, 0);
+                        });
+
+                        test('forwarder was not called', function () {
+                            assert.strictEqual(log.counts.forwarder, 0);
+                        });
+
+                        test('response.setHeader was called once', function () {
+                            assert.strictEqual(log.counts.setHeader, 2);
+                        });
+
+                        test('response.end was called once', function () {
+                            assert.strictEqual(log.counts.end, 1);
+                        });
+
+                        test('response.end was called correctly', function () {
+                            assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                        });
+
+                        test('response.statusCode was set correctly', function () {
+                            assert.strictEqual(response.statusCode, 400);
+                        });
+
+                        test('request.socket.destroy was called once', function () {
+                            assert.strictEqual(log.counts.destroy, 1);
+                        });
+                    });
+                });
+            });
+
+            suite('invalid POST request', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'application/json'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('request.on was not called', function () {
+                    assert.strictEqual(log.counts.on, 0);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.end was called correctly', function () {
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid content type `application/json`" }');
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 415);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
                 });
             });
 
@@ -1208,7 +1609,7 @@ suite('index:', function () {
             test('log.info was called correctly', function () {
                 assert.strictEqual(
                     log.args.log[0][0].substr(log.args.log[0][0].indexOf('INFO')),
-                    'INFO boomcatch: listening for GET 192.168.1.1:8080/foo/bar'
+                    'INFO boomcatch: listening for 192.168.1.1:8080/foo/bar'
                 );
             });
 
