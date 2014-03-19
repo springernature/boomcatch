@@ -65,10 +65,20 @@ Available options are:
   HTTP referers to accept requests from.
   The default is `.*`.
 
+* `--origin <origin>`:
+  Comma-separated list of URL(s)
+  for the Access-Control-Allow-Origin header.
+  The default is * (any origin),
+  specify 'null' to force same origin.
+
 * `--limit <milliseconds>`:
   Minimum elapsed time to allow
   between requests from the same IP adderss.
   The default is 0.
+
+* `--maxSize <bytes>`:
+  Maximum body size to allow for POST requests.
+  The default is -1 (unlimited).
 
 * `--silent`:
   Prevent the command
@@ -129,7 +139,12 @@ boomcatch.listen({
     port: 8080,                               // Defaults to 80
     path: '/perf',                            // Defaults to '/beacon'
     referer: /^\w+\.example\.com$/,           // Defaults to /.*/
+    origin: [                                 // Defaults to *
+      'http://foo.example.com',
+      'http://bar.example.com'
+    ],
     limit: 100,                               // Defaults to 0
+    maxSize: 1048576,                         // Defaults to -1
     log: console.log,                         // Defaults to function () {}
     validator: path.resolve('./myvalidator'), // Defaults to 'permissive'
     mapper: path.resolve('./mymapper'),       // Defaults to 'statsd'
