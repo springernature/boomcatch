@@ -1,7 +1,7 @@
 {
     "name": "boomcatch",
-    "version": "1.0.0",
-    "description": "Standalone beacon server for boomerang/kylie.",
+    "version": "1.1.0",
+    "description": "Standalone beacon server for boomerang.",
     "homepage": "https://github.com/nature/boomcatch",
     "bugs": "https://github.com/nature/boomcatch/issues",
     "license": "GPL-3.0+",
