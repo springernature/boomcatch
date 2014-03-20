@@ -1,5 +1,9 @@
 # History
 
+## 1.1.2
+
+* Implement data chunking in the UDP forwarder.
+
 ## 1.1.1
 
 * Return HTTP status 200 from successful POST requests.
