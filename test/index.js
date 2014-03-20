@@ -182,7 +182,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -203,7 +206,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -224,7 +230,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -245,7 +254,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -266,7 +278,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -287,7 +302,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -308,7 +326,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -329,7 +350,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -350,7 +374,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -371,7 +398,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -392,7 +422,10 @@ suite('index:', function () {
                     prefix: '',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -413,7 +446,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: '',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -434,7 +470,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -455,7 +494,34 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: '8125'
+                    fwdPort: '8125',
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
+                });
+            });
+        });
+
+        test('listen throws if fwdSize is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -476,7 +542,10 @@ suite('index:', function () {
                     prefix: 'prefix',
                     forwarder: 'forwarder',
                     fwdHost: '192.168.50.4',
-                    fwdPort: 8125
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST'
                 });
             });
         });
@@ -497,7 +566,10 @@ suite('index:', function () {
                     prefix: null,
                     forwarder: null,
                     fwdHost: null,
-                    fwdPort: null
+                    fwdPort: null,
+                    fwdSize: null,
+                    fwdUrl: null,
+                    fwdMethod: null
                 });
             });
         });
@@ -1594,7 +1666,8 @@ suite('index:', function () {
                     prefix: 'foo prefix',
                     forwarder: 'forwarder',
                     fwdHost: 'bar host',
-                    fwdPort: 1234
+                    fwdPort: 1234,
+                    fwdSize: 256
                 });
             });
 

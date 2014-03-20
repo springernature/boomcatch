@@ -150,6 +150,7 @@ function verifyForwarderOptions (options) {
         default:
             check.verify.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
             check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
+            check.verify.maybe.positiveNumber(options.fwdSize, 'Invalid forwarding packet size');
     }
 }
 
