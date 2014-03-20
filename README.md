@@ -196,11 +196,11 @@ as parameters,
 and returns the mapped data
 as its result.
 The optional separator property
-should be string
-that can be used by data forwarders
+should be a string
+that can be used by the UDP forwarder
 to ensure that,
 if data must be split
-into multiple UDP packets,
+into multiple packets,
 it can be done at suitable points in the data.
 
 If you then specify
