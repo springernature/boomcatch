@@ -44,7 +44,7 @@ function parseCommandLine () {
         .option('-f, --forwarder <path>', 'forwarder to use, default is udp')
         .option('-N, --fwdHost <name>', 'host name to forward data to (UDP only)')
         .option('-P, --fwdPort <port>', 'port to forward data on (UDP only)', parseInt)
-        .option('-P, --fwdSize <bytes>', 'maximum allowable packet size for data forwarding (UDP only)', parseInt)
+        .option('-Z, --fwdSize <bytes>', 'maximum allowable packet size for data forwarding (UDP only)', parseInt)
         .option('-U, --fwdUrl <name>', 'URL to forward data to (HTTP only)')
         .option('-M, --fwdMethod <name>', 'method to forward data with (HTTP only)')
         .parse(process.argv);
