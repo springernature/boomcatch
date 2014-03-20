@@ -65,6 +65,7 @@ defaults = {
  *                               Defaults to 'udp'.
  * @option fwdHost {string}      Host name to forward mapped data to (UDP only).
  * @option fwdPort {number}      Port to forward mapped data on (UDP only).
+ * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP only).
  * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  */
