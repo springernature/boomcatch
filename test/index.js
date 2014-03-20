@@ -758,7 +758,7 @@ suite('index:', function () {
                         assert.strictEqual(log.counts.destroy, 1);
                     });
 
-                    suite('end data:', function () {
+                    suite('end request:', function () {
                         setup(function () {
                             log.args.on[1][1]();
                         });
@@ -773,8 +773,10 @@ suite('index:', function () {
                     });
                 });
 
-                suite('end data:', function () {
+                suite('end request:', function () {
                     setup(function () {
+                        console.log(typeof log.args.on[1][1]);
+                        console.log(log.args.on[1][1]);
                         log.args.on[1][1]();
                     });
 
@@ -801,9 +803,10 @@ suite('index:', function () {
 
                     test('forwarder was called correctly', function () {
                         assert.isUndefined(log.these.forwarder[0]);
-                        assert.lengthOf(log.args.forwarder[0], 2);
+                        assert.lengthOf(log.args.forwarder[0], 3);
                         assert.strictEqual(log.args.forwarder[0][0], 'default mapped data');
-                        assert.isFunction(log.args.forwarder[0][1]);
+                        assert.isUndefined(log.args.forwarder[0][1]);
+                        assert.isFunction(log.args.forwarder[0][2]);
                     });
 
                     test('response.end was not called', function () {
@@ -976,7 +979,7 @@ suite('index:', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
 
-                suite('end data:', function () {
+                suite('end request:', function () {
                     setup(function () {
                         log.args.on[1][1]();
                     });
@@ -1055,7 +1058,7 @@ suite('index:', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
 
-                suite('end data:', function () {
+                suite('end request:', function () {
                     setup(function () {
                         log.args.on[1][1]();
                     });
@@ -1144,7 +1147,7 @@ suite('index:', function () {
                     assert.strictEqual(log.counts.on, 2);
                 });
 
-                suite('end data:', function () {
+                suite('end request:', function () {
                     setup(function () {
                         log.args.on[1][1]();
                     });

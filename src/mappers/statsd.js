@@ -15,15 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals require, exports */
+/*globals require, module */
 
 'use strict';
 
 var check = require('check-types'),
     metrics = require('../metrics');
 
-exports.initialise = function (options) {
-    return map.bind(null, normalisePrefix(options.prefix));
+module.exports = {
+    initialise: function (options) {
+        return map.bind(null, normalisePrefix(options.prefix));
+    },
+    separator: '\n'
 };
 
 function normalisePrefix (prefix) {

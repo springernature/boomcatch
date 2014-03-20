@@ -23,27 +23,37 @@ var check = require('check-types'),
     udp = require('dgram');
 
 exports.initialise = function (options) {
-    return send.bind(null, normaliseHost(options.fwdHost), normalisePort(options.fwdPort));
+    return send.bind(null, normaliseHost(options.fwdHost), normalisePort(options.fwdPort), normaliseSize(options.fwdSize));
 };
 
 function normaliseHost (host) {
-    if (check.unemptyString(host)) {
-        return host;
+    return normaliseValue(host, 'unemptyString', '127.0.0.1');
+}
+
+function normaliseValue (value, test, defaultValue) {
+    if (check[test](value)) {
+        return value;
     }
 
-    return '127.0.0.1';
+    return defaultValue;
 }
 
 function normalisePort (port) {
-    if (check.positiveNumber(port)) {
-        return port;
-    }
-
-    return 8125;
+    return normaliseValue(port, 'positiveNumber', 8125);
 }
 
-function send (host, port, data, callback) {
+function normaliseSize (size) {
+    return normaliseValue(size, 'positiveNumber', 512);
+}
+
+function send (host, port, size, data, separator, callback) {
     var socket, buffer;
+
+    if (size > 0 && data.length > size) {
+        return chunkData(data, size, separator || '', []).forEach(function (chunk) {
+            send(host, port, size, chunk, separator, callback);
+        });
+    }
 
     socket = udp.createSocket('udp4');
     buffer = new Buffer(data);
@@ -53,5 +63,29 @@ function send (host, port, data, callback) {
 
         callback(error, bytesSent);
     });
+}
+
+function chunkData (data, size, separator, chunks) {
+    var i;
+
+    if (data.length <= size) {
+        chunks.push(data);
+        return chunks;
+    }
+
+    if (separator !== '') {
+        for (i = size; i > 0; i -= 1) {
+            if (data.substr(i, separator.length) === separator) {
+                return chunkDataAtIndex(data, i, separator.length, size, separator, chunks);
+            }
+        }
+    }
+
+    return chunkDataAtIndex(data, size, 0, size, separator, chunks);
+}
+
+function chunkDataAtIndex(data, index, gap, size, separator, chunks) {
+    chunks.push(data.substring(0, index));
+    return chunkData(data.substring(index + gap), size, separator, chunks);
 }
 

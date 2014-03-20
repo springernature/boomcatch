@@ -201,8 +201,8 @@ function getValidator (options) {
     return getExtension('validator', options);
 }
 
-function getExtension (type, options) {
-    var name, extension;
+function getExtension (type, options, properties) {
+    var name, extension, result;
 
     name = getOption(type, options);
 
@@ -212,11 +212,19 @@ function getExtension (type, options) {
         extension = require(name);
     }
 
-    return extension.initialise(options);
+    result = extension.initialise(options);
+
+    if (Array.isArray(properties)) {
+        properties.forEach(function (property) {
+            result[property] = extension[property];
+        });
+    }
+
+    return result;
 }
 
 function getMapper (options) {
-    return getExtension('mapper', options);
+    return getExtension('mapper', options, ['separator']);
 }
 
 function getForwarder (options) {
@@ -395,7 +403,7 @@ function send (log, state, validator, mapper, forwarder, request, response) {
 
         log.info('sending ' + mappedData);
 
-        forwarder(mappedData, function (error, bytesSent) {
+        forwarder(mappedData, mapper.separator, function (error, bytesSent) {
             if (error) {
                 return fail(log, request, response, 502, error);
             }

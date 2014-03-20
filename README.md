@@ -117,6 +117,13 @@ Available options are:
   This option is only effective
   with the UDP forwarder.
 
+* `--fwdSize <bytes>`:
+  Maximum packet size
+  for forwarded data.
+  The default is 512.
+  This option is only effective
+  with the UDP forwarder.
+
 * `--fwdUrl <url>`:
   URL to forward mapped data to.
   This option is only effective
@@ -176,7 +183,8 @@ that looks like this:
 ```javscript
 {
     initialise: function (options) {
-    }
+    },
+    separator: '\n'
 }
 ```
 
@@ -187,6 +195,13 @@ and a referring URL
 as parameters,
 and returns the mapped data
 as its result.
+The optional separator property
+should be string
+that can be used by data forwarders
+to ensure that,
+if data must be split
+into multiple UDP packets,
+it can be done at suitable points in the data.
 
 If you then specify
 the path to your new mapper
@@ -207,11 +222,11 @@ At the moment, two forwarders are implemented,
 dispatching the data over UDP or HTTP.
 
 Defining a custom forwarder
-takes broadly the same form
-as [defining a custom mapper](#data-mappers)
+is similar to
+[defining a custom mapper](#data-mappers)
 and can be seen
 in the [source code for the udp forwarder][forwarder].
-Again, the module should export
+The module should export
 an interface that looks like this:
 
 ```javscript
@@ -225,9 +240,10 @@ In this case,
 the `initialise` function
 should return a function
 that is passed
-the mapped data
+the mapped data,
+an optional data-chunking separator
 and a callback function
-as its two parameters.
+as its three parameters.
 When the forwarding process has completed,
 the callback function should be invoked,
 following the node.js convention
