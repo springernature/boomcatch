@@ -775,8 +775,6 @@ suite('index:', function () {
 
                 suite('end request:', function () {
                     setup(function () {
-                        console.log(typeof log.args.on[1][1]);
-                        console.log(log.args.on[1][1]);
                         log.args.on[1][1]();
                     });
 
@@ -815,7 +813,7 @@ suite('index:', function () {
 
                     suite('error:', function () {
                         setup(function () {
-                            log.args.forwarder[0][1]('wibble');
+                            log.args.forwarder[0][2]('wibble');
                         });
 
                         test('response.setHeader was called once', function () {
@@ -846,7 +844,7 @@ suite('index:', function () {
 
                     suite('success:', function () {
                         setup(function () {
-                            log.args.forwarder[0][1](null, 1977);
+                            log.args.forwarder[0][2](null, 1977);
                         });
 
                         test('response.setHeader was not called', function () {
@@ -1279,7 +1277,7 @@ suite('index:', function () {
 
                         suite('success:', function () {
                             setup(function () {
-                                log.args.forwarder[0][1](null, 1);
+                                log.args.forwarder[0][2](null, 1);
                             });
 
                             test('response.setHeader was not called', function () {
