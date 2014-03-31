@@ -19,6 +19,21 @@
 
 'use strict';
 
+// There are three categories of metric: boomerang, navtiming and
+// restiming.
+//
+//     * boomerang: data recorded by boomerang.
+//     * navtiming: data extracted from the W3C Navigation Timing API.
+//     * restiming: data extracted from the W3C Resource Timing API.
+//
+// Within each category, there are three types of metric: timestamps,
+// durations and events.
+//
+//     * timestamps: milliseconds since the epoch.
+//     * durations: milliseconds difference between start timestamp
+//                  and some event
+//     * events: object with `start` and `end` timestamp properties.
+
 module.exports = {
     boomerang: {
         timestamps: [ 'start' ],
