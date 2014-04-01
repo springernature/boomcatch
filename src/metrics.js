@@ -37,16 +37,16 @@ module.exports = {
     // are higher-level / less information-rich than events.
     rt: {
         timestamps: [ 'start' ],
-        durations: [ 'firstbyte', 'lastbyte', 'load' ] // TODO: implement lastbyte using t_page
+        durations: [ 'firstbyte', 'lastbyte', 'load' ]
     },
     navtiming: {
-        timestamps: [ 'start', 'fetchStart', 'requestStart' ],
-        events: [ 'unload', 'redirect', 'dns', 'connect', 'ssl', 'response', 'dom', 'load' ],
-        durations: [ 'unload', 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte', 'dom', 'load' ]
+        timestamps: [ 'start', 'fetchStart', 'sslStart', 'requestStart', 'domInteractive' ],
+        events: [ 'unload', 'redirect', 'dns', 'connect', 'response', 'dom', 'domContent', 'load' ],
+        durations: [ 'unload', 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte', 'dom', 'domContent', 'load' ]
     },
     restiming: {
-        timestamps: [ 'start', 'fetchStart', 'requestStart' ],
-        events: [ 'redirect', 'dns', 'connect', 'ssl', 'response' ],
+        timestamps: [ 'start', 'fetchStart', 'sslStart', 'requestStart' ],
+        events: [ 'redirect', 'dns', 'connect', 'response' ],
         durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte' ]
     }
 };
