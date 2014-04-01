@@ -419,13 +419,13 @@ function send (log, state, validator, mapper, forwarder, request, response) {
 
 function normaliseData (data) {
     return {
-        boomerang: normaliseBoomerangData(data),
+        rt: normaliseRtData(data),
         navtiming: normaliseNavigationTimingApiData(data),
         restiming: normaliseResourceTimingApiData(data)
     };
 }
 
-function normaliseBoomerangData (data) {
+function normaliseRtData (data) {
     /*jshint camelcase:false */
 
     var startTime, timeToFirstByte, timeToLoad;

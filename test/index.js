@@ -858,10 +858,10 @@ suite('index:', function () {
                         assert.isUndefined(log.these.mapper[0]);
                         assert.lengthOf(log.args.mapper[0], 2);
                         assert.isObject(log.args.mapper[0][0]);
-                        assert.isObject(log.args.mapper[0][0].boomerang);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.start, 1);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 2);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 3);
+                        assert.isObject(log.args.mapper[0][0].rt);
+                        assert.strictEqual(log.args.mapper[0][0].rt.start, 1);
+                        assert.strictEqual(log.args.mapper[0][0].rt.firstbyte, 2);
+                        assert.strictEqual(log.args.mapper[0][0].rt.load, 3);
                         assert.isUndefined(log.args.mapper[0][0].navtiming);
                         assert.isUndefined(log.args.mapper[0][0].restiming);
                         assert.strictEqual(log.args.mapper[0][1], 'blah');
@@ -989,7 +989,7 @@ suite('index:', function () {
                 });
 
                 test('mapper was called correctly', function () {
-                    assert.isUndefined(log.args.mapper[0][0].boomerang);
+                    assert.isUndefined(log.args.mapper[0][0].rt);
                     assert.isUndefined(log.args.mapper[0][0].navtiming);
                     assert.isUndefined(log.args.mapper[0][0].restiming);
                     assert.strictEqual(log.args.mapper[0][1], 'wibble');
@@ -1059,9 +1059,9 @@ suite('index:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.isObject(log.args.mapper[0][0].boomerang);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.firstbyte, 10);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
+                        assert.isObject(log.args.mapper[0][0].rt);
+                        assert.strictEqual(log.args.mapper[0][0].rt.firstbyte, 10);
+                        assert.strictEqual(log.args.mapper[0][0].rt.load, 20);
                         assert.isObject(log.args.mapper[0][0].navtiming);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.start, 30);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.redirect, 10);
@@ -1138,9 +1138,9 @@ suite('index:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.isObject(log.args.mapper[0][0].boomerang);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.start, 10);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 20);
+                        assert.isObject(log.args.mapper[0][0].rt);
+                        assert.strictEqual(log.args.mapper[0][0].rt.start, 10);
+                        assert.strictEqual(log.args.mapper[0][0].rt.load, 20);
                         assert.isUndefined(log.args.mapper[0][0].navtiming);
                         assert.isArray(log.args.mapper[0][0].restiming);
                         assert.lengthOf(log.args.mapper[0][0].restiming, 2);
@@ -1227,10 +1227,10 @@ suite('index:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.isObject(log.args.mapper[0][0].boomerang);
-                        assert.isUndefined(log.args.mapper[0][0].boomerang.start);
-                        assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
-                        assert.strictEqual(log.args.mapper[0][0].boomerang.load, 10);
+                        assert.isObject(log.args.mapper[0][0].rt);
+                        assert.isUndefined(log.args.mapper[0][0].rt.start);
+                        assert.isUndefined(log.args.mapper[0][0].rt.firstbyte);
+                        assert.strictEqual(log.args.mapper[0][0].rt.load, 10);
                         assert.isUndefined(log.args.mapper[0][0].navtiming);
                         assert.isArray(log.args.mapper[0][0].restiming);
                         assert.lengthOf(log.args.mapper[0][0].restiming, 2);
@@ -1327,10 +1327,10 @@ suite('index:', function () {
                         });
 
                         test('mapper was called correctly', function () {
-                            assert.isObject(log.args.mapper[0][0].boomerang);
-                            assert.isUndefined(log.args.mapper[0][0].boomerang.start);
-                            assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
-                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 1);
+                            assert.isObject(log.args.mapper[0][0].rt);
+                            assert.isUndefined(log.args.mapper[0][0].rt.start);
+                            assert.isUndefined(log.args.mapper[0][0].rt.firstbyte);
+                            assert.strictEqual(log.args.mapper[0][0].rt.load, 1);
                             assert.isUndefined(log.args.mapper[0][0].navtiming);
                             assert.isUndefined(log.args.mapper[0][0].restiming);
                         });
@@ -1398,7 +1398,7 @@ suite('index:', function () {
                         });
 
                         test('mapper was called correctly', function () {
-                            assert.isUndefined(log.args.mapper[0][0].boomerang);
+                            assert.isUndefined(log.args.mapper[0][0].rt);
                             assert.isUndefined(log.args.mapper[0][0].navtiming);
                             assert.isUndefined(log.args.mapper[0][0].restiming);
                         });
@@ -1467,10 +1467,10 @@ suite('index:', function () {
                         });
 
                         test('mapper was called correctly', function () {
-                            assert.isObject(log.args.mapper[0][0].boomerang);
-                            assert.isUndefined(log.args.mapper[0][0].boomerang.start);
-                            assert.isUndefined(log.args.mapper[0][0].boomerang.firstbyte);
-                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 10);
+                            assert.isObject(log.args.mapper[0][0].rt);
+                            assert.isUndefined(log.args.mapper[0][0].rt.start);
+                            assert.isUndefined(log.args.mapper[0][0].rt.firstbyte);
+                            assert.strictEqual(log.args.mapper[0][0].rt.load, 10);
                             assert.isUndefined(log.args.mapper[0][0].navtiming);
                             assert.isUndefined(log.args.mapper[0][0].restiming);
                         });
@@ -1794,7 +1794,7 @@ suite('index:', function () {
                         });
 
                         test('mapper was called correctly', function () {
-                            assert.strictEqual(log.args.mapper[0][0].boomerang.load, 1);
+                            assert.strictEqual(log.args.mapper[0][0].rt.load, 1);
                         });
 
                         test('forwarder was called once', function () {

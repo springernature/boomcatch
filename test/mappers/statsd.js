@@ -104,7 +104,7 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        boomerang: {
+                        rt: {
                             start: 1,
                             firstbyte: 2,
                             load: 3
@@ -149,9 +149,9 @@ suite('mappers/statsd:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, [
-                        'boomerang.start:1|g',
-                        'boomerang.firstbyte:2|ms',
-                        'boomerang.load:3|ms',
+                        'rt.start:1|g',
+                        'rt.firstbyte:2|ms',
+                        'rt.load:3|ms',
                         'navtiming.start:4|g',
                         'navtiming.redirect:5|ms',
                         'navtiming.dns:6|ms',
@@ -190,7 +190,7 @@ suite('mappers/statsd:', function () {
                             domload: 666,
                             load: 777
                         },
-                        boomerang: {
+                        rt: {
                             load: 888
                         }
                     });
@@ -202,7 +202,7 @@ suite('mappers/statsd:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, [
-                        'boomerang.load:888|ms',
+                        'rt.load:888|ms',
                         'navtiming.start:111|g',
                         'navtiming.redirect:222|ms',
                         'navtiming.dns:333|ms',
@@ -254,7 +254,7 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        boomerang: {
+                        rt: {
                             load: 1
                         }
                     });
@@ -265,7 +265,7 @@ suite('mappers/statsd:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'foo.boomerang.load:1|ms\n');
+                    assert.strictEqual(result, 'foo.rt.load:1|ms\n');
                 });
             });
         });
@@ -292,7 +292,7 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        boomerang: {
+                        rt: {
                             load: 2
                         }
                     });
@@ -303,7 +303,7 @@ suite('mappers/statsd:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'bar.boomerang.load:2|ms\n');
+                    assert.strictEqual(result, 'bar.rt.load:2|ms\n');
                 });
             });
         });
