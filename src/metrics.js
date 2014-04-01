@@ -28,24 +28,26 @@ module.exports = {
     // data mappers: timestamps, durations and events.
     //
     //     * timestamps: milliseconds since the epoch for some event.
-    //     * durations: milliseconds difference between the start timestamp and some
-    //                  event.
     //     * events: an object with `start` and `end` timestamp properties.
+    //     * durations: milliseconds difference between the start timestamp and some
+    //                  event's end timestamp.
     //
-    // There is some duplication in the information available from durations and events.
+    // There is some duplication in the information available from events and durations.
     // Events are lower-level / more information-rich than durations, whereas durations
     // are higher-level / less information-rich than events.
     rt: {
         timestamps: [ 'start' ],
-        durations: [ 'firstbyte', 'load' ]
+        durations: [ 'firstbyte', 'lastbyte', 'load' ] // TODO: implement lastbyte using t_page
     },
     navtiming: {
-        timestamps: [ 'start' ],
-        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'domload', 'load' ]
+        timestamps: [ 'start', 'fetchStart', 'requestStart' ],
+        events: [ 'unload', 'redirect', 'dns', 'connect', 'ssl', 'response', 'dom', 'load' ],
+        durations: [ 'unload', 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte', 'dom', 'load' ]
     },
     restiming: {
-        timestamps: [ 'start' ],
-        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'load' ]
+        timestamps: [ 'start', 'fetchStart', 'requestStart' ],
+        events: [ 'redirect', 'dns', 'connect', 'ssl', 'response' ],
+        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte' ]
     }
 };
 
