@@ -477,7 +477,7 @@ function testKeys (data, firstKey, secondKey, action) {
 }
 
 function normaliseNavtimingData (data) {
-//    /*jshint camelcase:false */
+    /*jshint camelcase:false */
 //
 //    var start, fetchStart, sslStart, requestStart, domInteractive,
 //        unloadStart, unloadEnd, redirectStart, redirectEnd, dnsStart, dnsEnd,
@@ -562,7 +562,10 @@ function normaliseNavtimingData (data) {
 //    }
     var result = normaliseCategory(normalisationMaps.navtiming, data);
 
-    // TODO: Add navigation type, redirect count
+    if (result) {
+        result.type = data.nt_nav_type;
+        result.counts = { redirectCount: data.nt_red_cnt };
+    }
 
     return result;
 }
@@ -599,7 +602,25 @@ normalisationMaps = {
         ]
     },
     restiming: {
-        // TODO: Populate this
+        timestamps: [
+            { key: 'rt_st', name: 'start' },
+            { key: 'rt_fet_st', name: 'start' },
+            { key: 'rt_ssl_st', name: 'start', optional: true },
+            { key: 'rt_req_st', name: 'start', optional: true }
+        ],
+        events: [
+            { start: 'rt_red_st', end: 'rt_red_end', name: 'redirect', optional: true },
+            { start: 'rt_dns_st', end: 'rt_dns_end', name: 'dns', optional: true },
+            { start: 'rt_con_st', end: 'rt_con_end', name: 'connect', optional: true },
+            { start: 'rt_res_st', end: 'rt_res_end', name: 'response', optional: true }
+        ],
+        durations: [
+            { end: 'rt_red_end', name: 'redirect', optional: true },
+            { end: 'rt_dns_end', name: 'dns', optional: true },
+            { end: 'rt_con_end', name: 'connect', optional: true },
+            { end: 'rt_res_st', name: 'firstbyte', optional: true },
+            { end: 'rt_res_end', name: 'lastbyte', optional: true }
+        ]
     }
 };
 
@@ -679,7 +700,7 @@ function normaliseDurations (map, data) {
 }
 
 function normaliseRestimingData (data) {
-//    /*jshint camelcase:false */
+    /*jshint camelcase:false */
 //
 //    var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToLoad;
 //
@@ -725,11 +746,13 @@ function normaliseRestimingData (data) {
 //        });
 //    }
     if (check.array(data.restiming)) {
-        return data.restiming.map(function (resource) {
-            // TODO: Populate normalisationMaps.restiming
-            var result = normaliseCategory(normalisationMaps.restiming, resource);
+        return data.restiming.map(function (datum) {
+            var result = normaliseCategory(normalisationMaps.restiming, datum);
 
-            // TODO: Add rt_name, rt_in_type
+            if (result) {
+                result.name = datum.rt_name;
+                result.type = datum.rt_in_type;
+            }
 
             return result;
         });
@@ -737,11 +760,11 @@ function normaliseRestimingData (data) {
 }
 
 // TODO: We may be able to get rid of this once the new normalisation stuff is finished
-function getOptionalDifference (data, endKey, startKey) {
-    return testKeys(data, endKey, startKey, function () {
-        return parseInt(data[endKey]) - parseInt(data[startKey]);
-    });
-}
+//function getOptionalDifference (data, endKey, startKey) {
+//    return testKeys(data, endKey, startKey, function () {
+//        return parseInt(data[endKey]) - parseInt(data[startKey]);
+//    });
+//}
 
 function pass (log, response, status, bytes) {
     log.info('sent ' + bytes + ' bytes');
