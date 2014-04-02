@@ -442,7 +442,8 @@ function normaliseRtData (data) {
         check.maybe.positiveNumber(start) &&
         check.maybe.positiveNumber(timeToFirstByte) &&
         check.maybe.positiveNumber(timeToLastByte) &&
-        check.positiveNumber(timeToLoad)
+        check.positiveNumber(timeToLoad) &&
+        check.unemptyString(data.r)
     ) {
         return {
             timestamps: {
@@ -452,7 +453,8 @@ function normaliseRtData (data) {
                 firstbyte: timeToFirstByte,
                 lastbyte: timeToLastByte,
                 load: timeToLoad
-            }
+            },
+            url: data.r
         };
     }
 }
@@ -560,11 +562,10 @@ function normaliseNavtimingData (data) {
 //            }
 //        };
 //    }
-    var result = normaliseCategory(normalisationMaps.navtiming, data);
+    var result = normaliseCategory(normalisationMaps.navtiming, data, 'nt_nav_st');
 
     if (result) {
         result.type = data.nt_nav_type;
-        result.counts = { redirectCount: data.nt_red_cnt };
     }
 
     return result;
@@ -604,9 +605,9 @@ normalisationMaps = {
     restiming: {
         timestamps: [
             { key: 'rt_st', name: 'start' },
-            { key: 'rt_fet_st', name: 'start' },
-            { key: 'rt_ssl_st', name: 'start', optional: true },
-            { key: 'rt_req_st', name: 'start', optional: true }
+            { key: 'rt_fet_st', name: 'fetchStart' },
+            { key: 'rt_ssl_st', name: 'sslStart', optional: true },
+            { key: 'rt_req_st', name: 'requestStart', optional: true }
         ],
         events: [
             { start: 'rt_red_st', end: 'rt_red_end', name: 'redirect', optional: true },
@@ -625,12 +626,12 @@ normalisationMaps = {
 };
 
 
-function normaliseCategory (map, data) {
+function normaliseCategory (map, data, startKey) {
     try {
         return {
             timestamps: normaliseTimestamps(map, data),
             events: normaliseEvents(map, data),
-            durations: normaliseDurations(map, data)
+            durations: normaliseDurations(map, data, startKey)
         };
     } catch (e) {
     }
@@ -679,12 +680,12 @@ function normaliseEvents (map, data) {
     }, {});
 }
 
-function normaliseDurations (map, data) {
+function normaliseDurations (map, data, startKey) {
     return map.durations.reduce(function (result, duration) {
         var value, verify;
 
-        if (data.start && data[duration.end]) {
-            value = parseInt(data.start) - parseInt(data[duration.end]);
+        if (data[duration.end]) {
+            value = parseInt(data[duration.end]) - parseInt(data[startKey]);
         }
 
         verify = duration.optional ? check.verify.maybe : check.verify;
@@ -747,7 +748,7 @@ function normaliseRestimingData (data) {
 //    }
     if (check.array(data.restiming)) {
         return data.restiming.map(function (datum) {
-            var result = normaliseCategory(normalisationMaps.restiming, datum);
+            var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
 
             if (result) {
                 result.name = datum.rt_name;
