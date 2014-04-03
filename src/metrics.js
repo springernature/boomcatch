@@ -37,6 +37,7 @@ module.exports = {
     // are higher-level / less information-rich than events.
     rt: {
         timestamps: [ 'start' ],
+        events: [],
         durations: [ 'firstbyte', 'lastbyte', 'load' ]
     },
     navtiming: {
