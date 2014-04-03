@@ -606,7 +606,7 @@ normalisationMaps = {
         timestamps: [
             { key: 'rt_st', name: 'start' },
             { key: 'rt_fet_st', name: 'fetchStart' },
-            { key: 'rt_ssl_st', name: 'sslStart', optional: true },
+            { key: 'rt_scon_st', name: 'sslStart', optional: true },
             { key: 'rt_req_st', name: 'requestStart', optional: true }
         ],
         events: [
@@ -681,16 +681,18 @@ function normaliseEvents (map, data) {
 }
 
 function normaliseDurations (map, data, startKey) {
+    var start = parseInt(data[startKey]);
+
     return map.durations.reduce(function (result, duration) {
         var value, verify;
 
         if (data[duration.end]) {
-            value = parseInt(data[duration.end]) - parseInt(data[startKey]);
+            value = parseInt(data[duration.end]) - start;
         }
 
         verify = duration.optional ? check.verify.maybe : check.verify;
         verify.number(value);
-        verify.not.negativeNumber(value);
+        check.verify.not.negativeNumber(value);
 
         if (value) {
             result[duration.name] = value;

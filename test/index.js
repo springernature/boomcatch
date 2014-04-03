@@ -1189,26 +1189,56 @@ suite('index:', function () {
                         assert.isUndefined(log.args.mapper[0][0].navtiming);
                         assert.isArray(log.args.mapper[0][0].restiming);
                         assert.lengthOf(log.args.mapper[0][0].restiming, 2);
-                        // PHIL! YOU ARE HERE!
-                        //url: '/beacon?restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=30&restiming%5B0%5D%5Brt_dur%5D=40&restiming%5B0%5D%5Brt_red_st%5D=50&restiming%5B0%5D%5Brt_red_end%5D=60&restiming%5B0%5D%5Brt_fet_st%5D=70&restiming%5B0%5D%5Brt_dns_st%5D=80&restiming%5B0%5D%5Brt_dns_end%5D=90&restiming%5B0%5D%5Brt_con_st%5D=100&restiming%5B0%5D%5Brt_con_end%5D=110&restiming%5B0%5D%5Brt_scon_st%5D=120&restiming%5B0%5D%5Brt_req_st%5D=130&restiming%5B0%5D%5Brt_res_st%5D=140&restiming%5B0%5D%5Brt_res_end%5D=150&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=160&restiming%5B1%5D%5Brt_dur%5D=170&restiming%5B1%5D%5Brt_red_st%5D=180&restiming%5B1%5D%5Brt_red_end%5D=190&restiming%5B1%5D%5Brt_fet_st%5D=200&restiming%5B1%5D%5Brt_dns_st%5D=210&restiming%5B1%5D%5Brt_dns_end%5D=220&restiming%5B1%5D%5Brt_con_st%5D=230&restiming%5B1%5D%5Brt_con_end%5D=240&restiming%5B1%5D%5Brt_scon_st%5D=250&restiming%5B1%5D%5Brt_req_st%5D=260&restiming%5B1%5D%5Brt_res_st%5D=270&restiming%5B1%5D%5Brt_res_end%5D=280',
+
                         assert.isObject(log.args.mapper[0][0].restiming[0]);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[0]), 5);
                         assert.strictEqual(log.args.mapper[0][0].restiming[0].name, 'foo');
                         assert.strictEqual(log.args.mapper[0][0].restiming[0].type, 'css');
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].start, 30);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].redirect, 10);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].dns, 10);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].connect, 10);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].firstbyte, 110);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].load, 40);
+                        assert.isObject(log.args.mapper[0][0].restiming[0].timestamps);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[0].timestamps), 4);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].timestamps.start, 30);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].timestamps.fetchStart, 70);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].timestamps.sslStart, 120);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].timestamps.requestStart, 130);
+                        assert.isObject(log.args.mapper[0][0].restiming[0].events);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[0].events), 4);
+                        assert.isObject(log.args.mapper[0][0].restiming[0].events.redirect);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[0].events.redirect), 2);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].events.redirect.start, 50);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].events.redirect.end, 60);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].events.dns.start, 80);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].events.dns.end, 90);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].events.connect.start, 100);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].events.connect.end, 110);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].events.response.start, 140);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].events.response.end, 150);
+                        assert.isObject(log.args.mapper[0][0].restiming[0].durations);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[0].durations), 5);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].durations.redirect, 30);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].durations.dns, 60);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].durations.connect, 80);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].durations.firstbyte, 110);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].durations.lastbyte, 120);
+
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].name, 'bar');
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].type, 'img');
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].start, 160);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].redirect, 10);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].dns, 10);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].connect, 10);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].firstbyte, 110);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].load, 170);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].timestamps.start, 160);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].timestamps.fetchStart, 200);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].timestamps.sslStart, 250);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].timestamps.requestStart, 260);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].events.redirect.start, 180);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].events.redirect.end, 190);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].events.dns.start, 210);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].events.dns.end, 220);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].events.connect.start, 230);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].events.connect.end, 240);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].events.response.start, 270);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].events.response.end, 280);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].durations.redirect, 30);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].durations.dns, 60);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].durations.connect, 80);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].durations.firstbyte, 110);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].durations.lastbyte, 120);
                     });
 
                     test('forwarder was called once', function () {
@@ -1230,7 +1260,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?t_done=10&restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=20&restiming%5B0%5D%5Brt_dur%5D=30&restiming%5B0%5D%5Brt_fet_st%5D=40&restiming%5B0%5D%5Brt_req_st%5D=50&restiming%5B0%5D%5Brt_res_end%5D=60&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=70&restiming%5B1%5D%5Brt_dur%5D=80&restiming%5B1%5D%5Brt_fet_st%5D=90&restiming%5B1%5D%5Brt_req_st%5D=100&restiming%5B1%5D%5Brt_res_end%5D=110',
+                        url: '/beacon?restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=20&restiming%5B0%5D%5Brt_dur%5D=30&restiming%5B0%5D%5Brt_fet_st%5D=40&restiming%5B0%5D%5Brt_req_st%5D=50&restiming%5B0%5D%5Brt_res_end%5D=60&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=70&restiming%5B1%5D%5Brt_dur%5D=80&restiming%5B1%5D%5Brt_fet_st%5D=90&restiming%5B1%5D%5Brt_req_st%5D=100&restiming%5B1%5D%5Brt_res_end%5D=110',
                         method: 'GET',
                         headers: {
                             referer: 'wibble'
@@ -1276,29 +1306,28 @@ suite('index:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.isObject(log.args.mapper[0][0].rt);
-                        assert.isUndefined(log.args.mapper[0][0].rt.start);
-                        assert.isUndefined(log.args.mapper[0][0].rt.firstbyte);
-                        assert.strictEqual(log.args.mapper[0][0].rt.load, 10);
-                        assert.isUndefined(log.args.mapper[0][0].navtiming);
                         assert.isArray(log.args.mapper[0][0].restiming);
                         assert.lengthOf(log.args.mapper[0][0].restiming, 2);
+
                         assert.strictEqual(log.args.mapper[0][0].restiming[0].name, 'foo');
                         assert.strictEqual(log.args.mapper[0][0].restiming[0].type, 'css');
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].start, 20);
-                        assert.isUndefined(log.args.mapper[0][0].restiming[0].redirect);
-                        assert.isUndefined(log.args.mapper[0][0].restiming[0].dns);
-                        assert.isUndefined(log.args.mapper[0][0].restiming[0].connect);
-                        assert.isUndefined(log.args.mapper[0][0].restiming[0].firstbyte);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[0].load, 30);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[0].timestamps), 3);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].timestamps.start, 20);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].timestamps.fetchStart, 40);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].timestamps.requestStart, 50);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[0].events), 0);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[0].durations), 1);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[0].durations.lastbyte, 40);
+
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].name, 'bar');
                         assert.strictEqual(log.args.mapper[0][0].restiming[1].type, 'img');
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].start, 70);
-                        assert.isUndefined(log.args.mapper[0][0].restiming[1].redirect);
-                        assert.isUndefined(log.args.mapper[0][0].restiming[1].dns);
-                        assert.isUndefined(log.args.mapper[0][0].restiming[1].connect);
-                        assert.isUndefined(log.args.mapper[0][0].restiming[1].firstbyte);
-                        assert.strictEqual(log.args.mapper[0][0].restiming[1].load, 80);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[1].timestamps), 3);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].timestamps.start, 70);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].timestamps.fetchStart, 90);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].timestamps.requestStart, 100);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[1].events), 0);
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].restiming[1].durations), 1);
+                        assert.strictEqual(log.args.mapper[0][0].restiming[1].durations.lastbyte, 40);
                     });
 
                     test('forwarder was called once', function () {
