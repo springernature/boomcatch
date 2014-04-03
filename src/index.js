@@ -466,102 +466,13 @@ function getOptionalDatum (data, key) {
 }
 
 function getOptionalSum (data, aKey, bKey) {
-    // TODO: Defactor this if we get rid of getOptionalDifference
-    return testKeys(data, aKey, bKey, function () {
+    if (data[aKey] && data[bKey]) {
         return parseInt(data[aKey]) + parseInt(data[bKey]);
-    });
-}
-
-function testKeys (data, firstKey, secondKey, action) {
-    if (data[firstKey] && data[secondKey]) {
-        return action();
     }
 }
 
 function normaliseNavtimingData (data) {
     /*jshint camelcase:false */
-//
-//    var start, fetchStart, sslStart, requestStart, domInteractive,
-//        unloadStart, unloadEnd, redirectStart, redirectEnd, dnsStart, dnsEnd,
-//        connectStart, connectEnd, responseStart, responseEnd,
-//        domStart, domEnd, domContentStart, domContentEnd, loadStart, loadEnd;
-//
-//    start = parseInt(data.nt_nav_st);
-//    fetchStart = parseInt(data.nt_fet_st);
-//    sslStart = getOptionalDatum(data, 'nt_ssl_st');
-//    requestStart = parseInt(data.nt_req_st);
-//    domInteractive = parseInt(data.nt_domint);
-//    unloadStart = parseInt(data.nt_unload_st);
-//    unloadEnd = parseInt(data.nt_unload_end);
-//    redirectStart = parseInt(data.nt_red_st);
-//    redirectEnd = parseInt(data.nt_red_end);
-//    dnsStart = parseInt(data.nt_dns_st);
-//    dnsEnd = parseInt(data.nt_dns_end);
-//    connectStart = parseInt(data.nt_con_st);
-//    connectEnd = parseInt(data.nt_con_end);
-//    responseStart = parseInt(data.nt_res_st);
-//    responseEnd = parseInt(data.nt_res_end);
-//    domStart = parseInt(data.nt_domloading);
-//    domEnd = parseInt(data.nt_domcomp);
-//    domContentStart = parseInt(data.nt_domcontloaded_st);
-//    domContentEnd = parseInt(data.nt_domcontloaded_end);
-//    loadStart = parseInt(data.nt_unload_st);
-//    loadEnd = parseInt(data.nt_unload_end);
-//
-//    if (
-//        check.positiveNumber(start) &&
-//        check.positiveNumber(fetchStart) &&
-//        check.maybe.positiveNumber(sslStart) &&
-//        check.positiveNumber(requestStart) &&
-//        check.positiveNumber(domInteractive) &&
-//        check.positiveNumber(unloadStart) &&
-//        check.positiveNumber(unloadEnd) &&
-//        check.positiveNumber(redirectStart) &&
-//        check.positiveNumber(redirectEnd) &&
-//        check.positiveNumber(dnsStart) &&
-//        check.positiveNumber(dnsEnd) &&
-//        check.positiveNumber(connectStart) &&
-//        check.positiveNumber(connectEnd) &&
-//        check.positiveNumber(responseStart) &&
-//        check.positiveNumber(responseEnd) &&
-//        check.positiveNumber(domStart) &&
-//        check.positiveNumber(domEnd) &&
-//        check.positiveNumber(domContentStart) &&
-//        check.positiveNumber(domContentEnd) &&
-//        check.positiveNumber(loadStart) &&
-//        check.positiveNumber(loadEnd)
-//    ) {
-//        return {
-//            timestamps: {
-//                start: start,
-//                fetchStart: fetchStart,
-//                sslStart: sslStart,
-//                requestStart: requestStart,
-//                domInteractive: domInteractive
-//            },
-//            events: {
-//                unload: getEvent(unloadStart, unloadEnd),
-//                redirect: getEvent(redirectStart, redirectEnd),
-//                dns: getEvent(dnsStart, dnsEnd),
-//                connect: getEvent(connectStart, connectEnd),
-//                response: getEvent(responseStart, responseEnd),
-//                dom: getEvent(domStart, domEnd),
-//                domContent: getEvent(domContentStart, domContentEnd),
-//                load: getEvent(loadStart, loadEnd)
-//            },
-//            durations: {
-//                unload: unloadEnd - start,
-//                redirect: redirectEnd - start,
-//                dns: dnsEnd - start,
-//                connect: connectEnd - start,
-//                firstbyte: responseStart - start,
-//                lastbyte: responseEnd - start,
-//                dom: domEnd - start,
-//                domContent: domContentEnd - start,
-//                load: loadEnd - start,
-//            }
-//        };
-//    }
     var result = normaliseCategory(normalisationMaps.navtiming, data, 'nt_nav_st');
 
     if (result) {
@@ -704,50 +615,6 @@ function normaliseDurations (map, data, startKey) {
 
 function normaliseRestimingData (data) {
     /*jshint camelcase:false */
-//
-//    var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToLoad;
-//
-//    if (check.array(data.restiming)) {
-//        return data.restiming.map(function (resource) {
-//            // NOTE: We are wilfully reducing precision here from 1/1000th of a millisecond,
-//            //       for consistency with the Navigation Timing API. Open a pull request if
-//            //       you think that is the wrong decision! :)
-//            startTime = parseInt(resource.rt_st);
-//            redirectDuration = getOptionalResourceTiming(resource, 'rt_red_end', 'rt_red_st');
-//            dnsDuration = getOptionalResourceTiming(resource, 'rt_dns_end', 'rt_dns_st');
-//            connectDuration = getOptionalResourceTiming(resource, 'rt_con_end', 'rt_con_st');
-//            timeToFirstByte = getOptionalResourceTiming(resource, 'rt_res_st', 'rt_st');
-//            timeToLoad = parseInt(resource.rt_dur);
-//
-//            // HACK: Google Chrome sometimes reports a zero responseEnd timestamp (which is not
-//            //       conformant behaviour), leading to a negative duration. A negative duration
-//            //       is manifestly nonsense, so force it to zero instead. Bug report:
-//            //           https://code.google.com/p/chromium/issues/detail?id=346960
-//            if (timeToLoad < 0) {
-//                timeToLoad = 0;
-//            }
-//
-//            if (
-//                check.positiveNumber(startTime) &&
-//                check.maybe.number(redirectDuration) &&
-//                check.maybe.number(dnsDuration) &&
-//                check.maybe.number(connectDuration) &&
-//                check.maybe.positiveNumber(timeToFirstByte) &&
-//                check.number(timeToLoad)
-//            ) {
-//                return {
-//                    name: resource.rt_name,
-//                    type: resource.rt_in_type,
-//                    start: startTime,
-//                    redirect: redirectDuration,
-//                    dns: dnsDuration,
-//                    connect: connectDuration,
-//                    firstbyte: timeToFirstByte,
-//                    load: timeToLoad
-//                };
-//            }
-//        });
-//    }
     if (check.array(data.restiming)) {
         return data.restiming.map(function (datum) {
             var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
@@ -761,13 +628,6 @@ function normaliseRestimingData (data) {
         });
     }
 }
-
-// TODO: We may be able to get rid of this once the new normalisation stuff is finished
-//function getOptionalDifference (data, endKey, startKey) {
-//    return testKeys(data, endKey, startKey, function () {
-//        return parseInt(data[endKey]) - parseInt(data[startKey]);
-//    });
-//}
 
 function pass (log, response, status, bytes) {
     log.info('sent ' + bytes + ' bytes');
