@@ -955,8 +955,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        // TODO: Put some navtiming and restiming parameters in here to test their validation
-                        url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&r=wibble',
+                        url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&r=wibble&nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=40&nt_red_end=50&nt_fet_st=60&nt_dns_st=70&nt_dns_end=80&nt_con_st=90&nt_con_end=100&nt_ssl_st=110&nt_req_st=120&nt_res_st=130&nt_res_end=140&nt_domloading=150&nt_domint=160&nt_domcontloaded_st=170&nt_domcontloaded_end=180&nt_domcomp=190&nt_load_st=200&nt_nav_type=foo&nt_nt_red_cnt=1',
                         method: 'GET',
                         headers: {
                             referer: 'wibble'
@@ -1069,9 +1068,12 @@ suite('index:', function () {
 
                     test('mapper was called correctly', function () {
                         assert.isUndefined(log.args.mapper[0][0].rt);
+
                         assert.isObject(log.args.mapper[0][0].navtiming);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].navtiming), 4);
+
                         assert.strictEqual(log.args.mapper[0][0].navtiming.type, 'foo');
+
                         assert.isObject(log.args.mapper[0][0].navtiming.timestamps);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].navtiming.timestamps), 5);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.start, 10);
@@ -1079,6 +1081,7 @@ suite('index:', function () {
                         assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.sslStart, 110);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.requestStart, 120);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.domInteractive, 160);
+
                         assert.isObject(log.args.mapper[0][0].navtiming.events);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].navtiming.events), 8);
                         assert.isObject(log.args.mapper[0][0].navtiming.events.unload);
@@ -1106,6 +1109,7 @@ suite('index:', function () {
                         assert.isObject(log.args.mapper[0][0].navtiming.events.load);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.events.load.start, 200);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.events.load.end, 210);
+
                         assert.isObject(log.args.mapper[0][0].navtiming.durations);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].navtiming.durations), 9);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.durations.unload, 20);
@@ -1117,6 +1121,7 @@ suite('index:', function () {
                         assert.strictEqual(log.args.mapper[0][0].navtiming.durations.domContent, 170);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.durations.dom, 180);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.durations.load, 200);
+
                         assert.isUndefined(log.args.mapper[0][0].restiming);
                     });
 
@@ -1388,7 +1393,7 @@ suite('index:', function () {
 
                 suite('receive valid body data:', function () {
                     setup(function () {
-                        log.args.on[0][1]('data=t_done%3d1');
+                        log.args.on[0][1]('data=t_done%3d1%26r%3Dfoo');
                     });
 
                     test('response.setHeader was not called', function () {
@@ -1406,9 +1411,11 @@ suite('index:', function () {
 
                         test('mapper was called correctly', function () {
                             assert.isObject(log.args.mapper[0][0].rt);
-                            assert.isUndefined(log.args.mapper[0][0].rt.start);
-                            assert.isUndefined(log.args.mapper[0][0].rt.firstbyte);
-                            assert.strictEqual(log.args.mapper[0][0].rt.load, 1);
+                            assert.strictEqual(log.args.mapper[0][0].rt.url, 'foo');
+                            assert.isUndefined(log.args.mapper[0][0].rt.timestamps.start);
+                            assert.isUndefined(log.args.mapper[0][0].rt.durations.firstbyte);
+                            assert.isUndefined(log.args.mapper[0][0].rt.durations.lastbyte);
+                            assert.strictEqual(log.args.mapper[0][0].rt.durations.load, 1);
                             assert.isUndefined(log.args.mapper[0][0].navtiming);
                             assert.isUndefined(log.args.mapper[0][0].restiming);
                         });
@@ -1451,7 +1458,7 @@ suite('index:', function () {
 
                 suite('receive invalid body data:', function () {
                     setup(function () {
-                        log.args.on[0][1]('data=%7Bt_done%3A1%7D');
+                        log.args.on[0][1]('data=%7B%22t_done%22%3A10%2C%22r%22%3A%22foo%22%7D');
                     });
 
                     test('response.setHeader was not called', function () {
@@ -1528,7 +1535,7 @@ suite('index:', function () {
 
                 suite('receive valid body data:', function () {
                     setup(function () {
-                        log.args.on[0][1]('data=%7B%22t_done%22%3A10%7D');
+                        log.args.on[0][1]('data=%7B%22t_done%22%3A10%2C%22r%22%3A%22bar%22%7D');
                     });
 
                     test('response.setHeader was not called', function () {
@@ -1546,9 +1553,11 @@ suite('index:', function () {
 
                         test('mapper was called correctly', function () {
                             assert.isObject(log.args.mapper[0][0].rt);
-                            assert.isUndefined(log.args.mapper[0][0].rt.start);
-                            assert.isUndefined(log.args.mapper[0][0].rt.firstbyte);
-                            assert.strictEqual(log.args.mapper[0][0].rt.load, 10);
+                            assert.strictEqual(log.args.mapper[0][0].rt.url, 'bar');
+                            assert.isUndefined(log.args.mapper[0][0].rt.timestamps.start);
+                            assert.isUndefined(log.args.mapper[0][0].rt.durations.firstbyte);
+                            assert.isUndefined(log.args.mapper[0][0].rt.durations.lastbyte);
+                            assert.strictEqual(log.args.mapper[0][0].rt.durations.load, 10);
                             assert.isUndefined(log.args.mapper[0][0].navtiming);
                             assert.isUndefined(log.args.mapper[0][0].restiming);
                         });
@@ -1734,7 +1743,7 @@ suite('index:', function () {
                     referer: /baz/,
                     origin: [ 'http://foo', 'http://bar' ],
                     limit: 1000,
-                    maxSize: 15,
+                    maxSize: 30,
                     log: spooks.fn({
                         name: 'log',
                         log: log
@@ -1855,7 +1864,7 @@ suite('index:', function () {
 
                 suite('receive valid body data:', function () {
                     setup(function () {
-                        log.args.on[0][1]('data=t_done%3d1');
+                        log.args.on[0][1]('data=t_done%3D100%26r%3Dwibble');
                     });
 
                     test('response.setHeader was not called', function () {
@@ -1872,7 +1881,8 @@ suite('index:', function () {
                         });
 
                         test('mapper was called correctly', function () {
-                            assert.strictEqual(log.args.mapper[0][0].rt.load, 1);
+                            assert.strictEqual(log.args.mapper[0][0].rt.url, 'wibble');
+                            assert.strictEqual(log.args.mapper[0][0].rt.durations.load, 100);
                         });
 
                         test('forwarder was called once', function () {
@@ -1895,7 +1905,7 @@ suite('index:', function () {
 
                 suite('receive too much body data:', function () {
                     setup(function () {
-                        log.args.on[0][1]('data=t_done%3d10');
+                        log.args.on[0][1]('data=t_done%3D100%26r%3Dwibbley');
                     });
 
                     test('response.setHeader was called once', function () {
