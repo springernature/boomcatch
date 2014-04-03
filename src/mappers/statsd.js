@@ -51,7 +51,9 @@ function map (prefix, data, referer) {
             mapper = mapMetrics;
         }
 
-        result += mapper(metrics[category], prefix + category + '.', data[category], referer);
+        if (data[category]) {
+            result += mapper(metrics[category], prefix + category + '.', data[category], referer);
+        }
     });
 
     return result;
