@@ -105,7 +105,7 @@ function mapEvents (metrics, prefix, data) {
         var eventPrefix, datum = data.events[metric];
 
         if (check.object(datum)) {
-            eventPrefix = prefix + metric;
+            eventPrefix = prefix + metric + '.';
 
             return mapMetric(eventPrefix, 'start', datum, 'g') +
                    mapMetric(eventPrefix, 'end', datum, 'g');
