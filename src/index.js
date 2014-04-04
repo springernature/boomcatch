@@ -400,6 +400,7 @@ function send (log, state, validator, mapper, forwarder, request, response) {
             throw null;
         }
 
+        // TODO: Pass userAgent and IP address to data mapper
         mappedData = mapper(normaliseData(data), request.headers.referer);
         if (mappedData === '') {
             throw null;
