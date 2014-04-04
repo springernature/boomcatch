@@ -31,6 +31,10 @@ module.exports = {
 };
 
 function map (data, referer, userAgent, ipAddress) {
+    if (!data.navtiming || !data.restiming) {
+        return '';
+    }
+
     return JSON.stringify({
         log: {
             version: '1.2',
@@ -39,8 +43,8 @@ function map (data, referer, userAgent, ipAddress) {
                 version: packageInfo.version
             },
             browser: getBrowser(userAgent),
-            pages: getPages(data),
-            entries: getEntries(data)
+            pages: getPages(data.navtiming),
+            entries: getEntries(data.restiming)
         }
     });
 }
