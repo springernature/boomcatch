@@ -19,7 +19,8 @@
 
 'use strict';
 
-var check = require('check-types'),
+var packageInfo = require('../package.json'),
+    check = require('check-types'),
     metrics = require('../metrics');
 
 module.exports = {
@@ -29,7 +30,32 @@ module.exports = {
     separator: '\n'
 };
 
-function map (data, referer) {
-    return '';
+function map (data, referer, userAgent, ipAddress) {
+    return JSON.stringify({
+        log: {
+            version: '1.2',
+            creator: {
+                name: packageInfo.name,
+                version: packageInfo.version
+            },
+            browser: getBrowser(userAgent),
+            pages: getPages(data),
+            entries: getEntries(data)
+        }
+    });
+}
+
+function getBrowser (userAgent) {
+    // TODO
+    return {
+        name: '',
+        version: ''
+    };
+}
+
+function getPages (data) {
+}
+
+function getEntries (data) {
 }
 
