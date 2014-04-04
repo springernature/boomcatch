@@ -235,43 +235,43 @@ suite('mappers/statsd:', function () {
                         'navtiming.connect:28|ms',
                         'navtiming.firstbyte:29|ms',
                         'navtiming.lastbyte:30|ms',
-                        'navtiming.domContent:31|ms',
                         'navtiming.dom:32|ms',
+                        'navtiming.domContent:31|ms',
                         'navtiming.load:33|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.start:34|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.fetchStart:35|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.sslStart:36|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.requestStart:37|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.redirect.start:38|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.redirect.end:39|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.dns.start:40|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.dns.end:41|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.connect.start:42|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.connect.end:43|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.response.start:44|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.response.end:45|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.redirect:46|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.dns:47|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.connect:48|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.firstbyte:49|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.lastbyte:50|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.start:51|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.fetchStart:52|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.sslStart:53|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.requestStart:54|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.redirect.start:55|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.redirect.end:56|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.dns.start:57|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.dns.end:58|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.connect.start:59|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.connect.end:60|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.response.start:61|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.response.end:62|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.redirect:63|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.dns:64|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.connect:65|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.firstbyte:66|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.lastbyte:67|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.start:34|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.fetchStart:35|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.sslStart:36|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.requestStart:37|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.redirect.start:38|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.redirect.end:39|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.dns.start:40|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.dns.end:41|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.connect.start:42|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.connect.end:43|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.response.start:44|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.response.end:45|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.redirect:46|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.dns:47|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.connect:48|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.firstbyte:49|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.lastbyte:50|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.start:51|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.fetchStart:52|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.sslStart:53|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.requestStart:54|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.redirect.start:55|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.redirect.end:56|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.dns.start:57|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.dns.end:58|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.connect.start:59|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.connect.end:60|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.response.start:61|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.response.end:62|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.redirect:63|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.dns:64|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.connect:65|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.firstbyte:66|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.lastbyte:67|ms',
                         ''
                     ].join('\n'));
                 });
@@ -282,17 +282,12 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        navtiming: {
-                            start: 111,
-                            redirect: 222,
-                            dns: 333,
-                            connect: 444,
-                            firstbyte: 555,
-                            domload: 666,
-                            load: 777
-                        },
                         rt: {
-                            load: 888
+                            timestamps: {},
+                            events: {},
+                            durations: {
+                                load: 10
+                            }
                         }
                     });
                 });
@@ -302,17 +297,7 @@ suite('mappers/statsd:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, [
-                        'rt.load:888|ms',
-                        'navtiming.start:111|g',
-                        'navtiming.redirect:222|ms',
-                        'navtiming.dns:333|ms',
-                        'navtiming.connect:444|ms',
-                        'navtiming.firstbyte:555|ms',
-                        'navtiming.domload:666|ms',
-                        'navtiming.load:777|ms',
-                        ''
-                    ].join('\n'));
+                    assert.strictEqual(result, 'rt.load:10|ms\n');
                 });
             });
 
@@ -356,7 +341,11 @@ suite('mappers/statsd:', function () {
                 setup(function () {
                     result = mapper({
                         rt: {
-                            load: 1
+                            timestamps: {},
+                            events: {},
+                            durations: {
+                                load: 1
+                            }
                         }
                     });
                 });
@@ -394,7 +383,11 @@ suite('mappers/statsd:', function () {
                 setup(function () {
                     result = mapper({
                         rt: {
-                            load: 2
+                            timestamps: {},
+                            events: {},
+                            durations: {
+                                load: 2
+                            }
                         }
                     });
                 });
