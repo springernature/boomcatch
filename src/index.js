@@ -37,7 +37,9 @@ defaults = {
     validator: 'permissive',
     mapper: 'statsd',
     forwarder: 'udp'
-};
+},
+
+normalisationMaps;
 
 /**
  * Public function `listen`.
@@ -418,126 +420,212 @@ function send (log, state, validator, mapper, forwarder, request, response) {
 }
 
 function normaliseData (data) {
+    // TODO: Add metadata for URL, browser, geolocation
     return {
-        boomerang: normaliseBoomerangData(data),
-        navtiming: normaliseNavigationTimingApiData(data),
-        restiming: normaliseResourceTimingApiData(data)
+        rt: normaliseRtData(data),
+        navtiming: normaliseNavtimingData(data),
+        restiming: normaliseRestimingData(data)
     };
 }
 
-function normaliseBoomerangData (data) {
+function normaliseRtData (data) {
     /*jshint camelcase:false */
 
-    var startTime, timeToFirstByte, timeToLoad;
+    var start, timeToFirstByte, timeToLastByte, timeToLoad;
 
-    if (data['rt.tstart']) {
-        startTime = parseInt(data['rt.tstart']);
-    }
-
-    if (data.t_resp) {
-        timeToFirstByte = parseInt(data.t_resp);
-    }
-
+    start = getOptionalDatum(data, 'rt.tstart');
+    timeToFirstByte = getOptionalDatum(data, 't_resp');
+    timeToLastByte = getOptionalSum(data, 't_resp', 't_page');
     timeToLoad = parseInt(data.t_done);
 
     if (
-        check.maybe.positiveNumber(startTime) &&
+        check.maybe.positiveNumber(start) &&
         check.maybe.positiveNumber(timeToFirstByte) &&
-        check.positiveNumber(timeToLoad)
+        check.maybe.positiveNumber(timeToLastByte) &&
+        check.positiveNumber(timeToLoad) &&
+        check.unemptyString(data.r)
     ) {
         return {
-            start: startTime,
-            firstbyte: timeToFirstByte,
-            load: timeToLoad
+            timestamps: {
+                start: start
+            },
+            durations: {
+                firstbyte: timeToFirstByte,
+                lastbyte: timeToLastByte,
+                load: timeToLoad
+            },
+            url: data.r
         };
     }
 }
 
-function normaliseNavigationTimingApiData (data) {
-    /*jshint camelcase:false */
-
-    var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToDomLoad, timeToLoad;
-
-    startTime = parseInt(data.nt_nav_st);
-    redirectDuration = parseInt(data.nt_red_end) - parseInt(data.nt_red_st);
-    dnsDuration = parseInt(data.nt_dns_end) - parseInt(data.nt_dns_st);
-    connectDuration = parseInt(data.nt_con_end) - parseInt(data.nt_con_st);
-    timeToFirstByte = parseInt(data.nt_res_st) - parseInt(data.nt_fet_st);
-    timeToDomLoad = parseInt(data.nt_domcontloaded_st) - parseInt(data.nt_fet_st);
-    timeToLoad = parseInt(data.nt_load_st) - parseInt(data.nt_fet_st);
-
-    if (
-        check.positiveNumber(startTime) &&
-        check.number(redirectDuration) &&
-        check.number(dnsDuration) &&
-        check.number(connectDuration) &&
-        check.positiveNumber(timeToFirstByte) &&
-        check.positiveNumber(timeToDomLoad) &&
-        check.positiveNumber(timeToLoad)
-    ) {
-        return {
-            start: startTime,
-            redirect: redirectDuration,
-            dns: dnsDuration,
-            connect: connectDuration,
-            firstbyte: timeToFirstByte,
-            domload: timeToDomLoad,
-            load: timeToLoad
-        };
+function getOptionalDatum (data, key) {
+    if (data[key]) {
+        return parseInt(data[key]);
     }
 }
 
-function normaliseResourceTimingApiData (data) {
+function getOptionalSum (data, aKey, bKey) {
+    if (data[aKey] && data[bKey]) {
+        return parseInt(data[aKey]) + parseInt(data[bKey]);
+    }
+}
+
+function normaliseNavtimingData (data) {
     /*jshint camelcase:false */
+    var result = normaliseCategory(normalisationMaps.navtiming, data, 'nt_nav_st');
 
-    var startTime, redirectDuration, dnsDuration, connectDuration, timeToFirstByte, timeToLoad;
+    if (result) {
+        result.type = data.nt_nav_type;
+    }
 
+    return result;
+}
+
+normalisationMaps = {
+    navtiming: {
+        timestamps: [
+            { key: 'nt_nav_st', name: 'start' },
+            { key: 'nt_fet_st', name: 'fetchStart' },
+            { key: 'nt_ssl_st', name: 'sslStart', optional: true },
+            { key: 'nt_req_st', name: 'requestStart' },
+            { key: 'nt_domint', name: 'domInteractive' }
+        ],
+        events: [
+            { start: 'nt_unload_st', end: 'nt_unload_end', name: 'unload' },
+            { start: 'nt_red_st', end: 'nt_red_end', name: 'redirect' },
+            { start: 'nt_dns_st', end: 'nt_dns_end', name: 'dns' },
+            { start: 'nt_con_st', end: 'nt_con_end', name: 'connect' },
+            { start: 'nt_res_st', end: 'nt_res_end', name: 'response' },
+            { start: 'nt_domloading', end: 'nt_domcomp', name: 'dom' },
+            { start: 'nt_domcontloaded_st', end: 'nt_domcontloaded_end', name: 'domContent' },
+            { start: 'nt_load_st', end: 'nt_load_end', name: 'load' }
+        ],
+        durations: [
+            { end: 'nt_unload_end', name: 'unload' },
+            { end: 'nt_red_end', name: 'redirect' },
+            { end: 'nt_dns_end', name: 'dns' },
+            { end: 'nt_con_end', name: 'connect' },
+            { end: 'nt_res_st', name: 'firstbyte' },
+            { end: 'nt_res_end', name: 'lastbyte' },
+            { end: 'nt_domcontloaded_end', name: 'domContent' },
+            { end: 'nt_domcomp', name: 'dom' },
+            { end: 'nt_load_end', name: 'load' }
+        ]
+    },
+    restiming: {
+        timestamps: [
+            { key: 'rt_st', name: 'start' },
+            { key: 'rt_fet_st', name: 'fetchStart' },
+            { key: 'rt_scon_st', name: 'sslStart', optional: true },
+            { key: 'rt_req_st', name: 'requestStart', optional: true }
+        ],
+        events: [
+            { start: 'rt_red_st', end: 'rt_red_end', name: 'redirect', optional: true },
+            { start: 'rt_dns_st', end: 'rt_dns_end', name: 'dns', optional: true },
+            { start: 'rt_con_st', end: 'rt_con_end', name: 'connect', optional: true },
+            { start: 'rt_res_st', end: 'rt_res_end', name: 'response', optional: true }
+        ],
+        durations: [
+            { end: 'rt_red_end', name: 'redirect', optional: true },
+            { end: 'rt_dns_end', name: 'dns', optional: true },
+            { end: 'rt_con_end', name: 'connect', optional: true },
+            { end: 'rt_res_st', name: 'firstbyte', optional: true },
+            { end: 'rt_res_end', name: 'lastbyte', optional: true }
+        ]
+    }
+};
+
+
+function normaliseCategory (map, data, startKey) {
+    try {
+        return {
+            timestamps: normaliseTimestamps(map, data),
+            events: normaliseEvents(map, data),
+            durations: normaliseDurations(map, data, startKey)
+        };
+    } catch (e) {
+    }
+}
+
+function normaliseTimestamps (map, data) {
+    return map.timestamps.reduce(function (result, timestamp) {
+        var value, verify;
+
+        if (data[timestamp.key]) {
+            value = parseInt(data[timestamp.key]);
+        }
+
+        verify = timestamp.optional ? check.verify.maybe : check.verify;
+        verify.positiveNumber(value);
+
+        if (value) {
+            result[timestamp.name] = value;
+        }
+
+        return result;
+    }, {});
+}
+
+function normaliseEvents (map, data) {
+    return map.events.reduce(function (result, event) {
+        var start, end, verify;
+
+        if (data[event.start] && data[event.end]) {
+            start = parseInt(data[event.start]);
+            end = parseInt(data[event.end]);
+        }
+
+        verify = event.optional ? check.verify.maybe : check.verify;
+        verify.positiveNumber(start);
+        verify.positiveNumber(end);
+
+        if (start && end) {
+            result[event.name] = {
+                start: start,
+                end: end
+            };
+        }
+
+        return result;
+    }, {});
+}
+
+function normaliseDurations (map, data, startKey) {
+    var start = parseInt(data[startKey]);
+
+    return map.durations.reduce(function (result, duration) {
+        var value, verify;
+
+        if (data[duration.end]) {
+            value = parseInt(data[duration.end]) - start;
+        }
+
+        verify = duration.optional ? check.verify.maybe : check.verify;
+        verify.number(value);
+        check.verify.not.negativeNumber(value);
+
+        if (value) {
+            result[duration.name] = value;
+        }
+
+        return result;
+    }, {});
+}
+
+function normaliseRestimingData (data) {
+    /*jshint camelcase:false */
     if (check.array(data.restiming)) {
-        return data.restiming.map(function (resource) {
-            // NOTE: We are wilfully reducing precision here from 1/1000th of a millisecond,
-            //       for consistency with the Navigation Timing API. Open a pull request if
-            //       you think that is the wrong decision! :)
-            startTime = parseInt(resource.rt_st);
-            redirectDuration = getOptionalResourceTiming(resource, 'rt_red_end', 'rt_red_st');
-            dnsDuration = getOptionalResourceTiming(resource, 'rt_dns_end', 'rt_dns_st');
-            connectDuration = getOptionalResourceTiming(resource, 'rt_con_end', 'rt_con_st');
-            timeToFirstByte = getOptionalResourceTiming(resource, 'rt_res_st', 'rt_st');
-            timeToLoad = parseInt(resource.rt_dur);
+        return data.restiming.map(function (datum) {
+            var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
 
-            // HACK: Google Chrome sometimes reports a zero responseEnd timestamp (which is not
-            //       conformant behaviour), leading to a negative duration. A negative duration
-            //       is manifestly nonsense, so force it to zero instead. Bug report:
-            //           https://code.google.com/p/chromium/issues/detail?id=346960
-            if (timeToLoad < 0) {
-                timeToLoad = 0;
+            if (result) {
+                result.name = datum.rt_name;
+                result.type = datum.rt_in_type;
             }
 
-            if (
-                check.positiveNumber(startTime) &&
-                check.maybe.number(redirectDuration) &&
-                check.maybe.number(dnsDuration) &&
-                check.maybe.number(connectDuration) &&
-                check.maybe.positiveNumber(timeToFirstByte) &&
-                check.number(timeToLoad)
-            ) {
-                return {
-                    name: resource.rt_name,
-                    type: resource.rt_in_type,
-                    start: startTime,
-                    redirect: redirectDuration,
-                    dns: dnsDuration,
-                    connect: connectDuration,
-                    firstbyte: timeToFirstByte,
-                    load: timeToLoad
-                };
-            }
+            return result;
         });
-    }
-}
-
-function getOptionalResourceTiming (data, endKey, startKey) {
-    if (data[endKey] && data[startKey]) {
-        return parseInt(data[endKey]) - parseInt(data[startKey]);
     }
 }
 

@@ -20,17 +20,35 @@
 'use strict';
 
 module.exports = {
-    boomerang: {
+    // Metric definitions for use by data mappers. There are currently three categories
+    // of metric, corresponding to three different boomerang plugins: rt, navtiming and
+    // restiming.
+    //
+    // Within each category, there are three types of metric that are available for
+    // data mappers: timestamps, durations and events.
+    //
+    //     * timestamps: milliseconds since the epoch for some event.
+    //     * events: an object with `start` and `end` timestamp properties.
+    //     * durations: milliseconds difference between the start timestamp and some
+    //                  event's end timestamp.
+    //
+    // There is some duplication in the information available from events and durations.
+    // Events are lower-level / more information-rich than durations, whereas durations
+    // are higher-level / less information-rich than events.
+    rt: {
         timestamps: [ 'start' ],
-        durations: [ 'firstbyte', 'load' ]
+        events: [],
+        durations: [ 'firstbyte', 'lastbyte', 'load' ]
     },
     navtiming: {
-        timestamps: [ 'start' ],
-        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'domload', 'load' ]
+        timestamps: [ 'start', 'fetchStart', 'sslStart', 'requestStart', 'domInteractive' ],
+        events: [ 'unload', 'redirect', 'dns', 'connect', 'response', 'dom', 'domContent', 'load' ],
+        durations: [ 'unload', 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte', 'dom', 'domContent', 'load' ]
     },
     restiming: {
-        timestamps: [ 'start' ],
-        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'load' ]
+        timestamps: [ 'start', 'fetchStart', 'sslStart', 'requestStart' ],
+        events: [ 'redirect', 'dns', 'connect', 'response' ],
+        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte' ]
     }
 };
 

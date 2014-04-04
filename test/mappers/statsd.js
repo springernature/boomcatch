@@ -104,40 +104,95 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        boomerang: {
-                            start: 1,
-                            firstbyte: 2,
-                            load: 3
+                        rt: {
+                            timestamps: {
+                                start: 1
+                            },
+                            events: {},
+                            durations: {
+                                firstbyte: 2,
+                                lastbyte: 3,
+                                load: 4
+                            },
+                            r: 'http://www.example.com/foo'
                         },
                         navtiming: {
-                            start: 4,
-                            redirect: 5,
-                            dns: 6,
-                            connect: 7,
-                            firstbyte: 8,
-                            domload: 9,
-                            load: 10
+                            timestamps: {
+                                start: 4,
+                                fetchStart: 5,
+                                sslStart: 6,
+                                requestStart: 7,
+                                domInteractive: 8
+                            },
+                            events: {
+                                unload: { start: 9, end: 10 },
+                                redirect: { start: 11, end: 12 },
+                                dns: { start: 13, end: 14 },
+                                connect: { start: 15, end: 16 },
+                                response: { start: 17, end: 18 },
+                                dom: { start: 19, end: 20 },
+                                domContent: { start: 21, end: 22 },
+                                load: { start: 23, end: 24 }
+                            },
+                            durations: {
+                                unload: 25,
+                                redirect: 26,
+                                dns: 27,
+                                connect: 28,
+                                firstbyte: 29,
+                                lastbyte: 30,
+                                domContent: 31,
+                                dom: 32,
+                                load: 33
+                            },
+                            type: 'bar'
                         },
                         restiming: [
                             {
-                                name: 'http://www.example.com/foo',
-                                type: 'css',
-                                start: 11,
-                                redirect: 12,
-                                dns: 13,
-                                connect: 14,
-                                firstbyte: 15,
-                                load: 16
+                                timestamps: {
+                                    start: 34,
+                                    fetchStart: 35,
+                                    sslStart: 36,
+                                    requestStart: 37
+                                },
+                                events: {
+                                    redirect: { start: 38, end: 39 },
+                                    dns: { start: 40, end: 41 },
+                                    connect: { start: 42, end: 43 },
+                                    response: { start: 44, end: 45 }
+                                },
+                                durations: {
+                                    redirect: 46,
+                                    dns: 47,
+                                    connect: 48,
+                                    firstbyte: 49,
+                                    lastbyte: 50
+                                },
+                                name: 'http://www.example.com/baz',
+                                type: 'css'
                             },
                             {
-                                name: 'foo bar baz qux',
-                                type: 'img',
-                                start: 17,
-                                redirect: 18,
-                                dns: 19,
-                                connect: 20,
-                                firstbyte: 21,
-                                load: 22
+                                timestamps: {
+                                    start: 51,
+                                    fetchStart: 52,
+                                    sslStart: 53,
+                                    requestStart: 54
+                                },
+                                events: {
+                                    redirect: { start: 55, end: 56 },
+                                    dns: { start: 57, end: 58 },
+                                    connect: { start: 59, end: 60 },
+                                    response: { start: 61, end: 62 }
+                                },
+                                durations: {
+                                    redirect: 63,
+                                    dns: 64,
+                                    connect: 65,
+                                    firstbyte: 66,
+                                    lastbyte: 67
+                                },
+                                name: 'http://www.example.com/qux',
+                                type: 'img'
                             }
                         ]
                     }, 'wibble');
@@ -149,28 +204,74 @@ suite('mappers/statsd:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, [
-                        'boomerang.start:1|g',
-                        'boomerang.firstbyte:2|ms',
-                        'boomerang.load:3|ms',
+                        'rt.start:1|g',
+                        'rt.firstbyte:2|ms',
+                        'rt.lastbyte:3|ms',
+                        'rt.load:4|ms',
                         'navtiming.start:4|g',
-                        'navtiming.redirect:5|ms',
-                        'navtiming.dns:6|ms',
-                        'navtiming.connect:7|ms',
-                        'navtiming.firstbyte:8|ms',
-                        'navtiming.domload:9|ms',
-                        'navtiming.load:10|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.start:11|g',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.redirect:12|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.dns:13|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.connect:14|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.firstbyte:15|ms',
-                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2u3333.load:16|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.start:17|g',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.redirect:18|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.dns:19|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.connect:20|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.firstbyte:21|ms',
-                        'restiming.3b2x2q2q302t.1.img.2u3333w2q2p36w2q2p3ew35393c.load:22|ms',
+                        'navtiming.fetchStart:5|g',
+                        'navtiming.sslStart:6|g',
+                        'navtiming.requestStart:7|g',
+                        'navtiming.domInteractive:8|g',
+                        'navtiming.unload.start:9|g',
+                        'navtiming.unload.end:10|g',
+                        'navtiming.redirect.start:11|g',
+                        'navtiming.redirect.end:12|g',
+                        'navtiming.dns.start:13|g',
+                        'navtiming.dns.end:14|g',
+                        'navtiming.connect.start:15|g',
+                        'navtiming.connect.end:16|g',
+                        'navtiming.response.start:17|g',
+                        'navtiming.response.end:18|g',
+                        'navtiming.dom.start:19|g',
+                        'navtiming.dom.end:20|g',
+                        'navtiming.domContent.start:21|g',
+                        'navtiming.domContent.end:22|g',
+                        'navtiming.load.start:23|g',
+                        'navtiming.load.end:24|g',
+                        'navtiming.unload:25|ms',
+                        'navtiming.redirect:26|ms',
+                        'navtiming.dns:27|ms',
+                        'navtiming.connect:28|ms',
+                        'navtiming.firstbyte:29|ms',
+                        'navtiming.lastbyte:30|ms',
+                        'navtiming.dom:32|ms',
+                        'navtiming.domContent:31|ms',
+                        'navtiming.load:33|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.start:34|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.fetchStart:35|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.sslStart:36|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.requestStart:37|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.redirect.start:38|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.redirect.end:39|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.dns.start:40|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.dns.end:41|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.connect.start:42|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.connect.end:43|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.response.start:44|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.response.end:45|g',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.redirect:46|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.dns:47|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.connect:48|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.firstbyte:49|ms',
+                        'restiming.3b2x2q2q302t.0.css.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b2q2p3e.lastbyte:50|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.start:51|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.fetchStart:52|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.sslStart:53|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.requestStart:54|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.redirect.start:55|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.redirect.end:56|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.dns.start:57|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.dns.end:58|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.connect.start:59|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.connect.end:60|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.response.start:61|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.response.end:62|g',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.redirect:63|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.dns:64|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.connect:65|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.firstbyte:66|ms',
+                        'restiming.3b2x2q2q302t.1.img.2w3838341m1b1b3b3b3b1a2t3c2p3134302t1a2r33311b35393c.lastbyte:67|ms',
                         ''
                     ].join('\n'));
                 });
@@ -181,17 +282,12 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        navtiming: {
-                            start: 111,
-                            redirect: 222,
-                            dns: 333,
-                            connect: 444,
-                            firstbyte: 555,
-                            domload: 666,
-                            load: 777
-                        },
-                        boomerang: {
-                            load: 888
+                        rt: {
+                            timestamps: {},
+                            events: {},
+                            durations: {
+                                load: 10
+                            }
                         }
                     });
                 });
@@ -201,17 +297,7 @@ suite('mappers/statsd:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, [
-                        'boomerang.load:888|ms',
-                        'navtiming.start:111|g',
-                        'navtiming.redirect:222|ms',
-                        'navtiming.dns:333|ms',
-                        'navtiming.connect:444|ms',
-                        'navtiming.firstbyte:555|ms',
-                        'navtiming.domload:666|ms',
-                        'navtiming.load:777|ms',
-                        ''
-                    ].join('\n'));
+                    assert.strictEqual(result, 'rt.load:10|ms\n');
                 });
             });
 
@@ -254,8 +340,12 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        boomerang: {
-                            load: 1
+                        rt: {
+                            timestamps: {},
+                            events: {},
+                            durations: {
+                                load: 1
+                            }
                         }
                     });
                 });
@@ -265,7 +355,7 @@ suite('mappers/statsd:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'foo.boomerang.load:1|ms\n');
+                    assert.strictEqual(result, 'foo.rt.load:1|ms\n');
                 });
             });
         });
@@ -292,8 +382,12 @@ suite('mappers/statsd:', function () {
 
                 setup(function () {
                     result = mapper({
-                        boomerang: {
-                            load: 2
+                        rt: {
+                            timestamps: {},
+                            events: {},
+                            durations: {
+                                load: 2
+                            }
                         }
                     });
                 });
@@ -303,7 +397,7 @@ suite('mappers/statsd:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'bar.boomerang.load:2|ms\n');
+                    assert.strictEqual(result, 'bar.rt.load:2|ms\n');
                 });
             });
         });

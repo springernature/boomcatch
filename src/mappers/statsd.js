@@ -45,13 +45,13 @@ function map (prefix, data, referer) {
     var result = '', mapper;
 
     Object.keys(metrics).forEach(function (category) {
-        if (data.hasOwnProperty(category)) {
-            if (category === 'restiming') {
-                mapper = mapResourceTimingMetrics;
-            } else {
-                mapper = mapMetrics;
-            }
+        if (category === 'restiming') {
+            mapper = mapRestimingMetrics;
+        } else {
+            mapper = mapMetrics;
+        }
 
+        if (data[category]) {
             result += mapper(metrics[category], prefix + category + '.', data[category], referer);
         }
     });
@@ -59,9 +59,8 @@ function map (prefix, data, referer) {
     return result;
 }
 
-function mapResourceTimingMetrics (metrics, prefix, data, referer) {
+function mapRestimingMetrics (metrics, prefix, data, referer) {
     return data.map(function (resource, index) {
-        /*jshint camelcase:false */
         return mapMetrics(metrics, [
             prefix + base36Encode(referer),
             index,
@@ -78,17 +77,38 @@ function base36Encode (string) {
 }
 
 function mapMetrics (metrics, prefix, data) {
-    return mapTimestamps(metrics, prefix, data) + mapDurations(metrics, prefix, data);
+    return mapTimestamps(metrics, prefix, data) +
+           mapEvents(metrics, prefix, data) +
+           mapDurations(metrics, prefix, data);
 }
 
 function mapTimestamps (metrics, prefix, data) {
-    return mapStuff(metrics.timestamps, prefix, data, 'g');
+    return mapThings(metrics.timestamps, prefix, data.timestamps, 'g');
 }
 
-function mapStuff (metrics, prefix, data, suffix) {
+function mapThings (metrics, prefix, data, suffix) {
     return metrics.map(function (metric) {
         if (check.number(data[metric])) {
-            return prefix + metric + ':' + data[metric] + '|' + suffix + '\n';
+            return mapMetric(prefix, metric, data, suffix);
+        }
+
+        return '';
+    }).join('');
+}
+
+function mapMetric (prefix, name, data, suffix) {
+    return prefix + name + ':' + data[name] + '|' + suffix + '\n';
+}
+
+function mapEvents (metrics, prefix, data) {
+    return metrics.events.map(function (metric) {
+        var eventPrefix, datum = data.events[metric];
+
+        if (check.object(datum)) {
+            eventPrefix = prefix + metric + '.';
+
+            return mapMetric(eventPrefix, 'start', datum, 'g') +
+                   mapMetric(eventPrefix, 'end', datum, 'g');
         }
 
         return '';
@@ -96,6 +116,6 @@ function mapStuff (metrics, prefix, data, suffix) {
 }
 
 function mapDurations (metrics, prefix, data) {
-    return mapStuff(metrics.durations, prefix, data, 'ms');
+    return mapThings(metrics.durations, prefix, data.durations, 'ms');
 }
 
