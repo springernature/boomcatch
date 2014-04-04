@@ -83,7 +83,7 @@ function mapMetrics (metrics, prefix, data) {
 }
 
 function mapTimestamps (metrics, prefix, data) {
-    return mapThings(metrics.timestamps, prefix, data, 'g');
+    return mapThings(metrics.timestamps, prefix, data.timestamps, 'g');
 }
 
 function mapThings (metrics, prefix, data, suffix) {
@@ -102,7 +102,7 @@ function mapMetric (prefix, name, data, suffix) {
 
 function mapEvents (metrics, prefix, data) {
     return metrics.events.map(function (metric) {
-        var eventPrefix, datum = data[metric];
+        var eventPrefix, datum = data.events[metric];
 
         if (check.object(datum)) {
             eventPrefix = prefix + metric;
@@ -116,6 +116,6 @@ function mapEvents (metrics, prefix, data) {
 }
 
 function mapDurations (metrics, prefix, data) {
-    return mapThings(metrics.durations, prefix, data, 'ms');
+    return mapThings(metrics.durations, prefix, data.durations, 'ms');
 }
 
