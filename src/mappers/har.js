@@ -64,6 +64,25 @@ function getBrowser (userAgent) {
 }
 
 function getPages (data) {
+    var start = new Date();
+    start.setTime(data.timestamps.start);
+
+    return [
+        {
+            startedDateTime: start.toISOString(),
+            id: '0',
+            // TODO: Add title with BOOMR.addVar()?
+            title: '',
+            pageTimings: getPageTimings(data)
+        }
+    ];
+}
+
+function getPageTimings (data) {
+    return {
+        onContentLoad: data.events.domContent.start,
+        onLoad: data.events.load.start
+    };
 }
 
 function getEntries (data) {
