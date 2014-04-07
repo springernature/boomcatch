@@ -21,10 +21,14 @@
 
 var packageInfo = require('../package.json'),
     check = require('check-types'),
-    metrics = require('../metrics');
+    metrics = require('../metrics'),
+    useragent = require('useragent');
 
 module.exports = {
     initialise: function (options) {
+        // Asynchronously update the user agent database.
+        useragent(true);
+
         return map;
     },
     separator: '\n'
@@ -50,10 +54,11 @@ function map (data, referer, userAgent, remoteAddress) {
 }
 
 function getBrowser (userAgent) {
-    // TODO
+    var browser = useragent.lookup(userAgent).toJSON();
+
     return {
-        name: '',
-        version: ''
+        name: browser.family,
+        version: browser.major
     };
 }
 
