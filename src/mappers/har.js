@@ -58,6 +58,7 @@ function getBrowser (userAgent) {
 
     return {
         name: browser.family,
+        // TODO: Consider whether to include minor version and patch level?
         version: browser.major
     };
 }
