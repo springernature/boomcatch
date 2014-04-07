@@ -2286,28 +2286,20 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called three times', function () {
-                    assert.strictEqual(log.counts.setHeader, 3);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
-                test('response.end was called once', function () {
-                    assert.strictEqual(log.counts.end, 1);
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
                 });
 
-                test('response.statusCode was set correctly', function () {
-                    assert.strictEqual(response.statusCode, 429);
-                });
-
-                test('request.socket.destroy was called once', function () {
-                    assert.strictEqual(log.counts.destroy, 1);
-                });
-
-                test('request.on was not called', function () {
-                    assert.strictEqual(log.counts.on, 2);
+                test('request.on was called four times', function () {
+                    assert.strictEqual(log.counts.on, 4);
                 });
             });
 
-            suite('immediate request first unproxied address:', function () {
+            suite('immediate request from first unproxied address:', function () {
                 var request, response;
 
                 setup(function () {
