@@ -30,7 +30,7 @@ module.exports = {
     separator: '\n'
 };
 
-function map (data, referer, userAgent, ipAddress) {
+function map (data, referer, userAgent, remoteAddress) {
     if (!data.navtiming || !data.restiming) {
         return '';
     }

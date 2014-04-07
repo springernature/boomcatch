@@ -271,7 +271,7 @@ function handleRequest (log, path, referer, origin, limit, maxSize, validator, m
     };
 
     request.on('data', receive.bind(null, log, state, maxSize, request, response));
-    request.on('end', send.bind(null, log, state, validator, mapper, forwarder, request, response));
+    request.on('end', send.bind(null, log, state, remoteAddress, validator, mapper, forwarder, request, response));
 }
 
 function logRequest (log, request) {
@@ -375,7 +375,7 @@ function receive (log, state, maxSize, request, response, data) {
     state.body += data;
 }
 
-function send (log, state, validator, mapper, forwarder, request, response) {
+function send (log, state, remoteAddress, validator, mapper, forwarder, request, response) {
     try {
         var successStatus, data, mappedData;
 
@@ -406,8 +406,7 @@ function send (log, state, validator, mapper, forwarder, request, response) {
             throw null;
         }
 
-        // TODO: Pass userAgent and IP address to data mapper
-        mappedData = mapper(normaliseData(data), request.headers.referer);
+        mappedData = mapper(normaliseData(data), request.headers.referer, request.headers['user-agent'], remoteAddress);
         if (mappedData === '') {
             throw null;
         }
