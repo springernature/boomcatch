@@ -26,6 +26,7 @@ spooks = require('spooks');
 modulePath = '../../src/mappers/har';
 
 mockery.registerAllowable(modulePath);
+mockery.registerAllowable('../../package.json');
 mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
 mockery.registerAllowable('querystring');

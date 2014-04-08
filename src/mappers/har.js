@@ -19,7 +19,7 @@
 
 'use strict';
 
-var packageInfo = require('../package.json'),
+var packageInfo = require('../../package.json'),
     check = require('check-types'),
     useragent = require('useragent'),
     url = require('url'),
