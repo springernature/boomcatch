@@ -748,7 +748,8 @@ suite('index:', function () {
                         url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&t_done=4&r=wibble',
                         method: 'GET',
                         headers: {
-                            referer: 'blah'
+                            referer: 'blah',
+                            'user-agent': 'oovavu'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -856,7 +857,7 @@ suite('index:', function () {
 
                     test('mapper was called correctly', function () {
                         assert.isUndefined(log.these.mapper[0]);
-                        assert.lengthOf(log.args.mapper[0], 2);
+                        assert.lengthOf(log.args.mapper[0], 4);
                         assert.isObject(log.args.mapper[0][0]);
                         assert.isObject(log.args.mapper[0][0].rt);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].rt), 3);
@@ -873,6 +874,8 @@ suite('index:', function () {
                         assert.isUndefined(log.args.mapper[0][0].navtiming);
                         assert.isUndefined(log.args.mapper[0][0].restiming);
                         assert.strictEqual(log.args.mapper[0][1], 'blah');
+                        assert.strictEqual(log.args.mapper[0][2], 'oovavu');
+                        assert.strictEqual(log.args.mapper[0][3], 'foo.bar');
                     });
 
                     test('forwarder was called once', function () {
@@ -958,14 +961,15 @@ suite('index:', function () {
                         url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&r=wibble&nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=40&nt_red_end=50&nt_fet_st=60&nt_dns_st=70&nt_dns_end=80&nt_con_st=90&nt_con_end=100&nt_ssl_st=110&nt_req_st=120&nt_res_st=130&nt_res_end=140&nt_domloading=150&nt_domint=160&nt_domcontloaded_st=170&nt_domcontloaded_end=180&nt_domcomp=190&nt_load_st=200&nt_nav_type=foo&nt_nt_red_cnt=1',
                         method: 'GET',
                         headers: {
-                            referer: 'wibble'
+                            referer: 'wibble',
+                            'user-agent': 'blah'
                         },
                         on: spooks.fn({
                             name: 'on',
                             log: log
                         }),
                         socket: {
-                            remoteAddress: 'foo.bar',
+                            remoteAddress: 'abc',
                             destroy: spooks.fn({
                                 name: 'destroy',
                                 log: log
@@ -1001,6 +1005,8 @@ suite('index:', function () {
                     assert.isUndefined(log.args.mapper[0][0].navtiming);
                     assert.isUndefined(log.args.mapper[0][0].restiming);
                     assert.strictEqual(log.args.mapper[0][1], 'wibble');
+                    assert.strictEqual(log.args.mapper[0][2], 'blah');
+                    assert.strictEqual(log.args.mapper[0][3], 'abc');
                 });
 
                 test('forwarder was called once', function () {
@@ -1024,7 +1030,8 @@ suite('index:', function () {
                         url: '/beacon?nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=40&nt_red_end=50&nt_fet_st=60&nt_dns_st=70&nt_dns_end=80&nt_con_st=90&nt_con_end=100&nt_ssl_st=110&nt_req_st=120&nt_res_st=130&nt_res_end=140&nt_domloading=150&nt_domint=160&nt_domcontloaded_st=170&nt_domcontloaded_end=180&nt_domcomp=190&nt_load_st=200&nt_load_end=210&nt_nav_type=foo&nt_nt_red_cnt=1',
                         method: 'GET',
                         headers: {
-                            referer: 'wibble'
+                            referer: 'wibble',
+                            'user-agent': 'blah'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -1147,7 +1154,8 @@ suite('index:', function () {
                         url: '/beacon?restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=30&restiming%5B0%5D%5Brt_dur%5D=40&restiming%5B0%5D%5Brt_red_st%5D=50&restiming%5B0%5D%5Brt_red_end%5D=60&restiming%5B0%5D%5Brt_fet_st%5D=70&restiming%5B0%5D%5Brt_dns_st%5D=80&restiming%5B0%5D%5Brt_dns_end%5D=90&restiming%5B0%5D%5Brt_con_st%5D=100&restiming%5B0%5D%5Brt_con_end%5D=110&restiming%5B0%5D%5Brt_scon_st%5D=120&restiming%5B0%5D%5Brt_req_st%5D=130&restiming%5B0%5D%5Brt_res_st%5D=140&restiming%5B0%5D%5Brt_res_end%5D=150&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=160&restiming%5B1%5D%5Brt_dur%5D=170&restiming%5B1%5D%5Brt_red_st%5D=180&restiming%5B1%5D%5Brt_red_end%5D=190&restiming%5B1%5D%5Brt_fet_st%5D=200&restiming%5B1%5D%5Brt_dns_st%5D=210&restiming%5B1%5D%5Brt_dns_end%5D=220&restiming%5B1%5D%5Brt_con_st%5D=230&restiming%5B1%5D%5Brt_con_end%5D=240&restiming%5B1%5D%5Brt_scon_st%5D=250&restiming%5B1%5D%5Brt_req_st%5D=260&restiming%5B1%5D%5Brt_res_st%5D=270&restiming%5B1%5D%5Brt_res_end%5D=280',
                         method: 'GET',
                         headers: {
-                            referer: 'wibble'
+                            referer: 'wibble',
+                            'user-agent': 'blah'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -1268,7 +1276,8 @@ suite('index:', function () {
                         url: '/beacon?restiming%5B0%5D%5Brt_name%5D=foo&restiming%5B0%5D%5Brt_in_type%5D=css&restiming%5B0%5D%5Brt_st%5D=20&restiming%5B0%5D%5Brt_dur%5D=30&restiming%5B0%5D%5Brt_fet_st%5D=40&restiming%5B0%5D%5Brt_req_st%5D=50&restiming%5B0%5D%5Brt_res_end%5D=60&restiming%5B1%5D%5Brt_name%5D=bar&restiming%5B1%5D%5Brt_in_type%5D=img&restiming%5B1%5D%5Brt_st%5D=70&restiming%5B1%5D%5Brt_dur%5D=80&restiming%5B1%5D%5Brt_fet_st%5D=90&restiming%5B1%5D%5Brt_req_st%5D=100&restiming%5B1%5D%5Brt_res_end%5D=110',
                         method: 'GET',
                         headers: {
-                            referer: 'wibble'
+                            referer: 'wibble',
+                            'user-agent': 'blah'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -1358,7 +1367,8 @@ suite('index:', function () {
                         method: 'POST',
                         headers: {
                             referer: 'wibble',
-                            'content-type': 'application/x-www-form-urlencoded'
+                            'content-type': 'application/x-www-form-urlencoded',
+                            'user-agent': 'blah'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -1500,7 +1510,8 @@ suite('index:', function () {
                         method: 'POST',
                         headers: {
                             referer: 'wibble',
-                            'content-type': 'text/plain'
+                            'content-type': 'text/plain',
+                            'user-agent': 'blah'
                         },
                         on: spooks.fn({
                             name: 'on',
