@@ -157,9 +157,9 @@ function getTimings (data) {
         blocked: data.timestamps.fetchStart - data.timestamps.start,
         dns: getOptionalEventDuration(data, 'dns'),
         connect: getOptionalEventDuration(data, 'connect'),
-        // HACK: The resource timing API doesn't provide us with separate metrics
-        //       for `send` and `wait`, so we're assigning all of the time
-        //       to `send` and setting `wait` to zero.
+        // HACK: The resource timing API doesn't provide us with separate
+        //       metrics for `send` and `wait`, so we're assigning all of
+        //       the time to `send` and setting `wait` to zero.
         send: getOptionalEventDifference(data, 'response', 'start', 'requestStart'),
         wait: 0,
         receive: getOptionalEventDuration(data, 'dns'),
