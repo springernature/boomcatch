@@ -26,7 +26,7 @@ var packageInfo = require('../package.json'),
     querystring = require('querystring');
 
 module.exports = {
-    initialise: function () {
+    initialise: function (/*options*/) {
         // Asynchronously update the user agent database.
         useragent(true);
 
