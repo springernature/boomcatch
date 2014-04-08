@@ -542,7 +542,6 @@ normalisationMaps = {
     }
 };
 
-
 function normaliseCategory (map, data, startKey) {
     try {
         return {

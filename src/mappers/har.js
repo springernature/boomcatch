@@ -21,11 +21,12 @@
 
 var packageInfo = require('../package.json'),
     check = require('check-types'),
-    metrics = require('../metrics'),
-    useragent = require('useragent');
+    useragent = require('useragent'),
+    url = require('url'),
+    querystring = require('querystring');
 
 module.exports = {
-    initialise: function (options) {
+    initialise: function () {
         // Asynchronously update the user agent database.
         useragent(true);
 
@@ -34,7 +35,7 @@ module.exports = {
     separator: '\n'
 };
 
-function map (data, referer, userAgent, remoteAddress) {
+function map (data, referer, userAgent) {
     if (!data.navtiming || !data.restiming) {
         return '';
     }
@@ -64,18 +65,21 @@ function getBrowser (userAgent) {
 }
 
 function getPages (data) {
-    var start = new Date();
-    start.setTime(data.timestamps.start);
-
     return [
         {
-            startedDateTime: start.toISOString(),
+            startedDateTime: getTime(data.timestamps.start),
             id: '0',
             // TODO: Add title with BOOMR.addVar()?
             title: '',
             pageTimings: getPageTimings(data)
         }
     ];
+}
+
+function getTime (unixTime) {
+    var time = new Date();
+    time.setTime(unixTime);
+    return time.toISOString();
 }
 
 function getPageTimings (data) {
@@ -86,5 +90,103 @@ function getPageTimings (data) {
 }
 
 function getEntries (data) {
+    return data.map(function (datum) {
+        return {
+            pageref: '0',
+            startedDateTime: getTime(datum.timestamps.start),
+            time: datum.events.response ? datum.events.response.end : 0,
+            request: getRequest(datum),
+            response: getResponse(datum),
+            cache: getCache(datum),
+            timings: getTimings(datum)
+        };
+    });
+}
+
+function getRequest (data) {
+    return {
+        method: '',
+        url: data.name,
+        httpVersion: '',
+        cookies: [],
+        headers: [],
+        queryString: getQueryString(data.name),
+        headerSize: -1,
+        bodySize: -1
+    };
+}
+
+function getQueryString (urlString) {
+    var parameters = querystring.parse(url.parse(urlString).query);
+
+    return Object.keys(parameters).map(function (name) {
+        return {
+            name: name,
+            value: parameters[name]
+        };
+    });
+}
+
+function getResponse (data) {
+    return {
+        status: -1,
+        statusText: '',
+        httpVersion: '',
+        cookies: [],
+        headers: [],
+        content: getContent(data),
+        redirectURL: '',
+        headerSize: -1,
+        bodySize: -1
+    };
+}
+
+function getContent (/*data*/) {
+    return {
+        size: -1,
+        mimeType: ''
+    };
+}
+
+function getCache (/*data*/) {
+    return {};
+}
+
+function getTimings (data) {
+    return {
+        blocked: data.timestamps.fetchStart - data.timestamps.start,
+        dns: getOptionalEventDuration(data, 'dns'),
+        connect: getOptionalEventDuration(data, 'connect'),
+        // HACK: The resource timing API doesn't provide us with separate metrics
+        //       for `send` and `wait`, so we're assigning all of the time
+        //       to `send` and setting `wait` to zero.
+        send: getOptionalEventDifference(data, 'response', 'start', 'requestStart'),
+        wait: 0,
+        receive: getOptionalEventDuration(data, 'dns'),
+        ssl: getOptionalEventDifference(data, 'connect', 'end', 'sslStart')
+    };
+}
+
+function getOptionalEventDuration (data, eventName) {
+    var event = data.events[eventName];
+
+    if (!event) {
+        return -1;
+    }
+
+    return event.end - event.start;
+}
+
+function getOptionalEventDifference (data, eventName, eventProperty, timestampName) {
+    var event, timestamp;
+
+    event = data.events[eventName];
+    timestamp = data.timestamps[timestampName];
+
+    if (!event || check.not.positiveNumber(timestamp)) {
+        return -1;
+    }
+
+    return event[eventProperty] - timestamp;
 }
 
