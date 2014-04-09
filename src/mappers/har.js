@@ -91,14 +91,22 @@ function getPageTimings (data) {
 
 function getEntries (data) {
     return data.map(function (datum) {
+        var timings = getTimings(datum);
+
         return {
             pageref: '0',
             startedDateTime: getTime(datum.timestamps.start),
-            time: datum.events.response ? datum.events.response.end : 0,
+            time: Object.keys(timings).reduce(function (sum, name) {
+                if (name === 'ssl' || check.not.positiveNumber(timings[name])) {
+                    return sum;
+                }
+
+                return sum + timings[name];
+            }, 0),
             request: getRequest(datum),
             response: getResponse(datum),
             cache: getCache(datum),
-            timings: getTimings(datum)
+            timings: timings
         };
     });
 }
