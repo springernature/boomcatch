@@ -162,7 +162,7 @@ function getTimings (data) {
         //       the time to `send` and setting `wait` to zero.
         send: getOptionalEventDifference(data, 'response', 'start', 'requestStart'),
         wait: 0,
-        receive: getOptionalEventDuration(data, 'dns'),
+        receive: getOptionalEventDuration(data, 'response'),
         ssl: getOptionalEventDifference(data, 'connect', 'end', 'sslStart')
     };
 }
