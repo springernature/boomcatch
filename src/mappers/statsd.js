@@ -83,12 +83,10 @@ function mapMetrics (metrics, prefix, data) {
 
 function mapEvents (metrics, prefix, data) {
     return metrics.events.map(function (metric) {
-        var eventPrefix, datum = data.events[metric];
+        var datum = data.events[metric];
 
         if (check.object(datum)) {
-            eventPrefix = prefix + metric + '.';
-
-            return mapMetric(eventPrefix, datum.end - datum.start, 'ms');
+            return mapMetric(prefix, metric, datum.end - datum.start);
         }
 
         return '';
@@ -101,8 +99,10 @@ function mapMetric (prefix, name, value) {
 
 function mapDurations (metrics, prefix, data) {
     return metrics.durations.map(function (metric) {
-        if (check.number(data[metric])) {
-            return mapMetric(prefix, metric, data, 'ms');
+        var datum = data.durations[metric];
+
+        if (check.number(datum)) {
+            return mapMetric(prefix, metric, datum);
         }
 
         return '';
