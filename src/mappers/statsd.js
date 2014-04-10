@@ -77,27 +77,8 @@ function base36Encode (string) {
 }
 
 function mapMetrics (metrics, prefix, data) {
-    return mapTimestamps(metrics, prefix, data) +
-           mapEvents(metrics, prefix, data) +
+    return mapEvents(metrics, prefix, data) +
            mapDurations(metrics, prefix, data);
-}
-
-function mapTimestamps (metrics, prefix, data) {
-    return mapThings(metrics.timestamps, prefix, data.timestamps, 'g');
-}
-
-function mapThings (metrics, prefix, data, suffix) {
-    return metrics.map(function (metric) {
-        if (check.number(data[metric])) {
-            return mapMetric(prefix, metric, data, suffix);
-        }
-
-        return '';
-    }).join('');
-}
-
-function mapMetric (prefix, name, data, suffix) {
-    return prefix + name + ':' + data[name] + '|' + suffix + '\n';
 }
 
 function mapEvents (metrics, prefix, data) {
@@ -107,15 +88,24 @@ function mapEvents (metrics, prefix, data) {
         if (check.object(datum)) {
             eventPrefix = prefix + metric + '.';
 
-            return mapMetric(eventPrefix, 'start', datum, 'g') +
-                   mapMetric(eventPrefix, 'end', datum, 'g');
+            return mapMetric(eventPrefix, datum.end - datum.start, 'ms');
         }
 
         return '';
     }).join('');
 }
 
+function mapMetric (prefix, name, value) {
+    return prefix + name + ':' + value + '|ms' + '\n';
+}
+
 function mapDurations (metrics, prefix, data) {
-    return mapThings(metrics.durations, prefix, data.durations, 'ms');
+    return metrics.durations.map(function (metric) {
+        if (check.number(data[metric])) {
+            return mapMetric(prefix, metric, data, 'ms');
+        }
+
+        return '';
+    }).join('');
 }
 
