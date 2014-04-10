@@ -250,6 +250,7 @@ suite('mappers/har:', function () {
                         major: 'bar'
                     };
                     result = mapper({
+                        title: 'wibble',
                         navtiming: {
                             type: '0',
                             timestamps: {
@@ -398,7 +399,7 @@ suite('mappers/har:', function () {
                     test('data.log.pages[0] is correct', function () {
                         assert.strictEqual(data.log.pages[0].startedDateTime, '1970-01-01T00:00:00.001Z');
                         assert.strictEqual(data.log.pages[0].id, '0');
-                        assert.strictEqual(data.log.pages[0].title, '');
+                        assert.strictEqual(data.log.pages[0].title, 'wibble');
                         assert.isObject(data.log.pages[0].pageTimings);
                         assert.lengthOf(Object.keys(data.log.pages[0].pageTimings), 2);
                         assert.strictEqual(data.log.pages[0].pageTimings.onContentLoad, 12);
@@ -501,6 +502,120 @@ suite('mappers/har:', function () {
                         assert.strictEqual(data.log.entries[1].timings.wait, 0);
                         assert.strictEqual(data.log.entries[1].timings.receive, 10);
                         assert.strictEqual(data.log.entries[1].timings.ssl, 360);
+                    });
+                });
+            });
+
+            suite('call mapper with minimal data:', function () {
+                var result;
+
+                setup(function () {
+                    browser = {
+                        family: 'browser name',
+                        major: 'browser version'
+                    };
+                    result = mapper({
+                        navtiming: {
+                            type: '0',
+                            timestamps: {
+                                start: 100,
+                                fetchStart: 200,
+                                sslStart: 300,
+                                requestStart: 400,
+                                domInteractive: 500
+                            },
+                            events: {
+                                unload: { start: 600, end: 1200 },
+                                redirect: { start: 700, end: 1400 },
+                                dns: { start: 800, end: 1600 },
+                                connect: { start: 900, end: 1800 },
+                                response: { start: 1000, end: 2000 },
+                                dom: { start: 1100, end: 2200 },
+                                domContent: { start: 1200, end: 2400 },
+                                load: { start: 1300, end: 2600 }
+                            }
+                        },
+                        restiming: [
+                            {
+                                name: 'http://example.com/?a=b&c=d',
+                                type: 'css',
+                                timestamps: {
+                                    start: 1400,
+                                    fetchStart: 1500
+                                },
+                                events: {}
+                            }
+                        ]
+                    }, 'referer', 'user agent');
+                });
+
+                teardown(function () {
+                    browser = result = undefined;
+                });
+
+                test('useragent.lookup was called correctly', function () {
+                    assert.strictEqual(log.args.lookup[0][0], 'user agent');
+                });
+
+                test('result was not empty string', function () {
+                    assert.notEqual(result, '');
+                });
+
+                test('result was valid JSON', function () {
+                    assert.doesNotThrow(function () {
+                        JSON.parse(result);
+                    });
+                });
+
+                suite('parse result:', function () {
+                    var data;
+
+                    setup(function () {
+                        data = JSON.parse(result);
+                    });
+
+                    teardown(function () {
+                        data = undefined;
+                    });
+
+                    test('data.log.browser is correct', function () {
+                        assert.strictEqual(data.log.browser.name, 'browser name');
+                        assert.strictEqual(data.log.browser.version, 'browser version');
+                    });
+
+                    test('data.log.pages[0] is correct', function () {
+                        assert.strictEqual(data.log.pages[0].startedDateTime, '1970-01-01T00:00:00.100Z');
+                        assert.strictEqual(data.log.pages[0].title, 'referer');
+                        assert.strictEqual(data.log.pages[0].pageTimings.onContentLoad, 1200);
+                        assert.strictEqual(data.log.pages[0].pageTimings.onLoad, 1300);
+                    });
+
+                    test('data.log.entries has one item', function () {
+                        assert.lengthOf(data.log.entries, 1);
+                    });
+
+                    test('data.log.entries[0] is correct', function () {
+                        assert.strictEqual(data.log.entries[0].startedDateTime, '1970-01-01T00:00:01.400Z');
+                        assert.strictEqual(data.log.entries[0].time, 100);
+                    });
+
+                    test('data.log.entries[0].request is correct', function () {
+                        assert.strictEqual(data.log.entries[0].request.url, 'http://example.com/?a=b&c=d');
+                        assert.lengthOf(data.log.entries[0].request.queryString, 2);
+                        assert.strictEqual(data.log.entries[0].request.queryString[0].name, 'a');
+                        assert.strictEqual(data.log.entries[0].request.queryString[0].value, 'b');
+                        assert.strictEqual(data.log.entries[0].request.queryString[1].name, 'c');
+                        assert.strictEqual(data.log.entries[0].request.queryString[1].value, 'd');
+                    });
+
+                    test('data.log.entries[0].timings is correct', function () {
+                        assert.strictEqual(data.log.entries[0].timings.blocked, 100);
+                        assert.strictEqual(data.log.entries[0].timings.dns, -1);
+                        assert.strictEqual(data.log.entries[0].timings.connect, -1);
+                        assert.strictEqual(data.log.entries[0].timings.send, -1);
+                        assert.strictEqual(data.log.entries[0].timings.wait, 0);
+                        assert.strictEqual(data.log.entries[0].timings.receive, -1);
+                        assert.strictEqual(data.log.entries[0].timings.ssl, -1);
                     });
                 });
             });

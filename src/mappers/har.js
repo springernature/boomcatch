@@ -48,7 +48,9 @@ function map (data, referer, userAgent) {
                 version: packageInfo.version
             },
             browser: getBrowser(userAgent),
-            pages: getPages(data.navtiming),
+            // HACK: The title must be set by the client with BOOMR.addVar(),
+            //       otherwise we fall back to using the page URL.
+            pages: getPages(data.navtiming, data.title || referer),
             entries: getEntries(data.restiming)
         }
     });
@@ -59,18 +61,16 @@ function getBrowser (userAgent) {
 
     return {
         name: browser.family,
-        // TODO: Consider whether to include minor version and patch level?
         version: browser.major
     };
 }
 
-function getPages (data) {
+function getPages (data, title) {
     return [
         {
             startedDateTime: getTime(data.timestamps.start),
             id: '0',
-            // TODO: Add title with BOOMR.addVar()?
-            title: '',
+            title: title || '',
             pageTimings: getPageTimings(data)
         }
     ];
