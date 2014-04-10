@@ -236,7 +236,7 @@ function getForwarder (options) {
 }
 
 function handleRequest (log, path, referer, origin, limit, maxSize, validator, mapper, forwarder, request, response) {
-    var queryIndex, requestPath, state;
+    var requestPath, remoteAddress, state;
 
     logRequest(log, request);
 
@@ -246,8 +246,7 @@ function handleRequest (log, path, referer, origin, limit, maxSize, validator, m
         return fail(log, request, response, 405, 'Invalid method `' + request.method + '`');
     }
 
-    queryIndex = request.url.indexOf('?');
-    requestPath = queryIndex === -1 ? request.url : request.url.substr(0, queryIndex);
+    requestPath = getRequestPath(request);
 
     if (requestPath !== path) {
         return fail(log, request, response, 404, 'Invalid path `' + requestPath + '`');
@@ -261,7 +260,9 @@ function handleRequest (log, path, referer, origin, limit, maxSize, validator, m
         return fail(log, request, response, 415, 'Invalid content type `' + request.headers['content-type'] + '`');
     }
 
-    if (!checkLimit(limit, request)) {
+    remoteAddress = getRemoteAddress(request);
+
+    if (!checkLimit(limit, remoteAddress)) {
         return fail(log, request, response, 429, 'Exceeded rate `' + limit.time + '`');
     }
 
@@ -270,7 +271,7 @@ function handleRequest (log, path, referer, origin, limit, maxSize, validator, m
     };
 
     request.on('data', receive.bind(null, log, state, maxSize, request, response));
-    request.on('end', send.bind(null, log, state, validator, mapper, forwarder, request, response));
+    request.on('end', send.bind(null, log, state, remoteAddress, validator, mapper, forwarder, request, response));
 }
 
 function logRequest (log, request) {
@@ -309,6 +310,12 @@ function fail (log, request, response, status, message) {
     request.socket.destroy();
 }
 
+function getRequestPath (request) {
+    var queryIndex = request.url.indexOf('?');
+
+    return queryIndex === -1 ? request.url : request.url.substr(0, queryIndex);
+}
+
 function isValidContentType (contentType) {
     if (!contentType) {
         return false;
@@ -321,38 +328,37 @@ function isValidContentType (contentType) {
     return isValidContentType(contentType.substr(0, contentType.indexOf(';')));
 }
 
-function checkLimit (limit, request) {
-    var now, address, lastRequest, proxiedAddresses, proxy;
+function getRemoteAddress (request) {
+    var proxiedAddresses = request.headers['x-forwarded-for'], filteredAddresses;
+
+    if (proxiedAddresses) {
+        filteredAddresses = proxiedAddresses.split(',').map(function (address) {
+            return address.trim();
+        }).filter(check.unemptyString);
+
+        if (filteredAddresses.length > 0) {
+            return filteredAddresses[0];
+        }
+    }
+
+    return request.socket.remoteAddress;
+}
+
+function checkLimit (limit, remoteAddress) {
+    var now, lastRequest;
 
     if (limit === null) {
         return true;
     }
 
     now = Date.now();
-    address = request.socket.remoteAddress;
-    lastRequest = limit.requests[address];
-    proxiedAddresses = request.headers['x-forwarded-for'];
-
-    if (check.object(lastRequest)) {
-        proxy = lastRequest;
-        lastRequest = lastRequest[proxiedAddresses || 'self'];
-    }
+    lastRequest = limit.requests[remoteAddress];
 
     if (check.positiveNumber(lastRequest) && now <= lastRequest + limit.time) {
         return false;
     }
 
-    if (proxiedAddresses) {
-        if (!proxy) {
-            proxy = limit.requests[address] = {
-                self: lastRequest
-            };
-        }
-
-        proxy[proxiedAddresses] = now;
-    } else {
-        limit.requests[address] = now;
-    }
+    limit.requests[remoteAddress] = now;
 
     return true;
 }
@@ -369,7 +375,7 @@ function receive (log, state, maxSize, request, response, data) {
     state.body += data;
 }
 
-function send (log, state, validator, mapper, forwarder, request, response) {
+function send (log, state, remoteAddress, validator, mapper, forwarder, request, response) {
     try {
         var successStatus, data, mappedData;
 
@@ -400,7 +406,7 @@ function send (log, state, validator, mapper, forwarder, request, response) {
             throw null;
         }
 
-        mappedData = mapper(normaliseData(data), request.headers.referer);
+        mappedData = mapper(normaliseData(data), request.headers.referer, request.headers['user-agent'], remoteAddress);
         if (mappedData === '') {
             throw null;
         }
@@ -535,7 +541,6 @@ normalisationMaps = {
         ]
     }
 };
-
 
 function normaliseCategory (map, data, startKey) {
     try {
