@@ -134,17 +134,7 @@ suite('mappers/statsd:', function () {
                                 domContent: { start: 21, end: 22 },
                                 load: { start: 23, end: 24 }
                             },
-                            durations: {
-                                unload: 25,
-                                redirect: 26,
-                                dns: 27,
-                                connect: 28,
-                                firstbyte: 29,
-                                lastbyte: 30,
-                                domContent: 31,
-                                dom: 32,
-                                load: 33
-                            },
+                            durations: {},
                             type: 'bar'
                         },
                         restiming: [
@@ -161,13 +151,7 @@ suite('mappers/statsd:', function () {
                                     connect: { start: 42, end: 43 },
                                     response: { start: 44, end: 45 }
                                 },
-                                durations: {
-                                    redirect: 46,
-                                    dns: 47,
-                                    connect: 48,
-                                    firstbyte: 49,
-                                    lastbyte: 50
-                                },
+                                durations: {},
                                 name: 'http://www.example.com/baz',
                                 type: 'css'
                             },
@@ -184,13 +168,7 @@ suite('mappers/statsd:', function () {
                                     connect: { start: 59, end: 60 },
                                     response: { start: 61, end: 62 }
                                 },
-                                durations: {
-                                    redirect: 63,
-                                    dns: 64,
-                                    connect: 65,
-                                    firstbyte: 66,
-                                    lastbyte: 67
-                                },
+                                durations: {},
                                 name: 'http://www.example.com/qux',
                                 type: 'img'
                             }
