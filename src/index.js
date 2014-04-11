@@ -23,7 +23,6 @@ var check = require('check-types'),
     http = require('http'),
     url = require('url'),
     qs = require('qs'),
-    logger = require('get-off-my-log'),
 
 defaults = {
     host: '0.0.0.0',
@@ -33,7 +32,10 @@ defaults = {
     origin: '*',
     limit: 0,
     maxSize: -1,
-    log: function () {},
+    log: {
+        info: function () {},
+        error: function () {}
+    },
     validator: 'permissive',
     mapper: 'statsd',
     forwarder: 'udp'
@@ -55,9 +57,7 @@ normalisationMaps;
  * @option limit {number}        Minimum elapsed time between requests from the same IP
  *                               address. Defaults to 0.
  * @option maxSize {number}      Maximum body size for POST requests.
- * @option log {function}        Log function that expects a single string argument
- *                               (without terminating newline character). Defaults to
- *                               `function () {}`.
+ * @option log {object}          Object with `info` and `error` log functions.
  * @option validator {string}    Validator used to accept or reject beacon requests.
  *                               Defaults to 'permissive'.
  * @option mapper {string}       Data mapper used to transform data before forwarding,
@@ -113,10 +113,10 @@ function verifyOptions (options) {
     check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
-    check.verify.maybe.fn(options.log, 'Invalid log function');
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
 
     verifyOrigin(options.origin);
+    verifyLog(options.log);
 
     verifyMapperOptions(options);
     verifyForwarderOptions(options);
@@ -133,6 +133,15 @@ function verifyOrigin (origin) {
         });
     } else if (origin) {
         throw new Error('Invalid access control origin');
+    }
+}
+
+function verifyLog (log) {
+    check.verify.maybe.object(log, 'Invalid log object');
+
+    if (check.object(log)) {
+        check.verify.fn(log.info, 'Invalid log.info function');
+        check.verify.fn(log.error, 'Invalid log.error function');
     }
 }
 
@@ -157,7 +166,7 @@ function verifyForwarderOptions (options) {
 }
 
 function getLog (options) {
-    return logger.initialise('boomcatch', getOption('log', options));
+    return getOption('log', options);
 }
 
 function getOption (name, options) {

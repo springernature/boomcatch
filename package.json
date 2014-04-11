@@ -37,6 +37,9 @@
         "yamlparser": "0.0.x",
         "request": "2.34.x"
     },
+    "optionalDependencies": {
+        "rconsole": "0.2.x"
+    },
     "devDependencies": {
         "jshint": "2.4.x",
         "mocha": "1.18.x",
