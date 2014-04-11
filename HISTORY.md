@@ -1,5 +1,11 @@
 # History
 
+## 1.2.0
+
+* Tidy up the data format.
+* Implement HTTP archive data mapper.
+* Add support for syslog-compatible logging.
+
 ## 1.1.2
 
 * Implement data chunking in the UDP forwarder.
