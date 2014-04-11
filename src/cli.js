@@ -78,14 +78,10 @@ function runServer () {
 function getLog () {
     if (cli.syslog) {
         initialiseSyslog();
-        return bindLog();
+        return console;
     }
     
     return getFallbackLog();
-}
-
-function bindLog () {
-    return console.log.bind(console);
 }
 
 function initialiseSyslog () {
@@ -108,6 +104,6 @@ function initialiseSyslog () {
 }
 
 function getFallbackLog () {
-    return require('get-off-my-log').initialise('boomcatch', bindLog());
+    return require('get-off-my-log').initialise('boomcatch', console.log);
 }
 
