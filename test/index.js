@@ -536,7 +536,10 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'prefix',
@@ -1735,10 +1738,16 @@ suite('index:', function () {
                     origin: [ 'http://foo', 'http://bar' ],
                     limit: 1000,
                     maxSize: 30,
-                    log: spooks.fn({
-                        name: 'log',
-                        log: log
-                    }),
+                    log: {
+                        info: spooks.fn({
+                            name: 'info',
+                            log: log
+                        }),
+                        error: spooks.fn({
+                            name: 'error',
+                            log: log
+                        })
+                    },
                     validator: 'restrictive',
                     mapper: 'mapper',
                     prefix: 'foo prefix',
@@ -1775,16 +1784,12 @@ suite('index:', function () {
             });
 
             test('log.info was called once', function () {
-                assert.strictEqual(log.counts.log, 1);
-                assert.lengthOf(log.args.log[0], 1);
-                assert.notEqual(log.args.log[0][0].indexOf('INFO'), -1);
+                assert.strictEqual(log.counts.info, 1);
             });
 
             test('log.info was called correctly', function () {
-                assert.strictEqual(
-                    log.args.log[0][0].substr(log.args.log[0][0].indexOf('INFO')),
-                    'INFO boomcatch: listening for 192.168.1.1:8080/foo/bar'
-                );
+                assert.lengthOf(log.args.info[0], 1);
+                assert.strictEqual(log.args.info[0][0], 'listening for 192.168.1.1:8080/foo/bar');
             });
 
             suite('valid request:', function () {
@@ -1837,16 +1842,11 @@ suite('index:', function () {
                 });
 
                 test('log.info was called once', function () {
-                    assert.strictEqual(log.counts.log, 2);
-                    assert.lengthOf(log.args.log[1], 1);
-                    assert.notEqual(log.args.log[1][0].indexOf('INFO'), -1);
+                    assert.strictEqual(log.counts.info, 2);
                 });
 
                 test('log.info was called correctly', function () {
-                    assert.strictEqual(
-                        log.args.log[1][0].substr(log.args.log[1][0].indexOf('INFO')),
-                        'INFO boomcatch: referer=foo.bar.baz.qux address=foo.bar[] method=POST url=/foo/bar'
-                    );
+                    assert.strictEqual(log.args.info[1][0], 'referer=foo.bar.baz.qux address=foo.bar[] method=POST url=/foo/bar');
                 });
 
                 test('request.on was called twice', function () {
