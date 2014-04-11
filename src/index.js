@@ -23,7 +23,6 @@ var check = require('check-types'),
     http = require('http'),
     url = require('url'),
     qs = require('qs'),
-    logger = require('get-off-my-log'),
 
 defaults = {
     host: '0.0.0.0',
@@ -157,7 +156,7 @@ function verifyForwarderOptions (options) {
 }
 
 function getLog (options) {
-    return logger.initialise('boomcatch', getOption('log', options));
+    return getOption('log', options);
 }
 
 function getOption (name, options) {

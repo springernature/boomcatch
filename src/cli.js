@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals require, process */
+/*globals require, process, console */
 
 'use strict';
 
@@ -38,6 +38,7 @@ function parseCommandLine () {
         .option('-l, --limit <milliseconds>', 'minimum elapsed time between requests from the same IP address, default is 0', parseInt)
         .option('-z, --maxSize <bytes>', 'maximum allowable body size for POST requests, default is -1 (unlimited)', parseInt)
         .option('-s, --silent', 'prevent the command from logging output to the console')
+        .option('-y, --syslog <facility>', 'use syslog-compatible logging, with the specified facility level')
         .option('-v, --validator <path>', 'validator to use, default is permissive')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
@@ -68,9 +69,45 @@ function parseOrigin (origin) {
 
 function runServer () {
     if (!cli.silent) {
-        cli.log = console.log.bind(console);
+        cli.log = getLog();
     }
 
     impl.listen(cli);
+}
+
+function getLog () {
+    if (cli.syslog) {
+        initialiseSyslog();
+        return bindLog();
+    }
+    
+    return getFallbackLog();
+}
+
+function bindLog () {
+    return console.log.bind(console);
+}
+
+function initialiseSyslog () {
+    try {
+        require('rconsole');
+
+        console.set({
+            facility: cli.syslog,
+            title: 'boomcatch',
+            stdout: true,
+            stderr: true,
+            showLine: false,
+            showFile: false,
+            showTime: true
+        });
+    } catch (e) {
+        console.log('Failed to initialise syslog, exiting.');
+        process.exit(1);
+    }
+}
+
+function initialiseFallbackLog () {
+    return require('get-off-my-log').initialise('boomcatch', bindLog());
 }
 
