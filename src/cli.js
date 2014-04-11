@@ -107,7 +107,7 @@ function initialiseSyslog () {
     }
 }
 
-function initialiseFallbackLog () {
+function getFallbackLog () {
     return require('get-off-my-log').initialise('boomcatch', bindLog());
 }
 
