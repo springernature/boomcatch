@@ -30,11 +30,7 @@ module.exports = {
     //     * timestamps: milliseconds since the epoch for some event.
     //     * events: an object with `start` and `end` timestamp properties.
     //     * durations: milliseconds difference between the start timestamp and some
-    //                  event's end timestamp.
-    //
-    // There is some duplication in the information available from events and durations.
-    // Events are lower-level / more information-rich than durations, whereas durations
-    // are higher-level / less information-rich than events.
+    //                  other point.
     rt: {
         timestamps: [ 'start' ],
         events: [],
@@ -43,12 +39,12 @@ module.exports = {
     navtiming: {
         timestamps: [ 'start', 'fetchStart', 'sslStart', 'requestStart', 'domInteractive' ],
         events: [ 'unload', 'redirect', 'dns', 'connect', 'response', 'dom', 'domContent', 'load' ],
-        durations: [ 'unload', 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte', 'dom', 'domContent', 'load' ]
+        durations: []
     },
     restiming: {
         timestamps: [ 'start', 'fetchStart', 'sslStart', 'requestStart' ],
         events: [ 'redirect', 'dns', 'connect', 'response' ],
-        durations: [ 'redirect', 'dns', 'connect', 'firstbyte', 'lastbyte' ]
+        durations: []
     }
 };
 

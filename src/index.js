@@ -455,6 +455,7 @@ function normaliseRtData (data) {
             timestamps: {
                 start: start
             },
+            events: {},
             durations: {
                 firstbyte: timeToFirstByte,
                 lastbyte: timeToLastByte,
@@ -507,17 +508,7 @@ normalisationMaps = {
             { start: 'nt_domcontloaded_st', end: 'nt_domcontloaded_end', name: 'domContent' },
             { start: 'nt_load_st', end: 'nt_load_end', name: 'load' }
         ],
-        durations: [
-            { end: 'nt_unload_end', name: 'unload' },
-            { end: 'nt_red_end', name: 'redirect' },
-            { end: 'nt_dns_end', name: 'dns' },
-            { end: 'nt_con_end', name: 'connect' },
-            { end: 'nt_res_st', name: 'firstbyte' },
-            { end: 'nt_res_end', name: 'lastbyte' },
-            { end: 'nt_domcontloaded_end', name: 'domContent' },
-            { end: 'nt_domcomp', name: 'dom' },
-            { end: 'nt_load_end', name: 'load' }
-        ]
+        durations: []
     },
     restiming: {
         timestamps: [
@@ -532,13 +523,7 @@ normalisationMaps = {
             { start: 'rt_con_st', end: 'rt_con_end', name: 'connect', optional: true },
             { start: 'rt_res_st', end: 'rt_res_end', name: 'response', optional: true }
         ],
-        durations: [
-            { end: 'rt_red_end', name: 'redirect', optional: true },
-            { end: 'rt_dns_end', name: 'dns', optional: true },
-            { end: 'rt_con_end', name: 'connect', optional: true },
-            { end: 'rt_res_st', name: 'firstbyte', optional: true },
-            { end: 'rt_res_end', name: 'lastbyte', optional: true }
-        ]
+        durations: []
     }
 };
 
