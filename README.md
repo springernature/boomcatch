@@ -85,6 +85,10 @@ Available options are:
   from logging output
   to the console.
 
+* `--syslog <facility>`:
+  Use [syslog]-compatible logging,
+  with the specified facility level.
+
 * `--validator <path>`:
   Validator used to accept or reject request data.
   The default is permissive
@@ -168,9 +172,10 @@ Mappers are used
 to transform data
 into appropriate formats
 for back-end stats consumers.
-Currently, one mapper is available out-of-the-box,
-which formats the metrics
-as [statsd] timers.
+Currently, two mappers are available out-of-the-box,
+which format the metrics
+as [statsd] timers
+or as a reduced subset [HTTP archive][har].
 
 Defining a custom data mapper
 is straightforward.
@@ -340,7 +345,9 @@ Copyright © 2014 Nature Publishing Group
 [ci-status]: http://travis-ci.org/#!/nature/boomcatch
 [node]: http://nodejs.org/download/
 [require]: http://nodejs.org/api/globals.html#globals_require
+[syslog]: http://en.wikipedia.org/wiki/Syslog
 [statsd]: https://github.com/etsy/statsd/
+[har]: http://www.softwareishard.com/blog/har-12-spec/
 [mapper]: https://github.com/nature/boomcatch/blob/master/src/mappers/statsd.js
 [forwarder]: https://github.com/nature/boomcatch/blob/master/src/forwarders/udp.js
 [contrib]: https://github.com/nature/boomcatch/blob/master/CONTRIBUTING.md
