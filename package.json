@@ -45,11 +45,12 @@
         "mocha": "1.18.x",
         "chai": "1.9.x",
         "mockery": "1.4.x",
-        "spooks": "0.5.x"
+        "spooks": "0.5.x",
+        "istanbul": "0.2.x"
     },
     "scripts": {
         "lint": "./node_modules/.bin/jshint src --config .jshintrc",
-        "test": "./node_modules/.bin/mocha --ui tdd --reporter spec --recursive --colors test"
+        "test": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --ui tdd --reporter spec --recursive --colors test"
     }
 }
 
