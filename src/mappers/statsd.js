@@ -19,8 +19,7 @@
 
 'use strict';
 
-var check = require('check-types'),
-    metrics = require('../metrics');
+var check = require('check-types');
 
 module.exports = {
     initialise: function (options) {
@@ -44,7 +43,7 @@ function normalisePrefix (prefix) {
 function map (prefix, data, referer) {
     var result = '', mapper;
 
-    Object.keys(metrics).forEach(function (category) {
+    Object.keys(data).forEach(function (category) {
         if (category === 'restiming') {
             mapper = mapRestimingMetrics;
         } else {
@@ -52,16 +51,16 @@ function map (prefix, data, referer) {
         }
 
         if (data[category]) {
-            result += mapper(metrics[category], prefix + category + '.', data[category], referer);
+            result += mapper(prefix + category + '.', data[category], referer);
         }
     });
 
     return result;
 }
 
-function mapRestimingMetrics (metrics, prefix, data, referer) {
+function mapRestimingMetrics (prefix, data, referer) {
     return data.map(function (resource, index) {
-        return mapMetrics(metrics, [
+        return mapMetrics([
             prefix + base36Encode(referer),
             index,
             resource.type,
@@ -76,13 +75,12 @@ function base36Encode (string) {
     }).join('');
 }
 
-function mapMetrics (metrics, prefix, data) {
-    return mapEvents(metrics, prefix, data) +
-           mapDurations(metrics, prefix, data);
+function mapMetrics (prefix, data) {
+    return mapEvents(prefix, data) + mapDurations(prefix, data);
 }
 
-function mapEvents (metrics, prefix, data) {
-    return metrics.events.map(function (metric) {
+function mapEvents (prefix, data) {
+    return Object.keys(data.events).map(function (metric) {
         var datum = data.events[metric];
 
         if (check.object(datum)) {
@@ -97,8 +95,8 @@ function mapMetric (prefix, name, value) {
     return prefix + name + ':' + value + '|ms' + '\n';
 }
 
-function mapDurations (metrics, prefix, data) {
-    return metrics.durations.map(function (metric) {
+function mapDurations (prefix, data) {
+    return Object.keys(data.durations).map(function (metric) {
         var datum = data.durations[metric];
 
         if (check.number(datum)) {
