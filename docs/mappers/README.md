@@ -61,6 +61,27 @@ are, in order:
    IP address of the client
    that sent the beacon request.
 
+The result of
+the mapper function
+should be a string
+containing the mapped data.
+
+In addition to
+the `initialise` function,
+mappers may optionally expose
+a `separator` property,
+which can be used by forwarders
+to ensure sane data-chunking behaviour
+in the event that
+they are required
+to break data
+across multiple packets
+before sending it on.
+For example,
+the `statsd` mapper
+defines `separator`
+as `'\n'`.
+
 [option]: ../../README.md#from-the-command-line
 [statsd]: statsd.md
 [har]: har.md
