@@ -1,6 +1,7 @@
 # Mappers
 
-Mappers are the third type of extension point,
+Mappers are the third stage
+of the extension pipeline,
 called after validators and filters
 but before forwarders.
 Their purpose is to transform beacon data
