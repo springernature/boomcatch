@@ -82,7 +82,7 @@ function mapMetric (prefix, name, value) {
 function mapNavtimingData (prefix, data) {
     return mapMetric(prefix, 'dns', data.events.dns.end - data.timestamps.start) +
            mapMetric(prefix, 'firstbyte', data.events.response.start - data.timestamps.start) +
-           mapMetric(prefix, 'dom', data.events.domContent.start - data.timestamps.start) +
+           mapMetric(prefix, 'domload', data.events.domContent.start - data.timestamps.start) +
            mapMetric(prefix, 'load', data.events.load.start - data.timestamps.start);
 }
 
