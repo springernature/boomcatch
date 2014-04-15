@@ -68,3 +68,13 @@ and `durations`:
   between the `start` timestamp
   and some other point.
 
+Grouping
+the different types of metric
+in this way
+enables data mappers
+to be implemented
+without requiring
+magical knowledge
+about the metric names
+exported by each plugin.
+
