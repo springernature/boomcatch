@@ -12,8 +12,8 @@ The choice of mapper
 can be specified at the command line,
 using the `-m` [option].
 
-Two mappers are availble out-of-the-box,
-[statsd] and [har].
+Three mappers are availble out-of-the-box,
+[statsd], [statsd-npg] and [har].
 
 Defining custom mappers is simple.
 The [source code for the statsd mapper][src]
@@ -85,6 +85,7 @@ as `'\n'`.
 
 [option]: ../../README.md#from-the-command-line
 [statsd]: statsd.md
+[statsd-npg]: statsd-npg.md
 [har]: har.md
 [src]: ../../src/mappers/statsd.js
 [format]: ../data.md
