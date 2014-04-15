@@ -2,7 +2,8 @@
 
 The statsd mapper
 transforms beacon data
-into [statsd] [timers].
+into [statsd]
+[timers].
 It accepts one option,
 `prefix`
 (`--prefix`
