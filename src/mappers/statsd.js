@@ -41,9 +41,11 @@ function normalisePrefix (prefix) {
 }
 
 function map (prefix, data, referer) {
-    var result = '', mapper;
+    var result = '';
 
     Object.keys(data).forEach(function (category) {
+        var mapper;
+
         if (category === 'restiming') {
             mapper = mapRestimingMetrics;
         } else {
