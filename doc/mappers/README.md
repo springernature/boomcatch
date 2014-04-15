@@ -2,8 +2,8 @@
 
 Mappers are the third stage
 of the extension pipeline,
-called after validators and filters
-but before forwarders.
+called after [validators] and [filters]
+but before [forwarders].
 Their purpose is to transform beacon data
 into an appropriate format
 to be consumed by some other process.
@@ -83,6 +83,9 @@ the `statsd` mapper
 defines `separator`
 as `'\n'`.
 
+[validators]: ../validators/README.md
+[filters]: ../filters/README.md
+[forwarders]: ../forwarders/README.md
 [option]: ../../README.md#from-the-command-line
 [statsd]: statsd.md
 [statsd-npg]: statsd-npg.md
