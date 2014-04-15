@@ -5,9 +5,7 @@ transforms beacon data
 into [statsd][statsd] [timers][timers].
 It accepts one option,
 `prefix`
-(`--prefix`
-or `-x`
-from the command line),
+(`-x` from the command line),
 which allows you
 to specify
 a namespace
