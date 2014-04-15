@@ -1,5 +1,9 @@
 # History
 
+## 1.2.1
+
+* Add a statsd/NPG mapper.
+
 ## 1.2.0
 
 * Tidy up the data format.
