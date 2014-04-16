@@ -55,6 +55,18 @@ suite('index:', function () {
                 })
             }
         }));
+        mockery.registerMock('./filters/unfiltered', spooks.obj({
+            archetype: { initialise: nop },
+            log: log,
+            results: {
+                initialise: function (data) {
+                    log.counts.filter += 1;
+                    log.args.filter.push(arguments);
+                    log.these.filter.push(this);
+                    return data;
+                }
+            }
+        }));
         mockery.registerMock('./mappers/statsd', spooks.obj({
             archetype: { initialise: nop },
             log: log,
@@ -86,6 +98,17 @@ suite('index:', function () {
                     log.args.validator.push(arguments);
                     return !restrict;
                 }
+            }
+        }));
+        mockery.registerMock('./filters/filtered', spooks.obj({
+            archetype: { initialise: nop },
+            log: log,
+            results: {
+                initialise: spooks.fn({
+                    name: 'filter',
+                    log: log,
+                    result: {}
+                })
             }
         }));
         mockery.registerMock('./mappers/mapper', spooks.obj({
@@ -126,9 +149,11 @@ suite('index:', function () {
         mockery.deregisterMock('./mappers/failing');
         mockery.deregisterMock('./forwarders/forwarder');
         mockery.deregisterMock('./mappers/mapper');
+        mockery.deregisterMock('./filters/filtered');
         mockery.deregisterMock('./validators/restrictive');
         mockery.deregisterMock('./forwarders/udp');
         mockery.deregisterMock('./mappers/statsd');
+        mockery.deregisterMock('./filters/unfiltered');
         mockery.deregisterMock('./validators/permissive');
         mockery.deregisterMock('http');
         mockery.disable();
@@ -583,7 +608,7 @@ suite('index:', function () {
             });
 
             test('?.initialise was called three times', function () {
-                assert.strictEqual(log.counts.initialise, 3);
+                assert.strictEqual(log.counts.initialise, 4);
             });
 
             test('validator.initialise was called correctly', function () {
@@ -592,19 +617,25 @@ suite('index:', function () {
                 assert.isObject(log.args.initialise[0][0]);
             });
 
-            test('mapper.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[1], require('./mappers/statsd'));
+            test('filter.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[1], require('./filters/unfiltered'));
                 assert.lengthOf(log.args.initialise[1], 1);
                 assert.isObject(log.args.initialise[1][0]);
-                assert.isUndefined(log.args.initialise[1][0].prefix);
+            });
+
+            test('mapper.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[2], require('./mappers/statsd'));
+                assert.lengthOf(log.args.initialise[2], 1);
+                assert.isObject(log.args.initialise[2][0]);
+                assert.isUndefined(log.args.initialise[2][0].prefix);
             });
 
             test('forwarder.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[2], require('./forwarders/udp'));
-                assert.lengthOf(log.args.initialise[2], 1);
-                assert.isObject(log.args.initialise[2][0]);
-                assert.isUndefined(log.args.initialise[2][0].fwdHost);
-                assert.isUndefined(log.args.initialise[2][0].fwdPort);
+                assert.strictEqual(log.these.initialise[3], require('./forwarders/udp'));
+                assert.lengthOf(log.args.initialise[3], 1);
+                assert.isObject(log.args.initialise[3][0]);
+                assert.isUndefined(log.args.initialise[3][0].fwdHost);
+                assert.isUndefined(log.args.initialise[3][0].fwdPort);
             });
 
             test('http.createServer was called once', function () {

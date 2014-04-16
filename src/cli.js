@@ -40,6 +40,7 @@ function parseCommandLine () {
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-y, --syslog <facility>', 'use syslog-compatible logging, with the specified facility level')
         .option('-v, --validator <path>', 'validator to use, default is permissive')
+        .option('-i, --filter <path>', 'filter to use, default is unfiltered')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
         .option('-f, --forwarder <path>', 'forwarder to use, default is udp')
