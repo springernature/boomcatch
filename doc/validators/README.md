@@ -7,6 +7,11 @@ Their purpose is to check
 the request,
 then signal whether
 to continue processing or fail.
+A common reason
+to define your own validator
+is to implement nonce validation,
+as a preventative measure
+against denial-of-service attacks.
 If the validator returns `true`,
 processing continues
 and the remaining extensions

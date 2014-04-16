@@ -166,138 +166,19 @@ boomcatch.listen({
 });
 ```
 
-### Data mappers
+### Extensions
 
-Mappers are used
-to transform data
-into appropriate formats
-for back-end stats consumers.
-Currently, two mappers are available out-of-the-box,
-which format the metrics
-as [statsd] timers
-or as a reduced subset [HTTP archive][har].
+Boomcatch implements
+four extension points
+to control
+how beacon requests
+are handled:
+validators,
+filters,
+mappers
+and forwarders.
 
-Defining a custom data mapper
-is straightforward.
-The [source code for the statsd mapper][mapper]
-should be easy to follow,
-but the basic pattern
-is to export an interface
-that looks like this:
-
-```javscript
-{
-    initialise: function (options) {
-    },
-    separator: '\n'
-}
-```
-
-The `initialise` function
-should return a function
-that is passed a data object
-and a referring URL
-as parameters,
-and returns the mapped data
-as its result.
-The optional separator property
-should be a string
-that can be used by the UDP forwarder
-to ensure that,
-if data must be split
-into multiple packets,
-it can be done at suitable points in the data.
-
-If you then specify
-the path to your new mapper
-with the `mapper` option,
-a first attempt to load it
-is made relative
-to this project's `src/mappers` directory.
-When that call to `require` fails,
-a second attempt will be made
-using the path that you specified verbatim.
-
-### Data forwarders
-
-Forwarders are used
-to send mapped data
-to back-end stats consumers.
-At the moment, two forwarders are implemented,
-dispatching the data over UDP or HTTP.
-
-Defining a custom forwarder
-is similar to
-[defining a custom mapper](#data-mappers)
-and can be seen
-in the [source code for the udp forwarder][forwarder].
-The module should export
-an interface that looks like this:
-
-```javscript
-{
-    initialise: function (options) {
-    }
-}
-```
-
-In this case,
-the `initialise` function
-should return a function
-that is passed
-the mapped data,
-an optional data-chunking separator
-and a callback function
-as its three parameters.
-When the forwarding process has completed,
-the callback function should be invoked,
-following the node.js convention
-of the first argument containing any error,
-or a falsey value if things went okay.
-The second argument should contain
-the number of bytes that were sent.
-
-Once your custom forwarder is ready,
-you can specify the path to it
-using the `forwarder` option.
-
-### Request validators
-
-Validators are used
-to test whether each request
-should be accepted or rejected.
-Typically, they check
-for the presence
-of a valid nonce
-in the query string,
-as a preventative measure
-against denial-of-service attacks.
-One validator is available out-of-the-box,
-which simply accepts all requests.
-
-As with mappers and forwarders,
-defining your own validator is easy
-and the basic interface
-looks the same:
-
-```javscript
-{
-    initialise: function (options) {
-    }
-}
-```
-
-Here,
-the `initialise` function
-should return a function
-that receives an object
-representing the parsed query string
-and returns either `true` or `false`,
-signifying that the request
-is valid or invalid respectively.
-
-Requests that are identified as invalid
-will fail with an HTTP 400 status.
+[Read more about them here][extensions].
 
 ## Development
 
@@ -344,13 +225,10 @@ Copyright © 2014 Nature Publishing Group
 [ci-image]: https://secure.travis-ci.org/nature/boomcatch.png?branch=master
 [ci-status]: http://travis-ci.org/#!/nature/boomcatch
 [node]: http://nodejs.org/download/
-[require]: http://nodejs.org/api/globals.html#globals_require
 [syslog]: http://en.wikipedia.org/wiki/Syslog
-[statsd]: https://github.com/etsy/statsd/
-[har]: http://www.softwareishard.com/blog/har-12-spec/
-[mapper]: https://github.com/nature/boomcatch/blob/master/src/mappers/statsd.js
-[forwarder]: https://github.com/nature/boomcatch/blob/master/src/forwarders/udp.js
-[contrib]: https://github.com/nature/boomcatch/blob/master/CONTRIBUTING.md
-[history]: https://github.com/nature/boomcatch/blob/master/HISTORY.md
-[license]: https://github.com/nature/boomcatch/blob/master/COPYING
+[require]: http://nodejs.org/api/globals.html#globals_require
+[extensions]: doc/extensions.md
+[contrib]: CONTRIBUTING.md
+[history]: HISTORY.md
+[license]: COPYING
 
