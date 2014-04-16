@@ -44,6 +44,22 @@ are:
    by sending the mapped data
    onto another process.
 
+In each case,
+extensions are loaded with `require`,
+employing a two-pass approach
+to enable loading of custom extensions.
+The first attempt is made
+with the relevant extension directory
+prefixed to the module path.
+If that attempt throws,
+a second attempt is made
+using the specified module path verbatim.
+Thus,
+standard extensions
+will be loaded on the first attempt
+and custom extensions
+will be loaded on the second.
+
 [validators]: validators/README.md
 [option]: ../README.md#from-the-command-line
 [filters]: filters/README.md
