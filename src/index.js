@@ -386,7 +386,7 @@ function receive (log, state, maxSize, request, response, data) {
 
 function send (log, state, remoteAddress, validator, mapper, forwarder, request, response) {
     try {
-        var successStatus, data, mappedData;
+        var successStatus, data, referer, userAgent, mappedData;
 
         if (state.failed) {
             return;
@@ -411,11 +411,14 @@ function send (log, state, remoteAddress, validator, mapper, forwarder, request,
             }
         }
 
-        if (!validator(data)) {
+        referer = request.headers.referer;
+        userAgent = request.headers['user-agent'];
+
+        if (!validator(data, referer, userAgent, remoteAddress)) {
             throw null;
         }
 
-        mappedData = mapper(normaliseData(data), request.headers.referer, request.headers['user-agent'], remoteAddress);
+        mappedData = mapper(normaliseData(data), referer, userAgent, remoteAddress);
         if (mappedData === '') {
             throw null;
         }
