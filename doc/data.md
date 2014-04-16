@@ -1,7 +1,7 @@
 # Data
 
 Before being passed through
-the extension pipeline,
+the [extension pipeline][extensions],
 data from each beacon request
 is normalised into a uniform structure
 that lends itself better
@@ -71,10 +71,13 @@ and `durations`:
 Grouping
 the different types of metric
 in this way
-enables data mappers
+enables [data mappers][mappers]
 to be implemented
 without requiring
 magical knowledge
 about the metric names
 exported by each plugin.
+
+[extensions]: extensions.md
+[mappers]: mappers/README.md
 
