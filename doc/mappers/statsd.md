@@ -59,7 +59,7 @@ The mapping of
 resource timing data
 is currently somewhat experimental
 and liable to change
-in a future version.
+in future versions.
 It features a
 base-36 encoding
 of page and resource URLs,
