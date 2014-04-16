@@ -11,7 +11,6 @@ to be consumed by some other process.
 The choice of mapper
 can be specified at the command line,
 using the `-m` [option].
-
 Three mappers are availble out-of-the-box,
 [statsd], [statsd-npg] and [har].
 
