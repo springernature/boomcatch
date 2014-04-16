@@ -18,7 +18,7 @@ with HTTP status 400.
 
 The choice of validator
 can be specified on the command line
-with the `-v` option.
+with the `-v` [option].
 One validator is available
 by default,
 `permissive`,
@@ -83,6 +83,7 @@ if the request is okay,
 [filters]: ../filters/README.md
 [mappers]: ../mappers/README.md
 [forwarders]: ../forwarders/README.md
+[option]: ../../README.md#from-the-command-line
 [normalised]: ../data.md
 
 
