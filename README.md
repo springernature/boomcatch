@@ -166,7 +166,7 @@ boomcatch.listen({
 });
 ```
 
-### Extensions
+## Extensions
 
 Boomcatch implements
 four extension points
