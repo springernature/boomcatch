@@ -3,7 +3,7 @@
 Forwarders are the fourth
 and final
 stage of the
-extension pipeline,
+[extension pipeline][extensions],
 after
 [validators],
 [filters]
@@ -86,6 +86,7 @@ are, in order:
    the number of bytes
    that were sent.
 
+[extensions]: ../extensions.md
 [validators]: ../validators/README.md
 [filters]: ../filters/README.md
 [mappers]: ../mappers/README.md
