@@ -21,19 +21,16 @@ are:
    or fail the request.
 
 2. [Filters]:
-   This extension point
-   isn't actually implemented yet.
-   When it's done,
-   it will enable you
-   to filter out
+   These functions
+   filter out
    unwanted parts
-   of the data
+   of the [normalised data][data]
    before it is passed
    to the mapper.
 
 3. [Mappers]:
    These functions
-   transform the [normalised data][data]
+   transform the data
    into a format
    suitable for consumption
    by some other process.
@@ -63,7 +60,7 @@ will be loaded on the second.
 [validators]: validators/README.md
 [option]: ../README.md#from-the-command-line
 [filters]: filters/README.md
-[mappers]: mappers/README.md
 [data]: data.md
+[mappers]: mappers/README.md
 [forwarders]: forwarders/README.md
 
