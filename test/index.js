@@ -607,7 +607,7 @@ suite('index:', function () {
                 boomcatch.listen();
             });
 
-            test('?.initialise was called three times', function () {
+            test('?.initialise was called four times', function () {
                 assert.strictEqual(log.counts.initialise, 4);
             });
 
@@ -1780,6 +1780,7 @@ suite('index:', function () {
                         })
                     },
                     validator: 'restrictive',
+                    filter: 'filtered',
                     mapper: 'mapper',
                     prefix: 'foo prefix',
                     forwarder: 'forwarder',
@@ -1789,8 +1790,8 @@ suite('index:', function () {
                 });
             });
 
-            test('?.initialise was called twice', function () {
-                assert.strictEqual(log.counts.initialise, 3);
+            test('?.initialise was called four times', function () {
+                assert.strictEqual(log.counts.initialise, 4);
             });
 
             test('validator.initialise was called correctly', function () {
@@ -1798,15 +1799,20 @@ suite('index:', function () {
                 assert.isObject(log.args.initialise[0][0]);
             });
 
+            test('filter.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[1], require('./filters/filtered'));
+                assert.isObject(log.args.initialise[1][0]);
+            });
+
             test('mapper.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[1], require('./mappers/mapper'));
-                assert.strictEqual(log.args.initialise[1][0].prefix, 'foo prefix');
+                assert.strictEqual(log.these.initialise[2], require('./mappers/mapper'));
+                assert.strictEqual(log.args.initialise[2][0].prefix, 'foo prefix');
             });
 
             test('forwarder.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[2], require('./forwarders/forwarder'));
-                assert.strictEqual(log.args.initialise[2][0].fwdHost, 'bar host');
-                assert.strictEqual(log.args.initialise[2][0].fwdPort, 1234);
+                assert.strictEqual(log.these.initialise[3], require('./forwarders/forwarder'));
+                assert.strictEqual(log.args.initialise[3][0].fwdHost, 'bar host');
+                assert.strictEqual(log.args.initialise[3][0].fwdPort, 1234);
             });
 
             test('http.listen was called correctly', function () {
@@ -1898,13 +1904,35 @@ suite('index:', function () {
                             log.args.on[1][1]();
                         });
 
+                        test('validator was called once', function () {
+                            assert.strictEqual(log.counts.validator, 1);
+                        });
+
+                        test('validator was called correctly', function () {
+                            assert.isObject(log.args.validator[0][0]);
+                            assert.lengthOf(Object.keys(log.args.validator[0][0]), 2);
+                            assert.strictEqual(log.args.validator[0][0].r, 'wibble');
+                            assert.strictEqual(log.args.validator[0][0].t_done, '100');
+                        });
+
+                        test('filter was called once', function () {
+                            assert.strictEqual(log.counts.filter, 1);
+                        });
+
+                        test('filter was called correctly', function () {
+                            assert.isObject(log.args.filter[0][0]);
+                            assert.isObject(log.args.filter[0][0].rt);
+                            assert.strictEqual(log.args.filter[0][0].rt.url, 'wibble');
+                            assert.strictEqual(log.args.filter[0][0].rt.durations.load, 100);
+                        });
+
                         test('mapper was called once', function () {
                             assert.strictEqual(log.counts.mapper, 1);
                         });
 
                         test('mapper was called correctly', function () {
-                            assert.strictEqual(log.args.mapper[0][0].rt.url, 'wibble');
-                            assert.strictEqual(log.args.mapper[0][0].rt.durations.load, 100);
+                            assert.isObject(log.args.mapper[0][0]);
+                            assert.lengthOf(Object.keys(log.args.mapper[0][0]), 0);
                         });
 
                         test('forwarder was called once', function () {
@@ -2558,12 +2586,12 @@ suite('index:', function () {
                 boomcatch.listen({ mapper: 'failing' });
             });
 
-            test('?.initialise was called three times', function () {
-                assert.strictEqual(log.counts.initialise, 3);
+            test('?.initialise was called four times', function () {
+                assert.strictEqual(log.counts.initialise, 4);
             });
 
             test('mapper.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[1], require('./mappers/failing'));
+                assert.strictEqual(log.these.initialise[2], require('./mappers/failing'));
             });
 
             suite('valid request:', function () {
