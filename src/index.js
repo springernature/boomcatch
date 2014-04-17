@@ -37,6 +37,7 @@ defaults = {
         error: function () {}
     },
     validator: 'permissive',
+    filter: 'unfiltered',
     mapper: 'statsd',
     forwarder: 'udp'
 },
@@ -58,8 +59,10 @@ normalisationMaps;
  *                               address. Defaults to 0.
  * @option maxSize {number}      Maximum body size for POST requests.
  * @option log {object}          Object with `info` and `error` log functions.
- * @option validator {string}    Validator used to accept or reject beacon requests.
- *                               Defaults to 'permissive'.
+ * @option validator {string}    Validator used to accept or reject beacon requests,
+ *                               loaded with `require`. Defaults to 'permissive'.
+ * @option filter {string}       Filter used to purge unwanted data, loaded with `require`.
+ *                               Defaults to `unfiltered`.
  * @option mapper {string}       Data mapper used to transform data before forwarding,
  *                               loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
@@ -72,7 +75,7 @@ normalisationMaps;
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  */
 exports.listen = function (options) {
-    var log, path, host, port, mapper, forwarder, validator;
+    var log, path, host, port, validator, filter, mapper, forwarder;
 
     if (options) {
         verifyOptions(options);
@@ -85,6 +88,7 @@ exports.listen = function (options) {
     host = getHost(options);
     port = getPort(options);
     validator = getValidator(options);
+    filter = getFilter(options);
     mapper = getMapper(options);
     forwarder = getForwarder(options);
 
@@ -100,6 +104,7 @@ exports.listen = function (options) {
             getLimit(options),
             getMaxSize(options),
             validator,
+            filter,
             mapper,
             forwarder
         )
@@ -236,6 +241,10 @@ function getExtension (type, options, properties) {
     return result;
 }
 
+function getFilter (options) {
+    return getExtension('filter', options);
+}
+
 function getMapper (options) {
     return getExtension('mapper', options, ['separator']);
 }
@@ -244,7 +253,7 @@ function getForwarder (options) {
     return getExtension('forwarder', options);
 }
 
-function handleRequest (log, path, referer, origin, limit, maxSize, validator, mapper, forwarder, request, response) {
+function handleRequest (log, path, referer, origin, limit, maxSize, validator, filter, mapper, forwarder, request, response) {
     var requestPath, remoteAddress, state;
 
     logRequest(log, request);
@@ -280,7 +289,7 @@ function handleRequest (log, path, referer, origin, limit, maxSize, validator, m
     };
 
     request.on('data', receive.bind(null, log, state, maxSize, request, response));
-    request.on('end', send.bind(null, log, state, remoteAddress, validator, mapper, forwarder, request, response));
+    request.on('end', send.bind(null, log, state, remoteAddress, validator, filter, mapper, forwarder, request, response));
 }
 
 function logRequest (log, request) {
@@ -384,7 +393,7 @@ function receive (log, state, maxSize, request, response, data) {
     state.body += data;
 }
 
-function send (log, state, remoteAddress, validator, mapper, forwarder, request, response) {
+function send (log, state, remoteAddress, validator, filter, mapper, forwarder, request, response) {
     try {
         var successStatus, data, referer, userAgent, mappedData;
 
@@ -418,7 +427,7 @@ function send (log, state, remoteAddress, validator, mapper, forwarder, request,
             throw null;
         }
 
-        mappedData = mapper(normaliseData(data), referer, userAgent, remoteAddress);
+        mappedData = mapper(filter(normaliseData(data)), referer, userAgent, remoteAddress);
         if (mappedData === '') {
             throw null;
         }

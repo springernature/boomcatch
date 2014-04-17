@@ -1,7 +1,7 @@
 # Mappers
 
 Mappers are the third stage
-of the extension pipeline,
+of the [extension pipeline][extensions],
 called after [validators] and [filters]
 but before [forwarders].
 Their purpose is to transform beacon data
@@ -46,8 +46,7 @@ passed to the mapper
 are, in order:
 
 1. `data`:
-   Beacon data,
-   in the boomcatch [normalised format][format].
+   [Normalised] and filtered data.
 
 2. `referer`:
    URL of the page
@@ -82,6 +81,7 @@ the `statsd` mapper
 defines `separator`
 as `'\n'`.
 
+[extensions]: ../extensions.md
 [validators]: ../validators/README.md
 [filters]: ../filters/README.md
 [forwarders]: ../forwarders/README.md
@@ -90,5 +90,5 @@ as `'\n'`.
 [statsd-npg]: statsd-npg.md
 [har]: har.md
 [src]: ../../src/mappers/statsd.js
-[format]: ../data.md
+[normalisaed]: ../data.md
 
