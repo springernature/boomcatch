@@ -1,5 +1,10 @@
 # History
 
+## 1.3.0
+
+* Implement filters.
+* Document extensions and data format.
+
 ## 1.2.1
 
 * Add a statsd/NPG mapper.
