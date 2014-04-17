@@ -427,7 +427,7 @@ suite('index:', function () {
                     limit: 100,
                     maxSize: 1024,
                     log: function () {},
-                    validator: 'restricted',
+                    validator: 'restrictive',
                     filter: '',
                     mapper: 'mapper',
                     prefix: 'prefix',
