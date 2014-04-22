@@ -1934,7 +1934,7 @@ suite('index:', function () {
 
                 suite('receive valid body data:', function () {
                     setup(function () {
-                        log.args.on[0][1]('data=t_done%3D100%26r%3Dwibble');
+                        log.args.on[0][1]('data=t_done%3D100%26r%3D');
                     });
 
                     test('response.setHeader was not called', function () {
@@ -1953,7 +1953,7 @@ suite('index:', function () {
                         test('validator was called correctly', function () {
                             assert.isObject(log.args.validator[0][0]);
                             assert.lengthOf(Object.keys(log.args.validator[0][0]), 2);
-                            assert.strictEqual(log.args.validator[0][0].r, 'wibble');
+                            assert.strictEqual(log.args.validator[0][0].r, '');
                             assert.strictEqual(log.args.validator[0][0].t_done, '100');
                         });
 
@@ -1964,7 +1964,7 @@ suite('index:', function () {
                         test('filter was called correctly', function () {
                             assert.isObject(log.args.filter[0][0]);
                             assert.isObject(log.args.filter[0][0].rt);
-                            assert.strictEqual(log.args.filter[0][0].rt.url, 'wibble');
+                            assert.strictEqual(log.args.filter[0][0].rt.url, '');
                             assert.strictEqual(log.args.filter[0][0].rt.durations.load, 100);
                         });
 
