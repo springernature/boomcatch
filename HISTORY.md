@@ -1,5 +1,9 @@
 # History
 
+## 1.3.1
+
+* Fix overly-strict data checks in normalisation routines.
+
 ## 1.3.0
 
 * Implement filters.
