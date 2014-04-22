@@ -469,8 +469,7 @@ function normaliseRtData (data) {
         check.maybe.positiveNumber(start) &&
         check.maybe.positiveNumber(timeToFirstByte) &&
         check.maybe.positiveNumber(timeToLastByte) &&
-        check.positiveNumber(timeToLoad) &&
-        check.unemptyString(data.r)
+        check.positiveNumber(timeToLoad)
     ) {
         return {
             timestamps: {
@@ -588,8 +587,10 @@ function normaliseEvents (map, data) {
         }
 
         verify = event.optional ? check.verify.maybe : check.verify;
-        verify.positiveNumber(start);
-        verify.positiveNumber(end);
+        verify.number(start);
+        check.verify.not.negativeNumber(start);
+        verify.number(end);
+        check.verify.not.negativeNumber(end);
 
         if (start && end) {
             result[event.name] = {
