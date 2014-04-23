@@ -7,7 +7,7 @@ beacon server for [boomerang].
 
 [![Build status][ci-image]][ci-status]
 
-* **boomcatch version**: *1.3.1*
+* **boomcatch version**: *1.3.2*
 * **node.js versions**: *0.8, 0.10, 0.11*
 
 ## Installation
