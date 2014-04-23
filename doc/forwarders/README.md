@@ -18,10 +18,11 @@ can be specified
 at the command line,
 using the `-f` [option].
 
-Two forwarders
+Three forwarders
 are available out-of-the-box,
-[udp]
-and [http].
+[udp],
+[http] and
+[log].
 
 Defining custom mappers is simple.
 The [source code for the udp forwarder][src]
@@ -93,5 +94,6 @@ are, in order:
 [option]: ../../README.md#from-the-command-line
 [udp]: udp.md
 [http]: http.md
+[log]: log.md
 [src]: ../../src/forwarders/udp.js
 
