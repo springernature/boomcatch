@@ -90,5 +90,5 @@ as `'\n'`.
 [statsd-npg]: statsd-npg.md
 [har]: har.md
 [src]: ../../src/mappers/statsd.js
-[normalisaed]: ../data.md
+[normalised]: ../data.md
 
