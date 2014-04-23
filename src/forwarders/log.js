@@ -15,11 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals require, exports */
+/*globals exports */
 
 'use strict';
-
-var check = require('check-types');
 
 exports.initialise = function (options) {
     return send.bind(null, options.log);
