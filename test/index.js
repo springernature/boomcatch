@@ -1035,7 +1035,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&r=wibble&nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=40&nt_red_end=50&nt_fet_st=60&nt_dns_st=70&nt_dns_end=80&nt_con_st=90&nt_con_end=100&nt_ssl_st=110&nt_req_st=120&nt_res_st=130&nt_res_end=140&nt_domloading=150&nt_domint=160&nt_domcontloaded_st=170&nt_domcontloaded_end=180&nt_domcomp=190&nt_load_st=200&nt_nav_type=foo&nt_nt_red_cnt=1',
+                        url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&r=wibble&nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=0&nt_red_end=0&nt_fet_st=40&nt_dns_st=50&nt_dns_end=60&nt_con_st=70&nt_con_end=80&nt_ssl_st=90&nt_req_st=100&nt_res_st=110&nt_res_end=120&nt_domloading=130&nt_domint=140&nt_domcontloaded_st=150&nt_domcontloaded_end=160&nt_domcomp=170&nt_load_st=180&nt_nav_type=foo&nt_red_cnt=0',
                         method: 'GET',
                         headers: {
                             referer: 'wibble',
@@ -1104,7 +1104,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=40&nt_red_end=50&nt_fet_st=60&nt_dns_st=70&nt_dns_end=80&nt_con_st=90&nt_con_end=100&nt_ssl_st=110&nt_req_st=120&nt_res_st=130&nt_res_end=140&nt_domloading=150&nt_domint=160&nt_domcontloaded_st=170&nt_domcontloaded_end=180&nt_domcomp=190&nt_load_st=200&nt_load_end=210&nt_nav_type=foo&nt_nt_red_cnt=1',
+                        url: '/beacon?nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=0&nt_red_end=0&nt_fet_st=40&nt_dns_st=50&nt_dns_end=60&nt_con_st=70&nt_con_end=80&nt_ssl_st=90&nt_req_st=100&nt_res_st=110&nt_res_end=120&nt_domloading=130&nt_domint=140&nt_domcontloaded_st=150&nt_domcontloaded_end=160&nt_domcomp=170&nt_load_st=180&nt_load_end=190&nt_nav_type=foo&nt_red_cnt=0',
                         method: 'GET',
                         headers: {
                             referer: 'wibble',
@@ -1161,10 +1161,10 @@ suite('index:', function () {
                         assert.isObject(log.args.mapper[0][0].navtiming.timestamps);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].navtiming.timestamps), 5);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.start, 10);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.fetchStart, 60);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.sslStart, 110);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.requestStart, 120);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.domInteractive, 160);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.fetchStart, 40);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.sslStart, 90);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.requestStart, 100);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.timestamps.domInteractive, 140);
 
                         assert.isObject(log.args.mapper[0][0].navtiming.events);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].navtiming.events), 8);
@@ -1173,26 +1173,26 @@ suite('index:', function () {
                         assert.strictEqual(log.args.mapper[0][0].navtiming.events.unload.start, 20);
                         assert.strictEqual(log.args.mapper[0][0].navtiming.events.unload.end, 30);
                         assert.isObject(log.args.mapper[0][0].navtiming.events.redirect);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.redirect.start, 40);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.redirect.end, 50);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.redirect.start, 0);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.redirect.end, 0);
                         assert.isObject(log.args.mapper[0][0].navtiming.events.dns);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.dns.start, 70);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.dns.end, 80);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.dns.start, 50);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.dns.end, 60);
                         assert.isObject(log.args.mapper[0][0].navtiming.events.connect);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.connect.start, 90);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.connect.end, 100);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.connect.start, 70);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.connect.end, 80);
                         assert.isObject(log.args.mapper[0][0].navtiming.events.response);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.response.start, 130);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.response.end, 140);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.response.start, 110);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.response.end, 120);
                         assert.isObject(log.args.mapper[0][0].navtiming.events.dom);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.dom.start, 150);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.dom.end, 190);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.dom.start, 130);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.dom.end, 170);
                         assert.isObject(log.args.mapper[0][0].navtiming.events.domContent);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.domContent.start, 170);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.domContent.end, 180);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.domContent.start, 150);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.domContent.end, 160);
                         assert.isObject(log.args.mapper[0][0].navtiming.events.load);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.load.start, 200);
-                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.load.end, 210);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.load.start, 180);
+                        assert.strictEqual(log.args.mapper[0][0].navtiming.events.load.end, 190);
 
                         assert.isObject(log.args.mapper[0][0].navtiming.durations);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0].navtiming.durations), 0);

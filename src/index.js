@@ -592,7 +592,7 @@ function normaliseEvents (map, data) {
         verify.number(end);
         check.verify.not.negativeNumber(end);
 
-        if (start && end) {
+        if (check.number(start) && check.number(end)) {
             result[event.name] = {
                 start: start,
                 end: end
