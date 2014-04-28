@@ -197,7 +197,7 @@ suite('forwarders/http:', function () {
                         name: 'callback',
                         log: log
                     });
-                    forwarder('foo bar', callback);
+                    forwarder('foo bar', null, callback);
                 });
 
                 teardown(function () {
@@ -314,7 +314,7 @@ suite('forwarders/http:', function () {
                         name: 'callback',
                         log: log
                     });
-                    forwarder({ foo: 'bar', baz: 'qux' }, callback);
+                    forwarder({ foo: 'bar', baz: 'qux' }, null, callback);
                 });
 
                 teardown(function () {
@@ -434,7 +434,7 @@ suite('forwarders/http:', function () {
                         name: 'callback',
                         log: log
                     });
-                    forwarder('foo bar', callback);
+                    forwarder('foo bar', null, callback);
                 });
 
                 teardown(function () {

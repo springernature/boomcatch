@@ -39,7 +39,7 @@ function normaliseMethod (method) {
     return 'GET';
 }
 
-function send (protocol, url, method, data, callback) {
+function send (protocol, url, method, data, separator, callback) {
     var length, request;
 
     if (check.object(data)) {
