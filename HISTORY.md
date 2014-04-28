@@ -1,5 +1,10 @@
 # History
 
+## 1.3.1
+
+* Implement a console forwarder.
+* Fix a bug in the HTTP forwarder.
+
 ## 1.3.2
 
 * Fix normalisation of zeroed events.
