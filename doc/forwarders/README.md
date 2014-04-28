@@ -22,7 +22,7 @@ Three forwarders
 are available out-of-the-box,
 [udp],
 [http] and
-[log].
+[console].
 
 Defining custom mappers is simple.
 The [source code for the udp forwarder][src]
@@ -94,6 +94,6 @@ are, in order:
 [option]: ../../README.md#from-the-command-line
 [udp]: udp.md
 [http]: http.md
-[log]: log.md
+[console]: console.md
 [src]: ../../src/forwarders/udp.js
 

@@ -15,20 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals exports */
+/*globals exports, console */
 
 'use strict';
 
-exports.initialise = function (options) {
-    return send.bind(null, options.log);
+exports.initialise = function () {
+    return send;
 };
 
-function send (log, data, callback) {
-    try {
-        log.info(data);
-        callback(null, data.length);
-    } catch (error) {
-        callback(error.message);
-    }
+function send (data, separator, callback) {
+    console.log(data);
+    callback(null, data.length);
 }
 
