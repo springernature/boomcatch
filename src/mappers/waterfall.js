@@ -48,16 +48,6 @@ function mapResource (resource) {
     };
 }
 
-function mapEvent (event) {
-    var result = [
-        mapEvent('redirect', events, start),
-        mapEvent('dns', events, start),
-        mapEvent('connect', events, start),
-        mapResponseEvent('firstbyte', events.response.start, start),
-        mapResponseEvent('lastbyte', events.response.end, start)
-    ];
-}
-
 function mapEvent (name, resource) {
     return mapTiming(name, resource.events[name]);
 }
