@@ -15,26 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals require, module */
+/*globals module */
 
 'use strict';
 
 module.exports = {
-    initialise: function (options) {
+    initialise: function () {
         return map;
     }
 };
 
-function map (data, referer, userAgent, remoteAddress) {
+function map (data, referer) {
     if (Array.isArray(data.restiming)) {
-        JSON.stringify(data.restiming.map(mapResource));
+        JSON.stringify(data.restiming.map(mapResource.bind(null, referer)));
     }
 
     return '';
 }
 
-function mapResource (resource) {
+function mapResource (referer, resource) {
     return {
+        page: referer,
         name: resource.name,
         type: resource.type,
         start: resource.timestamps.start,
