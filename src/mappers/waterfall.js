@@ -19,8 +19,6 @@
 
 'use strict';
 
-var check = require('check-types'), mappers;
-
 module.exports = {
     initialise: function (options) {
         return map;
@@ -28,5 +26,64 @@ module.exports = {
 };
 
 function map (data, referer, userAgent, remoteAddress) {
+    if (Array.isArray(data.restiming)) {
+        JSON.stringify(data.restiming.map(mapResource));
+    }
+
+    return '';
+}
+
+function mapResource (resource) {
+    return {
+        name: resource.name,
+        type: resource.type,
+        start: resource.timestamps.start,
+        timings: [
+            mapEvent('redirect', resource),
+            mapEvent('dns', resource),
+            mapEvent('connect', resource),
+            mapRequestTiming(resource),
+            mapEvent('response', resource)
+        ]
+    };
+}
+
+function mapEvent (event) {
+    var result = [
+        mapEvent('redirect', events, start),
+        mapEvent('dns', events, start),
+        mapEvent('connect', events, start),
+        mapResponseEvent('firstbyte', events.response.start, start),
+        mapResponseEvent('lastbyte', events.response.end, start)
+    ];
+}
+
+function mapEvent (name, resource) {
+    return mapTiming(name, resource.events[name]);
+}
+
+function mapTiming (name, event) {
+    if (event) {
+        return {
+            name: name,
+            start: event.start,
+            duration: event.end - event.start
+        };
+    }
+
+    return mapEvent(name, { start: 0, end: 0 });
+}
+
+function mapRequestTiming (resource) {
+    var requestTiming;
+
+    if (resource.timestamps.requestStart && resource.events.response) {
+        requestTiming = {
+            start: resource.timestamps.requestStart,
+            end: resource.events.response.start
+        };
+    }
+
+    return mapTiming('request', requestTiming);
 }
 
