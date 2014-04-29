@@ -132,7 +132,7 @@ function verifyOrigin (origin) {
         if (origin !== '*' && origin !== 'null') {
             check.verify.webUrl(origin, 'Invalid access control origin');
         }
-    } else if (check.array(origin)) {
+    } else if (Array.isArray(origin)) {
         origin.forEach(function (o) {
             check.verify.webUrl(o, 'Invalid access control origin');
         });
@@ -302,7 +302,7 @@ function logRequest (log, request) {
 }
 
 function getAccessControlOrigin (headers, origin) {
-    if (check.array(origin)) {
+    if (Array.isArray(origin)) {
         if (headers.origin && contains(origin, headers.origin)) {
             return headers.origin;
         }
@@ -627,7 +627,7 @@ function normaliseDurations (map, data, startKey) {
 
 function normaliseRestimingData (data) {
     /*jshint camelcase:false */
-    if (check.array(data.restiming)) {
+    if (Array.isArray(data.restiming)) {
         return data.restiming.map(function (datum) {
             var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
 
