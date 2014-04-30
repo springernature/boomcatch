@@ -62,7 +62,7 @@ function mapTiming (name, event) {
         };
     }
 
-    return mapEvent(name, { start: 0, end: 0 });
+    return mapTiming(name, { start: 0, end: 0 });
 }
 
 function mapRequestTiming (resource) {
