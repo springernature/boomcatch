@@ -27,7 +27,7 @@ module.exports = {
 
 function map (data, referer) {
     if (Array.isArray(data.restiming)) {
-        JSON.stringify(data.restiming.map(mapResource.bind(null, referer)));
+        return JSON.stringify(data.restiming.map(mapResource.bind(null, referer)));
     }
 
     return '';
