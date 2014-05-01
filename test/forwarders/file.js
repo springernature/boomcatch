@@ -34,17 +34,17 @@ suite('forwarders/file:', function () {
     setup(function () {
         log = {};
         mockery.enable({ useCleanCache: true });
+        mockery.registerMock('path', {
+            resolve: spooks.fn({
+                name: 'resolve',
+                log: log,
+                result: 'mock path.resolve result'
+            })
+        });
         mockery.registerMock('fs', {
             writeFile: spooks.fn({
                 name: 'writeFile',
                 log: log
-            })
-        });
-        mockery.registerMock('path', {
-            resolve: spooks.fn({
-                name: 'http',
-                log: log,
-                result: 'mock path.resolve result'
             })
         });
     });
@@ -97,7 +97,7 @@ suite('forwarders/file:', function () {
             var forwarder;
 
             setup(function () {
-                forwarder = http.initialise({ fwdDir: 'wibble' });
+                forwarder = file.initialise({ fwdDir: 'wibble' });
             });
 
             teardown(function () {
@@ -108,12 +108,12 @@ suite('forwarders/file:', function () {
                 assert.isFunction(forwarder);
             });
 
-            test('fs.writeFile was not called', function () {
-                assert.strictEqual(log.counts.writeFile, 0);
-            });
-
             test('path.resolve was not called', function () {
                 assert.strictEqual(log.counts.resolve, 0);
+            });
+
+            test('fs.writeFile was not called', function () {
+                assert.strictEqual(log.counts.writeFile, 0);
             });
 
             suite('call forwarder:', function () {
@@ -131,6 +131,17 @@ suite('forwarders/file:', function () {
                     callback = undefined;
                 });
 
+                test('path.resolve was called once', function () {
+                    assert.strictEqual(log.counts.resolve, 1);
+                });
+
+                test('path.resolve was called correctly', function () {
+                    assert.strictEqual(log.these.resolve[0], require('path'));
+                    assert.lengthOf(log.args.resolve[0], 2);
+                    assert.match(log.args.resolve[0][0], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
+                    assert.strictEqual(log.args.resolve[0][1], 'wibble');
+                });
+
                 test('fs.writeFile was called once', function () {
                     assert.strictEqual(log.counts.writeFile, 1);
                 });
@@ -138,6 +149,48 @@ suite('forwarders/file:', function () {
                 test('fs.request was called correctly', function () {
                     assert.strictEqual(log.these.writeFile[0], require('fs'));
                     assert.lengthOf(log.args.writeFile[0], 4);
+                    assert.strictEqual(log.args.writeFile[0][0], 'mock path.resolve result');
+                    assert.strictEqual(log.args.writeFile[0][1], 'foo bar');
+                    assert.isObject(log.args.writeFile[0][2]);
+                    assert.lengthOf(Object.keys(log.args.writeFile[0][2]), 1);
+                    assert.strictEqual(log.args.writeFile[0][2].mode, 420);
+                    assert.isFunction(log.args.writeFile[0][3]);
+                });
+
+                suite('call forwarder:', function () {
+                    setup(function () {
+                        forwarder('foo bar', null, function () {});
+                    });
+
+                    test('path.resolve was called once', function () {
+                        assert.strictEqual(log.counts.resolve, 2);
+                    });
+
+                    test('path.resolve was called correctly', function () {
+                        assert.match(log.args.resolve[1][0], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
+                        assert.notEqual(log.args.resolve[0][0], log.args.resolve[1][0]);
+                    });
+
+                    test('callback was not called', function () {
+                        assert.strictEqual(log.counts.callback, 0);
+                    });
+                });
+
+                suite('call writeFile callback:', function () {
+                    setup(function () {
+                        log.args.writeFile[0][3]('some error');
+                    });
+
+                    test('callback was called once', function () {
+                        assert.strictEqual(log.counts.callback, 1);
+                    });
+
+                    test('callback was called correctly', function () {
+                        assert.isUndefined(log.these.callback[0]);
+                        assert.lengthOf(log.args.callback[0], 2);
+                        assert.strictEqual(log.args.callback[0][0], 'some error');
+                        assert.strictEqual(log.args.callback[0][1], 7);
+                    });
                 });
             });
         });
