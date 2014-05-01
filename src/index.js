@@ -178,7 +178,7 @@ function verifyForwarderOptions (options) {
 function verifyDirectory (path, message) {
     var stat;
 
-    check.verify.unemptyString(options.fwdDir, message);
+    check.verify.unemptyString(path, message);
 
     if (fs.existsSync(path)) {
         stat = fs.statSync(path);
