@@ -1,5 +1,9 @@
 # History
 
+## 1.3.5
+
+* Fix path bug in file forwarder.
+
 ## 1.3.4
 
 * Implement a waterfall mapper.
