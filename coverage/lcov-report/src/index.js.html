@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">src/index.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">94.68% <small>(249 / 263)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">91.58% <small>(250 / 273)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">90.7% <small>(117 / 129)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">87.31% <small>(117 / 134)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">98.11% <small>(52 / 53)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">96.3% <small>(52 / 54)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">94.68% <small>(249 / 263)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">91.58% <small>(250 / 273)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -866,7 +866,28 @@
 648
 649
 650
-651</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -888,6 +909,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">233</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1030,12 +1053,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">90</span>
 <span class="cline-any cline-yes">90</span>
 <span class="cline-any cline-yes">90</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -1541,6 +1583,7 @@ var check = require('check-types'),
     http = require('http'),
     url = require('url'),
     qs = require('qs'),
+    fs = require('fs'),
 &nbsp;
 defaults = {
     host: '0.0.0.0',
@@ -1591,6 +1634,7 @@ normalisationMaps;
  * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP only).
  * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
+ * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  */
 exports.listen = function (options) {
     var log, path, host, port, validator, filter, mapper, forwarder;
@@ -1650,7 +1694,7 @@ function verifyOrigin (origin) {
         <span class="missing-if-branch" title="else path not taken" >E</span>if (origin !== '*' &amp;&amp; origin !== 'null') {
             check.verify.webUrl(origin, 'Invalid access control origin');
         }
-    } else if (check.array(origin)) {
+    } else if (Array.isArray(origin)) {
         origin.forEach(function (o) {
             check.verify.webUrl(o, 'Invalid access control origin');
         });
@@ -1677,7 +1721,10 @@ function verifyForwarderOptions (options) {
     check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
 &nbsp;
     switch (options.forwarder) {
-<span class="branch-0 cbranch-no" title="branch not covered" >        case 'http':</span>
+<span class="branch-0 cbranch-no" title="branch not covered" >        case 'file':</span>
+<span class="cstat-no" title="statement not covered" >            verifyDirectory(options.fwdDir, 'Invalid forwarding directory');</span>
+<span class="cstat-no" title="statement not covered" >            break;</span>
+<span class="branch-1 cbranch-no" title="branch not covered" >        case 'http':</span>
 <span class="cstat-no" title="statement not covered" >            check.verify.webUrl(options.fwdUrl, 'Invalid forwarding URL');</span>
 <span class="cstat-no" title="statement not covered" >            check.verify.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');</span>
 <span class="cstat-no" title="statement not covered" >            break;</span>
@@ -1686,6 +1733,22 @@ function verifyForwarderOptions (options) {
             check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
             check.verify.maybe.positiveNumber(options.fwdSize, 'Invalid forwarding packet size');
     }
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function verifyDirectory (path, message) {</span>
+<span class="cstat-no" title="statement not covered" >    var stat;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    check.verify.unemptyString(path, message);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (fs.existsSync(path)) {</span>
+<span class="cstat-no" title="statement not covered" >        stat = fs.statSync(path);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (stat.isDirectory()) {</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    throw new Error(message);</span>
 }
 &nbsp;
 function getLog (options) {
@@ -1820,7 +1883,7 @@ function logRequest (log, request) {
 }
 &nbsp;
 function getAccessControlOrigin (headers, origin) {
-    if (check.array(origin)) {
+    if (Array.isArray(origin)) {
         if (headers.origin &amp;&amp; contains(origin, headers.origin)) {
             return headers.origin;
         }
@@ -2145,7 +2208,7 @@ function normaliseDurations (map, data, startKey) {
 &nbsp;
 function normaliseRestimingData (data) {
     /*jshint camelcase:false */
-    if (check.array(data.restiming)) {
+    if (Array.isArray(data.restiming)) {
         return data.restiming.map(function (datum) {
             var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
 &nbsp;
@@ -2171,7 +2234,7 @@ function pass (log, response, status, bytes) {
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Apr 28 2014 13:35:06 GMT+0100 (BST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu May 01 2014 11:25:56 GMT+0100 (BST)</div>
 </div>
 
 <script src="../prettify.js"></script>

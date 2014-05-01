@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for src/metrics.js</title>
+    <title>Code coverage report for src/mappers/waterfall.js</title>
     <meta charset="utf-8">
 
-    <link rel="stylesheet" href="../prettify.css">
+    <link rel="stylesheet" href="../../prettify.css">
 
     <style>
         body, html {
@@ -196,23 +196,23 @@
 </head>
 <body>
 <div class="header high">
-    <h1>Code coverage report for <span class="entity">src/metrics.js</span></h1>
+    <h1>Code coverage report for <span class="entity">src/mappers/waterfall.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(1 / 1)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(19 / 19)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(8 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(6 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(1 / 1)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(19 / 19)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
-    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; metrics.js</div>
+    <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">src/mappers/</a> &#187; waterfall.js</div>
 </div>
 <div class="body">
 <pre><table class="coverage">
@@ -266,7 +266,37 @@
 48
 49
 50
-51</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -289,6 +319,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">26</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">41</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -303,17 +347,33 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">164</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">250</span>
+<span class="cline-any cline-yes">205</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">45</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">41</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41</span>
+<span class="cline-any cline-yes">32</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Copyright © 2014 Nature Publishing Group
@@ -338,43 +398,73 @@
 'use strict';
 &nbsp;
 module.exports = {
-    // Metric definitions for use by data mappers. There are currently three categories
-    // of metric, corresponding to three different boomerang plugins: rt, navtiming and
-    // restiming.
-    //
-    // Within each category, there are three types of metric that are available for
-    // data mappers: timestamps, durations and events.
-    //
-    //     * timestamps: milliseconds since the epoch for some event.
-    //     * events: an object with `start` and `end` timestamp properties.
-    //     * durations: milliseconds difference between the start timestamp and some
-    //                  other point.
-    rt: {
-        timestamps: [ 'start' ],
-        events: [],
-        durations: [ 'firstbyte', 'lastbyte', 'load' ]
-    },
-    navtiming: {
-        timestamps: [ 'start', 'fetchStart', 'sslStart', 'requestStart', 'domInteractive' ],
-        events: [ 'unload', 'redirect', 'dns', 'connect', 'response', 'dom', 'domContent', 'load' ],
-        durations: []
-    },
-    restiming: {
-        timestamps: [ 'start', 'fetchStart', 'sslStart', 'requestStart' ],
-        events: [ 'redirect', 'dns', 'connect', 'response' ],
-        durations: []
+    initialise: function () {
+        return map;
     }
 };
+&nbsp;
+function map (data, referer) {
+    if (Array.isArray(data.restiming)) {
+        return JSON.stringify(data.restiming.map(mapResource.bind(null, referer)));
+    }
+&nbsp;
+    return '';
+}
+&nbsp;
+function mapResource (referer, resource) {
+    return {
+        page: referer,
+        name: resource.name,
+        type: resource.type,
+        start: resource.timestamps.start,
+        timings: [
+            mapEvent('redirect', resource),
+            mapEvent('dns', resource),
+            mapEvent('connect', resource),
+            mapRequestTiming(resource),
+            mapEvent('response', resource)
+        ]
+    };
+}
+&nbsp;
+function mapEvent (name, resource) {
+    return mapTiming(name, resource.events[name]);
+}
+&nbsp;
+function mapTiming (name, event) {
+    if (event) {
+        return {
+            name: name,
+            start: event.start,
+            duration: event.end - event.start
+        };
+    }
+&nbsp;
+    return mapTiming(name, { start: 0, end: 0 });
+}
+&nbsp;
+function mapRequestTiming (resource) {
+    var requestTiming;
+&nbsp;
+    if (resource.timestamps.requestStart &amp;&amp; resource.events.response) {
+        requestTiming = {
+            start: resource.timestamps.requestStart,
+            end: resource.events.response.start
+        };
+    }
+&nbsp;
+    return mapTiming('request', requestTiming);
+}
 &nbsp;
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Apr 12 2014 18:34:06 GMT+0100 (BST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu May 01 2014 11:25:56 GMT+0100 (BST)</div>
 </div>
 
-<script src="../prettify.js"></script>
+<script src="../../prettify.js"></script>
 
 <script src="http://yui.yahooapis.com/3.6.0/build/yui/yui-min.js"></script>
 <script>
