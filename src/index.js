@@ -73,6 +73,7 @@ normalisationMaps;
  * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP only).
  * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
+ * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  */
 exports.listen = function (options) {
     var log, path, host, port, validator, filter, mapper, forwarder;
@@ -159,6 +160,9 @@ function verifyForwarderOptions (options) {
     check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
 
     switch (options.forwarder) {
+        case 'file':
+            verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
+            break;
         case 'http':
             check.verify.webUrl(options.fwdUrl, 'Invalid forwarding URL');
             check.verify.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
@@ -168,6 +172,22 @@ function verifyForwarderOptions (options) {
             check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
             check.verify.maybe.positiveNumber(options.fwdSize, 'Invalid forwarding packet size');
     }
+}
+
+function verifyDirectory (path, message) {
+    var stat;
+
+    check.verify.unemptyString(options.fwdDir, message);
+
+    if (fs.existsSync(path)) {
+        stat = fs.statSync(path);
+
+        if (stat.isDirectory()) {
+            return;
+        }
+    }
+
+    throw new Error(message);
 }
 
 function getLog (options) {

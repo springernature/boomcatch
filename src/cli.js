@@ -49,6 +49,7 @@ function parseCommandLine () {
         .option('-Z, --fwdSize <bytes>', 'maximum allowable packet size for data forwarding (UDP only)', parseInt)
         .option('-U, --fwdUrl <name>', 'URL to forward data to (HTTP only)')
         .option('-M, --fwdMethod <name>', 'method to forward data with (HTTP only)')
+        .option('-D, --fwdDir <path>', 'directory to write data to (file forwarder only)')
         .parse(process.argv);
 }
 
