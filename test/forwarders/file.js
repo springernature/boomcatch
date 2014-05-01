@@ -37,10 +37,10 @@ suite('forwarders/file:', function () {
         log = {};
         mockery.enable({ useCleanCache: true });
         mockery.registerMock('path', {
-            resolve: spooks.fn({
-                name: 'resolve',
+            join: spooks.fn({
+                name: 'join',
                 log: log,
-                result: 'mock path.resolve result'
+                result: 'mock path.join result'
             })
         });
         mockery.registerMock('fs', {
@@ -110,8 +110,8 @@ suite('forwarders/file:', function () {
                 assert.isFunction(forwarder);
             });
 
-            test('path.resolve was not called', function () {
-                assert.strictEqual(log.counts.resolve, 0);
+            test('path.join was not called', function () {
+                assert.strictEqual(log.counts.join, 0);
             });
 
             test('fs.writeFile was not called', function () {
@@ -133,15 +133,15 @@ suite('forwarders/file:', function () {
                     callback = undefined;
                 });
 
-                test('path.resolve was called once', function () {
-                    assert.strictEqual(log.counts.resolve, 1);
+                test('path.join was called once', function () {
+                    assert.strictEqual(log.counts.join, 1);
                 });
 
-                test('path.resolve was called correctly', function () {
-                    assert.strictEqual(log.these.resolve[0], require('path'));
-                    assert.lengthOf(log.args.resolve[0], 2);
-                    assert.match(log.args.resolve[0][0], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
-                    assert.strictEqual(log.args.resolve[0][1], 'wibble');
+                test('path.join was called correctly', function () {
+                    assert.strictEqual(log.these.join[0], require('path'));
+                    assert.lengthOf(log.args.join[0], 2);
+                    assert.strictEqual(log.args.join[0][0], 'wibble');
+                    assert.match(log.args.join[0][1], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
                 });
 
                 test('fs.writeFile was called once', function () {
@@ -151,7 +151,7 @@ suite('forwarders/file:', function () {
                 test('fs.request was called correctly', function () {
                     assert.strictEqual(log.these.writeFile[0], require('fs'));
                     assert.lengthOf(log.args.writeFile[0], 4);
-                    assert.strictEqual(log.args.writeFile[0][0], 'mock path.resolve result');
+                    assert.strictEqual(log.args.writeFile[0][0], 'mock path.join result');
                     assert.strictEqual(log.args.writeFile[0][1], 'foo bar');
                     assert.isObject(log.args.writeFile[0][2]);
                     assert.lengthOf(Object.keys(log.args.writeFile[0][2]), 1);
@@ -164,13 +164,13 @@ suite('forwarders/file:', function () {
                         forwarder('foo bar', null, function () {});
                     });
 
-                    test('path.resolve was called once', function () {
-                        assert.strictEqual(log.counts.resolve, 2);
+                    test('path.join was called once', function () {
+                        assert.strictEqual(log.counts.join, 2);
                     });
 
-                    test('path.resolve was called correctly', function () {
-                        assert.match(log.args.resolve[1][0], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
-                        assert.notEqual(log.args.resolve[0][0], log.args.resolve[1][0]);
+                    test('path.join was called correctly', function () {
+                        assert.match(log.args.join[1][1], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
+                        assert.notEqual(log.args.join[0][1], log.args.join[1][1]);
                     });
 
                     test('callback was not called', function () {

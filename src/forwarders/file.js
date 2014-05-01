@@ -29,7 +29,7 @@ exports.initialise = function (options) {
 
 function send (directory, data, separator, callback) {
     fs.writeFile(
-        path.resolve('boomcatch-' + uuid.v4() + '.json', directory),
+        path.join(directory, 'boomcatch-' + uuid.v4() + '.json'),
         data,
         { mode: 420 },
         function (error) {
