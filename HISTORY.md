@@ -1,6 +1,11 @@
 # History
 
-## 1.3.1
+## 1.3.4
+
+* Implement a waterfall mapper.
+* Implement a file forwarder.
+
+## 1.3.3
 
 * Implement a console forwarder.
 * Fix a bug in the HTTP forwarder.
