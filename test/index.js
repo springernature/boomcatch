@@ -31,7 +31,7 @@ mockery.registerAllowable(modulePath);
 mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
 mockery.registerAllowable('qs');
-mockery.registerAllowable('get-off-my-log');
+mockery.registerAllowable('fs');
 
 suite('index:', function () {
     var log;

@@ -23,6 +23,7 @@ var check = require('check-types'),
     http = require('http'),
     url = require('url'),
     qs = require('qs'),
+    fs = require('fs'),
 
 defaults = {
     host: '0.0.0.0',
