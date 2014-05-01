@@ -27,6 +27,8 @@ modulePath = '../../src/forwarders/file';
 
 mockery.registerAllowable(modulePath);
 mockery.registerAllowable('check-types');
+mockery.registerAllowable('node-uuid');
+mockery.registerAllowable('crypto');
 
 suite('forwarders/file:', function () {
     var log;
