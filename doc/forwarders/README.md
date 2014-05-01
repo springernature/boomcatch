@@ -21,7 +21,8 @@ using the `-f` [option].
 Three forwarders
 are available out-of-the-box,
 [udp],
-[http] and
+[http],
+[file] and
 [console].
 
 Defining custom mappers is simple.
@@ -94,6 +95,7 @@ are, in order:
 [option]: ../../README.md#from-the-command-line
 [udp]: udp.md
 [http]: http.md
+[file]: file.md
 [console]: console.md
 [src]: ../../src/forwarders/udp.js
 

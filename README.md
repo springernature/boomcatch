@@ -139,6 +139,11 @@ Available options are:
   This option is only effective
   with the HTTP forwarder.
 
+* `--fwdDir <path>`:
+  Directory to write mapped data to.
+  This option is only effective
+  with the file forwarder.
+
 ### From a node.js project
 
 ```javascript
