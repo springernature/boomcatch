@@ -21,7 +21,7 @@
 
 var fs = require('fs'),
     path = require('path'),
-    check = require('check-types');
+    uuid = require('node-uuid');
 
 exports.initialise = function (options) {
     return send.bind(null, options.fwdDir);
@@ -29,7 +29,7 @@ exports.initialise = function (options) {
 
 function send (directory, data, separator, callback) {
     fs.writeFile(
-        path.resolve('boomcatch-' + Date.now() + '.json', directory),
+        path.resolve('boomcatch-' + uuid.v4() + '.json', directory),
         data,
         { mode: 420 },
         function (error) {
