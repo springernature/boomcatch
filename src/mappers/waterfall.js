@@ -34,38 +34,40 @@ function map (data, referer) {
 }
 
 function mapResource (referer, resource) {
+    var start = resource.timestamps.start;
+
     return {
         page: referer,
         name: resource.name,
         type: resource.type,
-        start: resource.timestamps.start,
+        start: start,
         timings: [
-            mapEvent('redirect', resource),
-            mapEvent('dns', resource),
-            mapEvent('connect', resource),
-            mapRequestTiming(resource),
-            mapEvent('response', resource)
+            mapEvent('redirect', resource, start),
+            mapEvent('dns', resource, start),
+            mapEvent('connect', resource, start),
+            mapRequestTiming(resource, start),
+            mapEvent('response', resource, start)
         ]
     };
 }
 
-function mapEvent (name, resource) {
-    return mapTiming(name, resource.events[name]);
+function mapEvent (name, resource, resourceStart) {
+    return mapTiming(name, resource.events[name], resourceStart);
 }
 
-function mapTiming (name, event) {
+function mapTiming (name, event, resourceStart) {
     if (event) {
         return {
             name: name,
-            start: event.start,
+            start: event.start || resourceStart,
             duration: event.end - event.start
         };
     }
 
-    return mapTiming(name, { start: 0, end: 0 });
+    return mapTiming(name, { start: 0, end: 0 }, resourceStart);
 }
 
-function mapRequestTiming (resource) {
+function mapRequestTiming (resource, resourceStart) {
     var requestTiming;
 
     if (resource.timestamps.requestStart && resource.events.response) {
@@ -75,6 +77,6 @@ function mapRequestTiming (resource) {
         };
     }
 
-    return mapTiming('request', requestTiming);
+    return mapTiming('request', requestTiming, resourceStart);
 }
 
