@@ -193,11 +193,12 @@ suite('mappers/waterfall:', function () {
 
                     test('first datum is correct', function () {
                         assert.isObject(data[0]);
-                        assert.lengthOf(Object.keys(data[0]), 5);
+                        assert.lengthOf(Object.keys(data[0]), 6);
                         assert.strictEqual(data[0].page, 'baz');
                         assert.strictEqual(data[0].name, 'foo');
                         assert.strictEqual(data[0].type, 'css');
                         assert.strictEqual(data[0].start, 1);
+                        assert.strictEqual(data[0].duration, 11);
                         assert.isArray(data[0].timings);
                         assert.lengthOf(data[0].timings, 5);
                     });
@@ -239,6 +240,7 @@ suite('mappers/waterfall:', function () {
                         assert.strictEqual(data[1].name, 'bar');
                         assert.strictEqual(data[1].type, 'img');
                         assert.strictEqual(data[1].start, 9);
+                        assert.strictEqual(data[1].duration, 231);
                     });
 
                     test('second redirect timing is correct', function () {

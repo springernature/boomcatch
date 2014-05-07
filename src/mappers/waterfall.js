@@ -34,40 +34,52 @@ function map (data, referer) {
 }
 
 function mapResource (referer, resource) {
-    var start = resource.timestamps.start;
-
     return {
         page: referer,
         name: resource.name,
         type: resource.type,
-        start: start,
+        start: resource.timestamps.start,
+        duration: Object.keys(resource.events).reduce(
+            getResourceDuration.bind(null, resource),
+            resource.timestamps.fetchStart - resource.timestamps.start
+        ),
         timings: [
-            mapEvent('redirect', resource, start),
-            mapEvent('dns', resource, start),
-            mapEvent('connect', resource, start),
-            mapRequestTiming(resource, start),
-            mapEvent('response', resource, start)
+            mapEvent('redirect', resource),
+            mapEvent('dns', resource),
+            mapEvent('connect', resource),
+            mapRequestTiming(resource),
+            mapEvent('response', resource)
         ]
     };
 }
 
-function mapEvent (name, resource, resourceStart) {
-    return mapTiming(name, resource.events[name], resourceStart);
+function getResourceDuration (resource, duration, eventName) {
+    var eventDuration = resource.events[eventName].end - resource.timestamps.start;
+
+    if (eventDuration > duration) {
+        return eventDuration;
+    }
+
+    return duration;
 }
 
-function mapTiming (name, event, resourceStart) {
+function mapEvent (name, resource) {
+    return mapTiming(name, resource.events[name]);
+}
+
+function mapTiming (name, event) {
     if (event) {
         return {
             name: name,
-            start: event.start || resourceStart,
+            start: event.start,
             duration: event.end - event.start
         };
     }
 
-    return mapTiming(name, { start: 0, end: 0 }, resourceStart);
+    return mapTiming(name, { start: 0, end: 0 });
 }
 
-function mapRequestTiming (resource, resourceStart) {
+function mapRequestTiming (resource) {
     var requestTiming;
 
     if (resource.timestamps.requestStart && resource.events.response) {
@@ -77,6 +89,6 @@ function mapRequestTiming (resource, resourceStart) {
         };
     }
 
-    return mapTiming('request', requestTiming, resourceStart);
+    return mapTiming('request', requestTiming);
 }
 
