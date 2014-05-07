@@ -332,31 +332,31 @@ suite('mappers/waterfall:', function () {
 
                     test('redirect timing is correct', function () {
                         assert.strictEqual(data[0].timings[0].name, 'redirect');
-                        assert.strictEqual(data[0].timings[0].start, 42);
+                        assert.strictEqual(data[0].timings[0].start, 0);
                         assert.strictEqual(data[0].timings[0].duration, 0);
                     });
 
                     test('dns timing is correct', function () {
                         assert.strictEqual(data[0].timings[1].name, 'dns');
-                        assert.strictEqual(data[0].timings[1].start, 42);
+                        assert.strictEqual(data[0].timings[1].start, 0);
                         assert.strictEqual(data[0].timings[1].duration, 0);
                     });
 
                     test('connect timing is correct', function () {
                         assert.strictEqual(data[0].timings[2].name, 'connect');
-                        assert.strictEqual(data[0].timings[2].start, 42);
+                        assert.strictEqual(data[0].timings[2].start, 0);
                         assert.strictEqual(data[0].timings[2].duration, 0);
                     });
 
                     test('request timing is correct', function () {
                         assert.strictEqual(data[0].timings[3].name, 'request');
-                        assert.strictEqual(data[0].timings[3].start, 42);
+                        assert.strictEqual(data[0].timings[3].start, 0);
                         assert.strictEqual(data[0].timings[3].duration, 0);
                     });
 
                     test('response timing is correct', function () {
                         assert.strictEqual(data[0].timings[4].name, 'response');
-                        assert.strictEqual(data[0].timings[4].start, 42);
+                        assert.strictEqual(data[0].timings[4].start, 0);
                         assert.strictEqual(data[0].timings[4].duration, 0);
                     });
                 });
