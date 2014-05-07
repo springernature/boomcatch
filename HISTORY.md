@@ -1,5 +1,9 @@
 # History
 
+## 1.3.6
+
+* Expose resource duration in the waterfall mapper.'
+
 ## 1.3.5
 
 * Fix path bug in file forwarder.
