@@ -42,29 +42,33 @@ function normaliseMethod (method) {
 function send (protocol, url, method, data, separator, callback) {
     var length, request;
 
-    if (check.object(data)) {
-        data = querystring.stringify(data);
-    }
-
-    length = data.length;
-
-    if (method === 'GET') {
-        url.path += '?' + data;
-        data = null;
-    }
-
-    url.method = method;
-
-    request = protocol.request(url, function (response) {
-        if (data) {
-            request.write(data);
+    try {
+        if (check.object(data)) {
+            data = querystring.stringify(data);
         }
 
-        request.end();
+        length = data.length;
 
-        response.on('close', callback.bind(null, null, length));
-    });
+        if (method === 'GET') {
+            url.path += '?' + data;
+            data = null;
+        }
 
-    request.on('error', callback);
+        url.method = method;
+
+        request = protocol.request(url, function (response) {
+            if (data) {
+                request.write(data);
+            }
+
+            request.end();
+
+            response.on('close', callback.bind(null, null, length));
+        });
+
+        request.on('error', callback);
+    } catch (error) {
+        callback(error.message);
+    }
 }
 
