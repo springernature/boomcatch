@@ -727,22 +727,15 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called twice', function () {
-                    assert.strictEqual(log.counts.setHeader, 2);
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
-                test('response.setHeader was called correctly first time', function () {
+                test('response.setHeader was called correctly', function () {
                     assert.strictEqual(log.these.setHeader[0], response);
                     assert.lengthOf(log.args.setHeader[0], 2);
-                    assert.strictEqual(log.args.setHeader[0][0], 'Access-Control-Allow-Origin');
-                    assert.strictEqual(log.args.setHeader[0][1], '*');
-                });
-
-                test('response.setHeader was called correctly second time', function () {
-                    assert.strictEqual(log.these.setHeader[1], response);
-                    assert.lengthOf(log.args.setHeader[1], 2);
-                    assert.strictEqual(log.args.setHeader[1][0], 'Content-Type');
-                    assert.strictEqual(log.args.setHeader[1][1], 'application/json');
+                    assert.strictEqual(log.args.setHeader[0][0], 'Content-Type');
+                    assert.strictEqual(log.args.setHeader[0][1], 'application/json');
                 });
 
                 test('response.end was called once', function () {
@@ -795,8 +788,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called twice', function () {
-                    assert.strictEqual(log.counts.setHeader, 2);
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
                 test('response.end was called once', function () {
@@ -1730,8 +1723,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called twice', function () {
-                    assert.strictEqual(log.counts.setHeader, 2);
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
                 test('request.on was not called', function () {
@@ -2101,8 +2094,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called twice', function () {
-                    assert.strictEqual(log.counts.setHeader, 2);
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
                 });
 
                 test('response.end was called once', function () {
@@ -2161,8 +2154,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called three times', function () {
-                    assert.strictEqual(log.counts.setHeader, 3);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('response.end was called once', function () {
@@ -2321,8 +2314,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called three times', function () {
-                    assert.strictEqual(log.counts.setHeader, 3);
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
                 });
 
                 test('response.end was called once', function () {
@@ -2479,8 +2472,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called four times', function () {
-                    assert.strictEqual(log.counts.setHeader, 4);
+                test('response.setHeader was called three times', function () {
+                    assert.strictEqual(log.counts.setHeader, 3);
                 });
 
                 test('response.end was called once', function () {
@@ -2541,8 +2534,8 @@ suite('index:', function () {
                     request = response = undefined;
                 });
 
-                test('response.setHeader was called five times', function () {
-                    assert.strictEqual(log.counts.setHeader, 5);
+                test('response.setHeader was called four times', function () {
+                    assert.strictEqual(log.counts.setHeader, 4);
                 });
 
                 test('response.end was called once', function () {

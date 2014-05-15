@@ -102,8 +102,8 @@ exports.listen = function (options) {
             log,
             path,
             getReferer(options),
-            getOrigin(options),
             getLimit(options),
+            getOrigin(options),
             getMaxSize(options),
             validator,
             filter,
@@ -274,36 +274,19 @@ function getForwarder (options) {
     return getExtension('forwarder', options);
 }
 
-function handleRequest (log, path, referer, origin, limit, maxSize, validator, filter, mapper, forwarder, request, response) {
+function handleRequest (log, path, referer, limit, origin, maxSize, validator, filter, mapper, forwarder, request, response) {
     var requestPath, remoteAddress, state;
 
     logRequest(log, request);
 
-    response.setHeader('Access-Control-Allow-Origin', getAccessControlOrigin(request.headers, origin));
-
-    if (request.method !== 'GET' && request.method !== 'POST') {
-        return fail(log, request, response, 405, 'Invalid method `' + request.method + '`');
-    }
-
     requestPath = getRequestPath(request);
-
-    if (requestPath !== path) {
-        return fail(log, request, response, 404, 'Invalid path `' + requestPath + '`');
-    }
-
-    if (check.unemptyString(request.headers.referer) && !referer.test(request.headers.referer)) {
-        return fail(log, request, response, 403, 'Invalid referer `' + request.headers.referer + '`');
-    }
-
-    if (request.method === 'POST' && !isValidContentType(request.headers['content-type'])) {
-        return fail(log, request, response, 415, 'Invalid content type `' + request.headers['content-type'] + '`');
-    }
-
     remoteAddress = getRemoteAddress(request);
 
-    if (!checkLimit(limit, remoteAddress)) {
-        return fail(log, request, response, 429, 'Exceeded rate `' + limit.time + '`');
+    if (!checkRequest(log, path, referer, limit, requestPath, remoteAddress, request, response)) {
+        return;
     }
+
+    response.setHeader('Access-Control-Allow-Origin', getAccessControlOrigin(request.headers, origin));
 
     state = {
         body: ''
@@ -322,49 +305,10 @@ function logRequest (log, request) {
     );
 }
 
-function getAccessControlOrigin (headers, origin) {
-    if (Array.isArray(origin)) {
-        if (headers.origin && contains(origin, headers.origin)) {
-            return headers.origin;
-        }
-
-        return 'null';
-    }
-
-    return origin;
-}
-
-function contains (array, value) {
-    return array.reduce(function (match, candidate) {
-        return match || candidate === value;
-    }, false);
-}
-
-function fail (log, request, response, status, message) {
-    log.error(status + ' ' + message);
-
-    response.statusCode = status;
-    response.setHeader('Content-Type', 'application/json');
-    response.end('{ "error": "' + message + '" }');
-    request.socket.destroy();
-}
-
 function getRequestPath (request) {
     var queryIndex = request.url.indexOf('?');
 
     return queryIndex === -1 ? request.url : request.url.substr(0, queryIndex);
-}
-
-function isValidContentType (contentType) {
-    if (!contentType) {
-        return false;
-    }
-
-    if (contentType === 'application/x-www-form-urlencoded' || contentType === 'text/plain') {
-        return true;
-    }
-
-    return isValidContentType(contentType.substr(0, contentType.indexOf(';')));
 }
 
 function getRemoteAddress (request) {
@@ -381,6 +325,56 @@ function getRemoteAddress (request) {
     }
 
     return request.socket.remoteAddress;
+}
+
+function checkRequest (log, path, referer, limit, requestPath, remoteAddress, request, response) {
+    if (request.method !== 'GET' && request.method !== 'POST') {
+        fail(log, request, response, 405, 'Invalid method `' + request.method + '`');
+        return false;
+    }
+
+    if (requestPath !== path) {
+        fail(log, request, response, 404, 'Invalid path `' + requestPath + '`');
+        return false;
+    }
+
+    if (check.unemptyString(request.headers.referer) && !referer.test(request.headers.referer)) {
+        fail(log, request, response, 403, 'Invalid referer `' + request.headers.referer + '`');
+        return false;
+    }
+
+    if (request.method === 'POST' && !isValidContentType(request.headers['content-type'])) {
+        fail(log, request, response, 415, 'Invalid content type `' + request.headers['content-type'] + '`');
+        return false;
+    }
+
+    if (!checkLimit(limit, remoteAddress)) {
+        fail(log, request, response, 429, 'Exceeded rate `' + limit.time + '`');
+        return false;
+    }
+
+    return true;
+}
+
+function fail (log, request, response, status, message) {
+    log.error(status + ' ' + message);
+
+    response.statusCode = status;
+    response.setHeader('Content-Type', 'application/json');
+    response.end('{ "error": "' + message + '" }');
+    request.socket.destroy();
+}
+
+function isValidContentType (contentType) {
+    if (!contentType) {
+        return false;
+    }
+
+    if (contentType === 'application/x-www-form-urlencoded' || contentType === 'text/plain') {
+        return true;
+    }
+
+    return isValidContentType(contentType.substr(0, contentType.indexOf(';')));
 }
 
 function checkLimit (limit, remoteAddress) {
@@ -400,6 +394,24 @@ function checkLimit (limit, remoteAddress) {
     limit.requests[remoteAddress] = now;
 
     return true;
+}
+
+function getAccessControlOrigin (headers, origin) {
+    if (Array.isArray(origin)) {
+        if (headers.origin && contains(origin, headers.origin)) {
+            return headers.origin;
+        }
+
+        return 'null';
+    }
+
+    return origin;
+}
+
+function contains (array, value) {
+    return array.reduce(function (match, candidate) {
+        return match || candidate === value;
+    }, false);
 }
 
 function receive (log, state, maxSize, request, response, data) {
