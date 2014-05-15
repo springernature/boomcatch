@@ -28,13 +28,17 @@ exports.initialise = function (options) {
 };
 
 function send (directory, data, separator, callback) {
-    fs.writeFile(
-        path.join(directory, 'boomcatch-' + uuid.v4() + '.json'),
-        data,
-        { mode: 420 },
-        function (error) {
-            callback(error, data.length);
-        }
-    );
+    try {
+        fs.writeFile(
+            path.join(directory, 'boomcatch-' + uuid.v4() + '.json'),
+            data,
+            { mode: 420 },
+            function (error) {
+                callback(error, data.length);
+            }
+        );
+    } catch (error) {
+        callback(error.message);
+    }
 }
 

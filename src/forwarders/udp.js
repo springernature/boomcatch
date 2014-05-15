@@ -49,20 +49,24 @@ function normaliseSize (size) {
 function send (host, port, size, data, separator, callback) {
     var socket, buffer;
 
-    if (size > 0 && data.length > size) {
-        return chunkData(data, size, separator || '', []).forEach(function (chunk) {
-            send(host, port, size, chunk, separator, callback);
+    try {
+        if (size > 0 && data.length > size) {
+            return chunkData(data, size, separator || '', []).forEach(function (chunk) {
+                send(host, port, size, chunk, separator, callback);
+            });
+        }
+
+        socket = udp.createSocket('udp4');
+        buffer = new Buffer(data);
+
+        socket.send(buffer, 0, buffer.length, port, host, function (error, bytesSent) {
+            socket.close();
+
+            callback(error, bytesSent);
         });
+    } catch (error) {
+        callback(error.message);
     }
-
-    socket = udp.createSocket('udp4');
-    buffer = new Buffer(data);
-
-    socket.send(buffer, 0, buffer.length, port, host, function (error, bytesSent) {
-        socket.close();
-
-        callback(error, bytesSent);
-    });
 }
 
 function chunkData (data, size, separator, chunks) {
