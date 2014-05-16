@@ -24,6 +24,7 @@ var check = require('check-types'),
     url = require('url'),
     qs = require('qs'),
     fs = require('fs'),
+    toobusy = require('toobusy'),
 
 defaults = {
     host: '0.0.0.0',
@@ -278,6 +279,10 @@ function handleRequest (log, path, referer, limit, origin, maxSize, validator, f
     var requestPath, remoteAddress, state;
 
     logRequest(log, request);
+
+    if (toobusy()) {
+        return fail(log, request, response, 503, 'Server too busy');
+    }
 
     requestPath = getRequestPath(request);
     remoteAddress = getRemoteAddress(request);
