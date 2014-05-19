@@ -25,6 +25,7 @@ var check = require('check-types'),
     qs = require('qs'),
     fs = require('fs'),
     toobusy = require('toobusy'),
+    cluster = require('cluster'),
 
 defaults = {
     host: '0.0.0.0',
@@ -41,7 +42,8 @@ defaults = {
     validator: 'permissive',
     filter: 'unfiltered',
     mapper: 'statsd',
-    forwarder: 'udp'
+    forwarder: 'udp',
+    workers: 0
 },
 
 normalisationMaps;
@@ -76,9 +78,10 @@ normalisationMaps;
  * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
+ * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
  */
 exports.listen = function (options) {
-    var log, path, host, port, validator, filter, mapper, forwarder;
+    var workers, log, path, host, port, validator, filter, mapper, forwarder;
 
     if (options) {
         verifyOptions(options);
@@ -86,6 +89,7 @@ exports.listen = function (options) {
         options = {};
     }
 
+    workers = getWorkers(options);
     log = getLog(options);
     path = getPath(options);
     host = getHost(options);
@@ -95,23 +99,27 @@ exports.listen = function (options) {
     mapper = getMapper(options);
     forwarder = getForwarder(options);
 
-    log.info('listening for ' + host + ':' + port + path);
+    if (workers > 0 && cluster.isMaster) {
+        createWorkers(workers);
+    } else {
+        log.info('listening for ' + host + ':' + port + path);
 
-    http.createServer(
-        handleRequest.bind(
-            null,
-            log,
-            path,
-            getReferer(options),
-            getLimit(options),
-            getOrigin(options),
-            getMaxSize(options),
-            validator,
-            filter,
-            mapper,
-            forwarder
-        )
-    ).listen(port, host);
+        http.createServer(
+            handleRequest.bind(
+                null,
+                log,
+                path,
+                getReferer(options),
+                getLimit(options),
+                getOrigin(options),
+                getMaxSize(options),
+                validator,
+                filter,
+                mapper,
+                forwarder
+            )
+        ).listen(port, host);
+    }
 };
 
 function verifyOptions (options) {
@@ -122,6 +130,8 @@ function verifyOptions (options) {
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
+    check.verify.maybe.number(options.cluster, 'Invalid cluster');
+    check.verify.not.negativeNumber(options.cluster, 'Invalid cluster');
 
     verifyOrigin(options.origin);
     verifyLog(options.log);
@@ -192,12 +202,16 @@ function verifyDirectory (path, message) {
     throw new Error(message);
 }
 
-function getLog (options) {
-    return getOption('log', options);
+function getWorkers (options) {
+    return getOption('workers', options);
 }
 
 function getOption (name, options) {
     return options[name] || defaults[name];
+}
+
+function getLog (options) {
+    return getOption('log', options);
 }
 
 function getHost (options) {
@@ -273,6 +287,23 @@ function getMapper (options) {
 
 function getForwarder (options) {
     return getExtension('forwarder', options);
+}
+
+function createWorkers (count, log) {
+    var i;
+
+    for (i = 0; i < count; i += 1) {
+        cluster.fork();
+    }
+
+    cluster.on('online', function (worker) {
+        log.info('worker process ' + worker.process.pid + ' has started');
+    });
+
+    cluster.on('exit', function (worker) {
+        log.info('worker process ' + worker.process.pid + ' has died, respawning');
+        cluster.fork();
+    });
 }
 
 function handleRequest (log, path, referer, limit, origin, maxSize, validator, filter, mapper, forwarder, request, response) {
