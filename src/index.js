@@ -292,10 +292,6 @@ function getForwarder (options) {
 function createWorkers (count, log) {
     var i;
 
-    for (i = 0; i < count; i += 1) {
-        cluster.fork();
-    }
-
     cluster.on('online', function (worker) {
         log.info('worker process ' + worker.process.pid + ' has started');
     });
@@ -304,6 +300,10 @@ function createWorkers (count, log) {
         log.info('worker process ' + worker.process.pid + ' has died, respawning');
         cluster.fork();
     });
+
+    for (i = 0; i < count; i += 1) {
+        cluster.fork();
+    }
 }
 
 function handleRequest (log, path, referer, limit, origin, maxSize, validator, filter, mapper, forwarder, request, response) {
