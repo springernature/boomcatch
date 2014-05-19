@@ -89,6 +89,11 @@ Available options are:
   Use [syslog]-compatible logging,
   with the specified facility level.
 
+* `--workers <count>`:
+  The number of worker processes to spawn.
+  The default is -1
+  (one worker per CPU).
+
 * `--validator <path>`:
   Validator used to accept or reject request data.
   The default is permissive
