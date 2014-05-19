@@ -100,7 +100,7 @@ exports.listen = function (options) {
     forwarder = getForwarder(options);
 
     if (workers > 0 && cluster.isMaster) {
-        createWorkers(workers);
+        createWorkers(workers, log);
     } else {
         log.info('listening for ' + host + ':' + port + path);
 
@@ -130,8 +130,8 @@ function verifyOptions (options) {
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
-    check.verify.maybe.number(options.cluster, 'Invalid cluster');
-    check.verify.not.negativeNumber(options.cluster, 'Invalid cluster');
+    check.verify.maybe.number(options.workers, 'Invalid workers');
+    check.verify.not.negativeNumber(options.workers, 'Invalid workers');
 
     verifyOrigin(options.origin);
     verifyLog(options.log);

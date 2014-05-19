@@ -17,7 +17,7 @@
 
 'use strict';
 
-var assert, mockery, spooks, modulePath, nop, restrict;
+var assert, mockery, spooks, modulePath, nop;
 
 assert = require('chai').assert;
 mockery = require('mockery');
@@ -34,10 +34,14 @@ mockery.registerAllowable('qs');
 mockery.registerAllowable('fs');
 
 suite('index:', function () {
-    var log;
+    var log, restrict, cluster, isTooBusy;
 
     setup(function () {
         log = {};
+        cluster = spooks.obj({
+            archetype: { fork: nop, on: nop },
+            log: log
+        });
         mockery.enable({ useCleanCache: true });
         mockery.registerMock('http', spooks.obj({
             archetype: { createServer: nop, listen: nop },
@@ -143,9 +147,20 @@ suite('index:', function () {
                 })
             }
         }));
+        mockery.registerMock('toobusy', function () {
+            log.counts.toobusy += 1;
+            log.these.toobusy.push(this);
+            log.args.toobusy.push(arguments);
+        });
+        log.counts.toobusy = 0;
+        log.these.toobusy = [];
+        log.args.toobusy = [];
+        mockery.registerMock('cluster', cluster);
     });
 
     teardown(function () {
+        mockery.deregisterMock('cluster');
+        mockery.deregisterMock('toobusy');
         mockery.deregisterMock('./mappers/failing');
         mockery.deregisterMock('./forwarders/forwarder');
         mockery.deregisterMock('./mappers/mapper');
@@ -211,7 +226,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -236,7 +252,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -261,7 +278,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -286,7 +304,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -311,7 +330,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -336,7 +356,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -361,7 +382,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -386,7 +408,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -411,7 +434,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -436,7 +460,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -461,7 +486,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -486,7 +512,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -511,7 +538,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -536,7 +564,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -561,7 +590,8 @@ suite('index:', function () {
                     fwdPort: '8125',
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -586,7 +616,60 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: '256',
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
+                });
+            });
+        });
+
+        test('listen throws if workers is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: '4'
+                });
+            });
+        });
+
+        test('listen throws if workers is negative number', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: -1
                 });
             });
         });
@@ -614,7 +697,8 @@ suite('index:', function () {
                     fwdPort: 8125,
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST'
+                    fwdMethod: 'POST',
+                    workers: 2
                 });
             });
         });
@@ -639,7 +723,8 @@ suite('index:', function () {
                     fwdPort: null,
                     fwdSize: null,
                     fwdUrl: null,
-                    fwdMethod: null
+                    fwdMethod: null,
+                    workers: null
                 });
             });
         });
@@ -699,6 +784,14 @@ suite('index:', function () {
                 assert.lengthOf(log.args.listen[0], 2);
                 assert.strictEqual(log.args.listen[0][0], 80);
                 assert.strictEqual(log.args.listen[0][1], '0.0.0.0');
+            });
+
+            test('cluster.fork was not called', function () {
+                assert.strictEqual(log.counts.fork, 0);
+            });
+
+            test('cluster.on was not called', function () {
+                assert.strictEqual(log.counts.on, 0);
             });
 
             suite('invalid path:', function () {
@@ -1821,7 +1914,8 @@ suite('index:', function () {
                     forwarder: 'forwarder',
                     fwdHost: 'bar host',
                     fwdPort: 1234,
-                    fwdSize: 256
+                    fwdSize: 256,
+                    workers: 2
                 });
             });
 
@@ -1862,6 +1956,14 @@ suite('index:', function () {
             test('log.info was called correctly', function () {
                 assert.lengthOf(log.args.info[0], 1);
                 assert.strictEqual(log.args.info[0][0], 'listening for 192.168.1.1:8080/foo/bar');
+            });
+
+            test('cluster.fork was not called', function () {
+                assert.strictEqual(log.counts.fork, 0);
+            });
+
+            test('cluster.on was not called', function () {
+                assert.strictEqual(log.counts.on, 0);
             });
 
             suite('valid request:', function () {
@@ -2698,6 +2800,91 @@ suite('index:', function () {
                     test('request.socket.destroy was called once', function () {
                         assert.strictEqual(log.counts.destroy, 1);
                     });
+                });
+            });
+        });
+
+        suite('call listen with cluster master:', function () {
+            setup(function () {
+                cluster.isMaster = true;
+
+                boomcatch.listen({
+                    workers: 2
+                });
+            });
+
+            teardown(function () {
+                cluster.isMaster = undefined;
+            });
+
+            test('?.initialise was called four times', function () {
+                assert.strictEqual(log.counts.initialise, 4);
+            });
+
+            test('http.createServer was not called', function () {
+                assert.strictEqual(log.counts.createServer, 0);
+            });
+
+            test('http.listen was not called', function () {
+                assert.strictEqual(log.counts.listen, 0);
+            });
+
+            test('cluster.fork was called twice', function () {
+                assert.strictEqual(log.counts.fork, 2);
+            });
+
+            test('cluster.fork was called correctly first time', function () {
+                assert.strictEqual(log.these.fork[0], cluster);
+                assert.lengthOf(log.args.fork[0], 0);
+            });
+
+            test('cluster.fork was called correctly second time', function () {
+                assert.strictEqual(log.these.fork[1], cluster);
+                assert.lengthOf(log.args.fork[1], 0);
+            });
+
+            test('cluster.on was called twice', function () {
+                assert.strictEqual(log.counts.on, 2);
+            });
+
+            test('cluster.on was called correctly first time', function () {
+                assert.strictEqual(log.these.on[0], cluster);
+                assert.lengthOf(log.args.on[0], 2);
+                assert.strictEqual(log.args.on[0][0], 'online');
+                assert.isFunction(log.args.on[0][1]);
+            });
+
+            test('cluster.on was called correctly second time', function () {
+                assert.strictEqual(log.these.on[1], cluster);
+                assert.lengthOf(log.args.on[1], 2);
+                assert.strictEqual(log.args.on[1][0], 'exit');
+                assert.isFunction(log.args.on[1][1]);
+                assert.notEqual(log.args.on[0][1], log.args.on[1][1]);
+            });
+
+            suite('exit worker:', function () {
+                var worker;
+
+                setup(function () {
+                    worker = {
+                        process: {
+                            pid: 19770610
+                        }
+                    };
+                    log.args.on[1][1](worker);
+                });
+
+                teardown(function () {
+                    worker = undefined;
+                });
+
+                test('cluster.fork was called once', function () {
+                    assert.strictEqual(log.counts.fork, 3);
+                });
+
+                test('cluster.fork was called correctly', function () {
+                    assert.strictEqual(log.these.fork[2], cluster);
+                    assert.lengthOf(log.args.fork[2], 0);
                 });
             });
         });
