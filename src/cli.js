@@ -39,6 +39,7 @@ function parseCommandLine () {
         .option('-z, --maxSize <bytes>', 'maximum allowable body size for POST requests, default is -1 (unlimited)', parseInt)
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-y, --syslog <facility>', 'use syslog-compatible logging, with the specified facility level')
+        .option('-w, --workers <count>', 'use a fixed number of worker processes to handle requests, default is -1 (one worker per CPU)', parseWorkers)
         .option('-v, --validator <path>', 'validator to use, default is permissive')
         .option('-i, --filter <path>', 'filter to use, default is unfiltered')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
@@ -67,6 +68,16 @@ function parseOrigin (origin) {
     return array.map(function (item) {
         return item.trim();
     });
+}
+
+function parseWorkers (workers) {
+    var count = parseInt(workers);
+
+    if (check.not.number(count) || count < 0) {
+        count = require('os').cpus().length;
+    }
+
+    return count;
 }
 
 function runServer () {
