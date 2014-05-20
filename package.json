@@ -37,7 +37,7 @@
         "yamlparser": "0.0.x",
         "request": "2.34.x",
         "node-uuid": "1.4.x",
-        "toobusy": "dannycoates/node-toobusy#node11"
+        "toobusy-js": "0.3.x"
     },
     "optionalDependencies": {
         "rconsole": "0.2.x"
