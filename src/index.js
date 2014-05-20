@@ -81,7 +81,7 @@ normalisationMaps;
  * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
  */
 exports.listen = function (options) {
-    var workers, log, path, host, port, validator, filter, mapper, forwarder;
+    var workers, log;
 
     if (options) {
         verifyOptions(options);
@@ -91,34 +91,11 @@ exports.listen = function (options) {
 
     workers = getWorkers(options);
     log = getLog(options);
-    path = getPath(options);
-    host = getHost(options);
-    port = getPort(options);
-    validator = getValidator(options);
-    filter = getFilter(options);
-    mapper = getMapper(options);
-    forwarder = getForwarder(options);
 
     if (workers > 0 && cluster.isMaster) {
         createWorkers(workers, log);
     } else {
-        log.info('listening for ' + host + ':' + port + path);
-
-        http.createServer(
-            handleRequest.bind(
-                null,
-                log,
-                path,
-                getReferer(options),
-                getLimit(options),
-                getOrigin(options),
-                getMaxSize(options),
-                validator,
-                filter,
-                mapper,
-                forwarder
-            )
-        ).listen(port, host);
+        createServer(options, log);
     }
 };
 
@@ -214,6 +191,49 @@ function getLog (options) {
     return getOption('log', options);
 }
 
+function createWorkers (count, log) {
+    var i;
+
+    cluster.on('online', function (worker) {
+        log.info('worker process ' + worker.process.pid + ' has started');
+    });
+
+    cluster.on('exit', function (worker) {
+        log.info('worker process ' + worker.process.pid + ' has died, respawning');
+        cluster.fork();
+    });
+
+    for (i = 0; i < count; i += 1) {
+        cluster.fork();
+    }
+}
+
+function createServer (options, log) {
+    var host, port, path;
+
+    host = getHost(options);
+    port = getPort(options);
+    path = getPath(options);
+
+    log.info('listening for ' + host + ':' + port + path);
+
+    http.createServer(
+        handleRequest.bind(
+            null,
+            log,
+            path,
+            getReferer(options),
+            getLimit(options),
+            getOrigin(options),
+            getMaxSize(options),
+            getValidator(options),
+            getFilter(options),
+            getMapper(options),
+            getForwarder(options)
+        )
+    ).listen(port, host);
+}
+
 function getHost (options) {
     return getOption('host', options);
 }
@@ -287,23 +307,6 @@ function getMapper (options) {
 
 function getForwarder (options) {
     return getExtension('forwarder', options);
-}
-
-function createWorkers (count, log) {
-    var i;
-
-    cluster.on('online', function (worker) {
-        log.info('worker process ' + worker.process.pid + ' has started');
-    });
-
-    cluster.on('exit', function (worker) {
-        log.info('worker process ' + worker.process.pid + ' has died, respawning');
-        cluster.fork();
-    });
-
-    for (i = 0; i < count; i += 1) {
-        cluster.fork();
-    }
 }
 
 function handleRequest (log, path, referer, limit, origin, maxSize, validator, filter, mapper, forwarder, request, response) {

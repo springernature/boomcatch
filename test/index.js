@@ -2817,8 +2817,8 @@ suite('index:', function () {
                 cluster.isMaster = undefined;
             });
 
-            test('?.initialise was called four times', function () {
-                assert.strictEqual(log.counts.initialise, 4);
+            test('?.initialise was not called', function () {
+                assert.strictEqual(log.counts.initialise, 0);
             });
 
             test('http.createServer was not called', function () {
