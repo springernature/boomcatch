@@ -1,6 +1,6 @@
 # History
 
-## 1.4.2
+## 1.4.3
 
 * Switch to a [pure JS implementation of toobusy](https://github.com/STRML/node-toobusy).
 
