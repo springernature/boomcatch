@@ -1,5 +1,9 @@
 # History
 
+## 1.4.1
+
+* Switch to a [node 0.11 compatible version of toobusy](https://github.com/dannycoates/node-toobusy/tree/node11).
+
 ## 1.4.0
 
 * Add option to control number of worker processes.
@@ -8,7 +12,7 @@
 
 ## 1.3.6
 
-* Expose resource duration in the waterfall mapper.'
+* Expose resource duration in the waterfall mapper.
 
 ## 1.3.5
 
