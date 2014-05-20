@@ -250,10 +250,6 @@ function getReferer (options) {
     return getOption('referer', options);
 }
 
-function getOrigin (options) {
-    return getOption('origin', options);
-}
-
 function getLimit (options) {
     var limit = getOption('limit', options);
 
@@ -265,6 +261,10 @@ function getLimit (options) {
         time: limit,
         requests: {}
     };
+}
+
+function getOrigin (options) {
+    return getOption('origin', options);
 }
 
 function getMaxSize (options) {
