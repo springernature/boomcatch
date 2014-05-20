@@ -1,5 +1,9 @@
 # History
 
+## 1.4.2
+
+* Switch to a [pure JS implementation of toobusy](https://github.com/STRML/node-toobusy).
+
 ## 1.4.1
 
 * Switch to a [node 0.11 compatible version of toobusy](https://github.com/dannycoates/node-toobusy/tree/node11).
@@ -9,6 +13,7 @@
 * Add option to control number of worker processes.
 * Improve reliability of default forwarders.
 * Fail fast when the server is too busy.
+* NOTE: Node 0.8 is no longer supported.
 
 ## 1.3.6
 
