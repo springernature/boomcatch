@@ -1,5 +1,11 @@
 # History
 
+## 1.4.0
+
+* Add option to control number of worker processes.
+* Improve reliability of default forwarders.
+* Fail fast when the server is too busy.
+
 ## 1.3.6
 
 * Expose resource duration in the waterfall mapper.'
