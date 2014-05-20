@@ -167,6 +167,7 @@ boomcatch.listen({
     limit: 100,                               // Defaults to 0
     maxSize: 1048576,                         // Defaults to -1
     log: console.log,                         // Defaults to function () {}
+    workers: require('os').cpus().length,     // Defaults to 0
     validator: path.resolve('./myvalidator'), // Defaults to 'permissive'
     mapper: path.resolve('./mymapper'),       // Defaults to 'statsd'
     prefix: 'mystats.rum.',                   // Defaults to ''
