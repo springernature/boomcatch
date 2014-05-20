@@ -466,32 +466,14 @@ function receive (log, state, maxSize, request, response, data) {
 }
 
 function send (log, state, remoteAddress, validator, filter, mapper, forwarder, request, response) {
+    var data, referer, userAgent, mappedData;
+
+    if (state.failed) {
+        return;
+    }
+
     try {
-        var successStatus, data, referer, userAgent, mappedData;
-
-        if (state.failed) {
-            return;
-        }
-
-        if (request.method === 'GET') {
-            successStatus = 204;
-            data = qs.parse(url.parse(request.url).query);
-        } else {
-            successStatus = 200;
-
-            if (state.body.substr(0, 5) === 'data=') {
-                state.body = state.body.substr(5);
-            }
-
-            state.body = decodeURIComponent(state.body);
-
-            if (request.headers['content-type'] === 'text/plain') {
-                data = JSON.parse(state.body);
-            } else {
-                data = qs.parse(state.body);
-            }
-        }
-
+        data = parseData(request, state);
         referer = request.headers.referer;
         userAgent = request.headers['user-agent'];
 
@@ -511,11 +493,32 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
                 return fail(log, request, response, 502, error);
             }
 
-            pass(log, response, successStatus, bytesSent);
+            pass(log, response, state.successStatus, bytesSent);
         });
     } catch (error) {
         fail(log, request, response, 400, 'Invalid data');
     }
+}
+
+function parseData (request, state) {
+    if (request.method === 'GET') {
+        state.successStatus = 204;
+        return qs.parse(url.parse(request.url).query);
+    }
+
+    state.successStatus = 200;
+
+    if (state.body.substr(0, 5) === 'data=') {
+        state.body = state.body.substr(5);
+    }
+
+    state.body = decodeURIComponent(state.body);
+
+    if (request.headers['content-type'] === 'text/plain') {
+        return JSON.parse(state.body);
+    }
+
+    return qs.parse(state.body);
 }
 
 function normaliseData (data) {
