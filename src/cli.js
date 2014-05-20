@@ -22,6 +22,7 @@
 'use strict';
 
 var cli = require('commander'),
+    check = require('check-types'),
     packageInfo = require('../package.json'),
     impl = require('./index');
 
@@ -39,6 +40,7 @@ function parseCommandLine () {
         .option('-z, --maxSize <bytes>', 'maximum allowable body size for POST requests, default is -1 (unlimited)', parseInt)
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-y, --syslog <facility>', 'use syslog-compatible logging, with the specified facility level')
+        .option('-w, --workers <count>', 'use a fixed number of worker processes to handle requests, default is -1 (one worker per CPU)', parseInt)
         .option('-v, --validator <path>', 'validator to use, default is permissive')
         .option('-i, --filter <path>', 'filter to use, default is unfiltered')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
@@ -74,6 +76,8 @@ function runServer () {
         cli.log = getLog();
     }
 
+    normaliseWorkers();
+
     impl.listen(cli);
 }
 
@@ -107,5 +111,11 @@ function initialiseSyslog () {
 
 function getFallbackLog () {
     return require('get-off-my-log').initialise('boomcatch', console.log);
+}
+
+function normaliseWorkers () {
+    if (check.not.number(cli.workers) || cli.workers < 0) {
+        cli.workers = require('os').cpus().length;
+    }
 }
 

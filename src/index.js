@@ -24,6 +24,8 @@ var check = require('check-types'),
     url = require('url'),
     qs = require('qs'),
     fs = require('fs'),
+    toobusy = require('toobusy'),
+    cluster = require('cluster'),
 
 defaults = {
     host: '0.0.0.0',
@@ -40,7 +42,8 @@ defaults = {
     validator: 'permissive',
     filter: 'unfiltered',
     mapper: 'statsd',
-    forwarder: 'udp'
+    forwarder: 'udp',
+    workers: 0
 },
 
 normalisationMaps;
@@ -75,9 +78,10 @@ normalisationMaps;
  * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
+ * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
  */
 exports.listen = function (options) {
-    var log, path, host, port, validator, filter, mapper, forwarder;
+    var workers, log;
 
     if (options) {
         verifyOptions(options);
@@ -85,32 +89,14 @@ exports.listen = function (options) {
         options = {};
     }
 
+    workers = getWorkers(options);
     log = getLog(options);
-    path = getPath(options);
-    host = getHost(options);
-    port = getPort(options);
-    validator = getValidator(options);
-    filter = getFilter(options);
-    mapper = getMapper(options);
-    forwarder = getForwarder(options);
 
-    log.info('listening for ' + host + ':' + port + path);
-
-    http.createServer(
-        handleRequest.bind(
-            null,
-            log,
-            path,
-            getReferer(options),
-            getLimit(options),
-            getOrigin(options),
-            getMaxSize(options),
-            validator,
-            filter,
-            mapper,
-            forwarder
-        )
-    ).listen(port, host);
+    if (workers > 0 && cluster.isMaster) {
+        createWorkers(workers, log);
+    } else {
+        createServer(options, log);
+    }
 };
 
 function verifyOptions (options) {
@@ -121,6 +107,8 @@ function verifyOptions (options) {
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
+    check.verify.maybe.number(options.workers, 'Invalid workers');
+    check.verify.not.negativeNumber(options.workers, 'Invalid workers');
 
     verifyOrigin(options.origin);
     verifyLog(options.log);
@@ -191,12 +179,59 @@ function verifyDirectory (path, message) {
     throw new Error(message);
 }
 
-function getLog (options) {
-    return getOption('log', options);
+function getWorkers (options) {
+    return getOption('workers', options);
 }
 
 function getOption (name, options) {
     return options[name] || defaults[name];
+}
+
+function getLog (options) {
+    return getOption('log', options);
+}
+
+function createWorkers (count, log) {
+    var i;
+
+    cluster.on('online', function (worker) {
+        log.info('worker process ' + worker.process.pid + ' has started');
+    });
+
+    cluster.on('exit', function (worker) {
+        log.info('worker process ' + worker.process.pid + ' has died, respawning');
+        cluster.fork();
+    });
+
+    for (i = 0; i < count; i += 1) {
+        cluster.fork();
+    }
+}
+
+function createServer (options, log) {
+    var host, port, path;
+
+    host = getHost(options);
+    port = getPort(options);
+    path = getPath(options);
+
+    log.info('listening for ' + host + ':' + port + path);
+
+    http.createServer(
+        handleRequest.bind(
+            null,
+            log,
+            path,
+            getReferer(options),
+            getLimit(options),
+            getOrigin(options),
+            getMaxSize(options),
+            getValidator(options),
+            getFilter(options),
+            getMapper(options),
+            getForwarder(options)
+        )
+    ).listen(port, host);
 }
 
 function getHost (options) {
@@ -215,10 +250,6 @@ function getReferer (options) {
     return getOption('referer', options);
 }
 
-function getOrigin (options) {
-    return getOption('origin', options);
-}
-
 function getLimit (options) {
     var limit = getOption('limit', options);
 
@@ -230,6 +261,10 @@ function getLimit (options) {
         time: limit,
         requests: {}
     };
+}
+
+function getOrigin (options) {
+    return getOption('origin', options);
 }
 
 function getMaxSize (options) {
@@ -278,6 +313,10 @@ function handleRequest (log, path, referer, limit, origin, maxSize, validator, f
     var requestPath, remoteAddress, state;
 
     logRequest(log, request);
+
+    if (toobusy()) {
+        return fail(log, request, response, 503, 'Server too busy');
+    }
 
     requestPath = getRequestPath(request);
     remoteAddress = getRemoteAddress(request);
@@ -427,32 +466,14 @@ function receive (log, state, maxSize, request, response, data) {
 }
 
 function send (log, state, remoteAddress, validator, filter, mapper, forwarder, request, response) {
+    var data, referer, userAgent, mappedData;
+
+    if (state.failed) {
+        return;
+    }
+
     try {
-        var successStatus, data, referer, userAgent, mappedData;
-
-        if (state.failed) {
-            return;
-        }
-
-        if (request.method === 'GET') {
-            successStatus = 204;
-            data = qs.parse(url.parse(request.url).query);
-        } else {
-            successStatus = 200;
-
-            if (state.body.substr(0, 5) === 'data=') {
-                state.body = state.body.substr(5);
-            }
-
-            state.body = decodeURIComponent(state.body);
-
-            if (request.headers['content-type'] === 'text/plain') {
-                data = JSON.parse(state.body);
-            } else {
-                data = qs.parse(state.body);
-            }
-        }
-
+        data = parseData(request, state);
         referer = request.headers.referer;
         userAgent = request.headers['user-agent'];
 
@@ -472,11 +493,32 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
                 return fail(log, request, response, 502, error);
             }
 
-            pass(log, response, successStatus, bytesSent);
+            pass(log, response, state.successStatus, bytesSent);
         });
     } catch (error) {
         fail(log, request, response, 400, 'Invalid data');
     }
+}
+
+function parseData (request, state) {
+    if (request.method === 'GET') {
+        state.successStatus = 204;
+        return qs.parse(url.parse(request.url).query);
+    }
+
+    state.successStatus = 200;
+
+    if (state.body.substr(0, 5) === 'data=') {
+        state.body = state.body.substr(5);
+    }
+
+    state.body = decodeURIComponent(state.body);
+
+    if (request.headers['content-type'] === 'text/plain') {
+        return JSON.parse(state.body);
+    }
+
+    return qs.parse(state.body);
 }
 
 function normaliseData (data) {
