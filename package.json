@@ -1,6 +1,6 @@
 {
     "name": "boomcatch",
-    "version": "1.4.2",
+    "version": "1.4.3",
     "description": "Standalone beacon server for boomerang.",
     "homepage": "https://github.com/nature/boomcatch",
     "bugs": "https://github.com/nature/boomcatch/issues",
