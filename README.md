@@ -1,8 +1,8 @@
 # boomcatch
 
-Standalone,
+A standalone,
 node.js-based
-beacon server for [boomerang].
+beacon receiver for [boomerang].
 [Read more][blog].
 
 [![Build status][ci-image]][ci-status]
