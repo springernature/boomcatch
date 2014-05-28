@@ -1,0 +1,31 @@
+<svg width="{{width}}" height="{{height}}">
+    {{#xAxis}}
+    <g transform="translate({{x}}, {{y}}">
+        <text>Time (milliseconds)</text>
+    </g>
+    {{/xAxis}}
+    <!-- offset.x, offset.y ? -->
+    <g transform="translate({{offsetX}}, {{offsetY}})">
+        {{#resources}}
+        <g transform="translate(0, {{y}})">
+            <!-- white bar for flicker, grey bar for blocked -->
+            {{#timings}}
+            <rect x="{{x}}" width="{{width}}" height="{{height}}" style="fill: {{fill}};"></rect>
+            {{/timings}}
+            {{#label}}
+            <text x="{{x}}" y="{{y}}">{{text}}</text>
+            {{/label}}
+        </g>
+        {{/resources}}
+        <g transform="translate(0, -{{padding}})">
+            {{#ticks}}
+            <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{bodyHeight}}" style="stroke: rgb(204, 204, 204);"></line>
+            <text x="{{x}}" y="0" dy="-3" text-anchor="middle">{{value}}</text>
+            {{/ticks}}
+            {{#yAxis}}
+            <line x1="0" x2="0" y1="0" y2="{{bodyHeight}}" style="stroke: rgb(0, 0, 0);"></line>
+            <text x="0" y="0" dy="-3" text-anchor="middle">{{value}}</text>
+            {{/yAxis}}
+        </g>
+    </g>
+</svg>

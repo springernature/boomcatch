@@ -1,0 +1,31 @@
+{{#resources}}
+<section>
+    <div class="resource-detail box" data-resource-detail="{{index}}">
+        <h2 class="visually-hidden">{{name}}</h2>
+        <ul>
+            <li class="resource-detail-type unbulletted">
+                <h3>Initiator type</h3>:
+                {{type}}
+            </li>
+            <li class="resource-detail-start unbulleted padded-top">
+                <h3>Start time</h3>:
+                {{start}} <abbr title="milliseconds">ms</abbr>
+            </li>
+            <li class="resource-detail-duration unbulleted">
+                <h3>Duration</h3>:
+                {{duration}} <abbr title="milliseconds">ms</abbr>
+            </li>
+            {{#timings}}
+            <li class="resource-detail-timing-start unbulleted padded-top">
+                <h3>{{title}} start time</h3>:
+                {{start}} <abbr title="milliseconds">ms</abbr>
+            </li>
+            <li class="resource-detail-timing-duration unbulleted">
+                <h3>{{title}} duration</h3>:
+                {{duration}} <abbr title="milliseconds">ms</abbr>
+            </li>
+            {{/timings}}
+        </ul>
+    </div>
+</section>
+{{/resources}}
