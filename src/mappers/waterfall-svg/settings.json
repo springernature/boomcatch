@@ -6,14 +6,12 @@
     },
     "barHeight": 18,
     "padding": 6,
-    "colours": {
-        "blocked": "#e5ded3",
-        "timings": [
-            "#3f3ff6",
-            "#056200",
-            "#b1493e",
-            "#c648d3",
-            "#764782",
-        ]
-    }
+    "colours": [
+        { "name": "blocked", "value": "#e5ded3", "fg": "#000" },
+        { "name": "redirect", "value": "#3f3ff6", "fg": "#fff" },
+        { "name": "dns", "value": "#056200", "fg": "#fff" },
+        { "name": "connect", "value": "#b1493e", "fg": "#fff" },
+        { "name": "request", "value": "#c648d3", "fg": "#fff" },
+        { "name": "response", "value": "#764782", "fg": "#fff" }
+    ]
 }
