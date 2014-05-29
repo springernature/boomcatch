@@ -4,26 +4,26 @@
         <text>Time (milliseconds)</text>
     </g>
     {{/xAxis}}
-    <!-- offset.x, offset.y ? -->
-    <g transform="translate({{offsetX}}, {{offsetY}})">
+    <g transform="translate({{offset.x}}, {{offset.y}})">
         {{#resources}}
         <g transform="translate(0, {{y}})">
-            <!-- white bar for flicker, grey bar for blocked -->
+            <rect x="-{{offset.x}}" width="100%" height="{{height}}" style="fill: #fff;"></rect>
+            <rect x="{{x}}" y="{{barPadding}}" width="100%" height="{{barHeight}}" style="fill: #fff;"></rect>
             {{#timings}}
-            <rect x="{{x}}" width="{{width}}" height="{{height}}" style="fill: {{fill}};"></rect>
+            <rect x="{{x}}" y="{{barPadding}}" width="{{width}}" height="{{barHeight}}" style="fill: {{fill}};"></rect>
             {{/timings}}
             {{#label}}
-            <text x="{{x}}" y="{{y}}">{{text}}</text>
+            <text x="-{{offset.x}}" y="{{y}}" dy="{{dy}}">{{text}}</text>
             {{/label}}
         </g>
         {{/resources}}
         <g transform="translate(0, -{{padding}})">
             {{#ticks}}
-            <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{bodyHeight}}" style="stroke: rgb(204, 204, 204);"></line>
+            <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{height}}" style="stroke: #ccc;"></line>
             <text x="{{x}}" y="0" dy="-3" text-anchor="middle">{{value}}</text>
             {{/ticks}}
             {{#yAxis}}
-            <line x1="0" x2="0" y1="0" y2="{{bodyHeight}}" style="stroke: rgb(0, 0, 0);"></line>
+            <line x1="0" x2="0" y1="0" y2="{{height}}" style="stroke: #000;"></line>
             <text x="0" y="0" dy="-3" text-anchor="middle">{{value}}</text>
             {{/yAxis}}
         </g>

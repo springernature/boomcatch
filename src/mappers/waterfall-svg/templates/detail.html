@@ -3,25 +3,25 @@
     <div class="resource-detail box" data-resource-detail="{{index}}">
         <h2 class="visually-hidden">{{name}}</h2>
         <ul>
-            <li class="resource-detail-type unbulletted">
+            <li class="resource-type unbulletted">
                 <h3>Initiator type</h3>:
                 {{type}}
             </li>
-            <li class="resource-detail-start unbulleted padded-top">
+            <li class="resource-start unbulleted padded-top">
                 <h3>Start time</h3>:
                 {{start}} <abbr title="milliseconds">ms</abbr>
             </li>
-            <li class="resource-detail-duration unbulleted">
+            <li class="resource-duration unbulleted">
                 <h3>Duration</h3>:
                 {{duration}} <abbr title="milliseconds">ms</abbr>
             </li>
             {{#timings}}
-            <li class="resource-detail-timing-start unbulleted padded-top">
-                <h3>{{title}} start time</h3>:
+            <li class="resource-timing resource-start timing-{{name}} unbulleted padded-top">
+                <h3>{{name}} start time</h3>:
                 {{start}} <abbr title="milliseconds">ms</abbr>
             </li>
-            <li class="resource-detail-timing-duration unbulleted">
-                <h3>{{title}} duration</h3>:
+            <li class="resource-timing resource-duration timing-{{name}} unbulleted">
+                <h3>{{name}} duration</h3>:
                 {{duration}} <abbr title="milliseconds">ms</abbr>
             </li>
             {{/timings}}
