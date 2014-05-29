@@ -70,6 +70,7 @@ normalisationMaps;
  * @option mapper {string}       Data mapper used to transform data before forwarding,
  *                               loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
+ * @option svgTemplate {string}  Path to alternative SVG handlebars template file (SVG mapper only).
  * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper only).
  * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
  *                               Defaults to 'udp'.
@@ -151,6 +152,7 @@ function verifyForwarderOptions (options) {
 
     switch (options.forwarder) {
         case 'waterfall-svg':
+            verifyFile(options.svgTemplate, 'Invalid SVG template path');
             verifyFile(options.svgSettings, 'Invalid SVG settings path');
             break;
         case 'file':
@@ -167,20 +169,32 @@ function verifyForwarderOptions (options) {
     }
 }
 
-function verifyDirectory (path, message) {
+function verifyFile (path, message) {
+    verifyFs(true, path, 'isFile', message);
+}
+
+function verifyFs (isOptional, path, method, message) {
     var stat;
+
+    if (isOptional && !path) {
+        return;
+    }
 
     check.verify.unemptyString(path, message);
 
     if (fs.existsSync(path)) {
         stat = fs.statSync(path);
 
-        if (stat.isDirectory()) {
+        if (stat[method]()) {
             return;
         }
     }
 
     throw new Error(message);
+}
+
+function verifyDirectory (path, message) {
+    verifyFs(false, path, 'isDirectory', message);
 }
 
 function getWorkers (options) {
