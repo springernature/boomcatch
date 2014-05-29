@@ -62,7 +62,7 @@ function verifySettings (settings) {
         throw new Error('Incorrect number of SVG colours');
     }
 
-    settings.colours.forEach(function (colour) {
+    settings.colours.forEach(function (colour, index) {
         check.verify.object(colour, 'Invalid SVG colour [' + index + ']');
         check.verify.unemptyString(colour.name, 'Invalid SVG colour name [' + index + ']');
         check.verify.unemptyString(colour.value, 'Invalid SVG colour value [' + index + ']');
