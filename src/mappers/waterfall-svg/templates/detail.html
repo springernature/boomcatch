@@ -1,4 +1,4 @@
-{{#resources}}
+{{#with resources}}
 <section>
     <div class="resource-detail box" data-resource-detail="{{index}}">
         <h2 class="visually-hidden">{{name}}</h2>
@@ -15,7 +15,7 @@
                 <h3>Duration</h3>:
                 {{duration}} <abbr title="milliseconds">ms</abbr>
             </li>
-            {{#timings}}
+            {{#each timings}}
             <li class="resource-timing resource-start timing-{{name}} unbulleted padded-top">
                 <h3>{{name}} start time</h3>:
                 {{start}} <abbr title="milliseconds">ms</abbr>
@@ -24,8 +24,8 @@
                 <h3>{{name}} duration</h3>:
                 {{duration}} <abbr title="milliseconds">ms</abbr>
             </li>
-            {{/timings}}
+            {{/each}}
         </ul>
     </div>
 </section>
-{{/resources}}
+{{/with}}

@@ -1,31 +1,31 @@
 <svg width="{{width}}" height="{{height}}">
-    {{#xAxis}}
+    {{#with xAxis}}
     <g transform="translate({{x}}, {{y}}">
         <text>Time (milliseconds)</text>
     </g>
-    {{/xAxis}}
+    {{/with}}
     <g transform="translate({{offset.x}}, {{offset.y}})">
-        {{#resources}}
+        {{#each resources}}
         <g transform="translate(0, {{y}})">
             <rect x="-{{offset.x}}" width="100%" height="{{height}}" style="fill: #fff;"></rect>
             <rect x="{{x}}" y="{{barPadding}}" width="100%" height="{{barHeight}}" style="fill: #fff;"></rect>
-            {{#timings}}
+            {{#each timings}}
             <rect x="{{x}}" y="{{barPadding}}" width="{{width}}" height="{{barHeight}}" style="fill: {{fill}};"></rect>
-            {{/timings}}
-            {{#label}}
+            {{/each}}
+            {{#with label}}
             <text x="-{{offset.x}}" y="{{y}}" dy="{{dy}}">{{text}}</text>
-            {{/label}}
+            {{/with}}
         </g>
-        {{/resources}}
+        {{/each}}
         <g transform="translate(0, -{{padding}})">
-            {{#ticks}}
+            {{#each ticks}}
             <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{height}}" style="stroke: #ccc;"></line>
             <text x="{{x}}" y="0" dy="-3" text-anchor="middle">{{value}}</text>
-            {{/ticks}}
-            {{#yAxis}}
+            {{/each}}
+            {{#with yAxis}}
             <line x1="0" x2="0" y1="0" y2="{{height}}" style="stroke: #000;"></line>
             <text x="0" y="0" dy="-3" text-anchor="middle">{{value}}</text>
-            {{/yAxis}}
+            {{/with}}
         </g>
     </g>
 </svg>
