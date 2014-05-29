@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="generator" content="boomcatch {{version}}"/>
+
+        <title>{{title}}</title>
+
+        <style>
+            html, body, div, h1, h2, h3, p, a, abbr, ul, li, table, thead, tbody, tr, th, td, section
+            {
+                margin: 0;
+                padding: 0;
+                border: none;
+                font-size: 100%;
+                font: inherit;
+                vertical-align: baseline;
+            }
+
+            html, body
+            {
+                height: 100%;
+            }
+
+            html
+            {
+                font-size: 100.01%;
+            }
+
+            body
+            {
+                padding: 0 32px;
+                font-family: helvetica, arial, sans-serif;
+                font-size: 75%;
+                background-color: #fff;
+                color: #333;
+            }
+
+            h1
+            {
+                margin: 1em 0;
+                font-size: 2em;
+            }
+
+            h2
+            {
+                margin: 0.7em 0;
+                font-size: 1.4em;
+            }
+
+            h3
+            {
+                display: inline;
+                font-weight: bold;
+            }
+
+            .key
+            {
+                float: right;
+                margin-top: -13em;
+                border: 1px solid #111;
+            }
+
+            .key-titles
+            {
+                font-weight: bold;
+                text-align: left;
+                background-color: #111;
+                color: #ccc;
+            }
+
+            .key-title
+            {
+                padding: 0.5em 1em;
+            }
+
+            .key-data
+            {
+                padding: 0.25em 1em;
+                border-top: 1px solid #111;
+            }
+
+            {{#each svg.colours}}
+            .{{name}}
+            {
+                background-color: {{value}};
+                color: {{fg}}
+            }
+            {{/each}}
+
+            .resource-detail
+            {
+                position: absolute;
+                /* Not using display:none here because we need to read offsetWidth while the element is hidden */
+                visibility: hidden;
+            }
+
+            .box
+            {
+                padding: 16px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: #fff;
+            }
+
+            .visually-hidden
+            {
+                /* ...but accessible to screen-readers */
+                width: 1px;
+                height: 1px;
+                position: absolute;
+                clip: rect(1px 1px 1px 1px);
+                clip: rect(1px, 1px, 1px, 1px);
+            }
+
+            .unbulleted
+            {
+                list-style-type: none;
+            }
+
+            .padded-top
+            {
+                margin-top: 6px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>{{title}}</h1>
+
+        <section>
+            <h2>Waterfall chart</h2>
+
+            {{#with svg}}
+            <svg width="{{width}}" height="{{height}}">
+                {{#with xAxis}}
+                <g transform="translate({{x}}, {{y}}">
+                    <text>Time (milliseconds)</text>
+                </g>
+                {{/with}}
+                <g transform="translate({{offset.x}}, {{offset.y}})">
+                    {{#each resources}}
+                    <g transform="translate(0, {{y}})">
+                        <rect x="-{{offset.x}}" width="100%" height="{{resourceHeight}}" style="fill: #fff;"></rect>
+                        {{#each colours}}
+                        <rect x="{{x}}" y="{{barPadding}}" width="{{width}}" height="{{barHeight}}" style="fill: {{value}};"></rect>
+                        {{/each}}
+                        {{#with label}}
+                        <text x="-{{offset.x}}" y="{{y}}" dy="{{dy}}">{{text}}</text>
+                        {{/with}}
+                    </g>
+                    {{/each}}
+                    <g transform="translate(0, -{{padding}})">
+                        {{#each ticks}}
+                        <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{height}}" style="stroke: #ccc;"></line>
+                        <text x="{{x}}" y="0" dy="-3" text-anchor="middle">{{value}}</text>
+                        {{/each}}
+                        {{#with yAxis}}
+                        <line x1="0" x2="0" y1="0" y2="{{height}}" style="stroke: #000;"></line>
+                        <text x="0" y="0" dy="-3" text-anchor="middle">{{value}}</text>
+                        {{/with}}
+                    </g>
+                </g>
+            </svg>
+            {{/with}}
+        </section>
+
+        <section>
+            <h2>Colour key</h2>
+            <table class="description key" cellspacing="0" cellpadding="0">
+                <thead class="key-titles">
+                    <tr>
+                        <th class="key-title">State</th>
+                        <th class="key-title">Colour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each svg.colours}}
+                    <tr>
+                        <td class="key-data">{{name}}</td>
+                        <td class="key-data {{name}}">{{value}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </section>
+
+        {{#each details}}
+        <section>
+            <div class="resource-detail box" data-resource-detail="{{index}}">
+                <h2 class="visually-hidden">{{name}}</h2>
+                <ul>
+                    <li class="resource-type unbulletted">
+                        <h3>Initiator type</h3>:
+                        {{type}}
+                    </li>
+                    <li class="resource-start unbulleted padded-top">
+                        <h3>Start time</h3>:
+                        {{start}} <abbr title="milliseconds">ms</abbr>
+                    </li>
+                    <li class="resource-duration unbulleted">
+                        <h3>Duration</h3>:
+                        {{duration}} <abbr title="milliseconds">ms</abbr>
+                    </li>
+                    {{#each timings}}
+                    {{#unless blocked}}
+                    <li class="resource-timing resource-start timing-{{name}} unbulleted padded-top">
+                        <h3>{{name}} start time</h3>:
+                        {{start}} <abbr title="milliseconds">ms</abbr>
+                    </li>
+                    <li class="resource-timing resource-duration timing-{{name}} unbulleted">
+                        <h3>{{name}} duration</h3>:
+                        {{duration}} <abbr title="milliseconds">ms</abbr>
+                    </li>
+                    {{/unless}}
+                    {{/each}}
+                </ul>
+            </div>
+        </section>
+        {{/each}}
+    </body>
+</html>
