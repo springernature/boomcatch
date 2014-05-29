@@ -1,0 +1,19 @@
+{
+    "width": 960,
+    "offset": {
+        "x": 370,
+        "y": 50
+    },
+    "barHeight": 18,
+    "padding": 6,
+    "colours": {
+        "blocked": "#e5ded3",
+        "timings": [
+            "#3f3ff6",
+            "#056200",
+            "#b1493e",
+            "#c648d3",
+            "#764782",
+        ]
+    }
+}
