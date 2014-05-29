@@ -45,6 +45,7 @@ function parseCommandLine () {
         .option('-i, --filter <path>', 'filter to use, default is unfiltered')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
         .option('-x, --prefix <prefix>', 'prefix to apply to mapped metric names')
+        .option('-S, --svgSettings <path>', 'path to alternative SVG settings JSON file (SVG mapper only)')
         .option('-f, --forwarder <path>', 'forwarder to use, default is udp')
         .option('-N, --fwdHost <name>', 'host name to forward data to (UDP only)')
         .option('-P, --fwdPort <port>', 'port to forward data on (UDP only)', parseInt)

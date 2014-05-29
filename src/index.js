@@ -70,6 +70,7 @@ normalisationMaps;
  * @option mapper {string}       Data mapper used to transform data before forwarding,
  *                               loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
+ * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper only).
  * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
  *                               Defaults to 'udp'.
  * @option fwdHost {string}      Host name to forward mapped data to (UDP only).
@@ -149,6 +150,9 @@ function verifyForwarderOptions (options) {
     check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
 
     switch (options.forwarder) {
+        case 'waterfall-svg':
+            verifyFile(options.svgSettings, 'Invalid SVG settings path');
+            break;
         case 'file':
             verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
             break;
