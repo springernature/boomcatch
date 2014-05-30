@@ -32,7 +32,6 @@
                 padding: 0 32px;
                 font-family: helvetica, arial, sans-serif;
                 font-size: 75%;
-                background-color: #fff;
                 color: #333;
             }
 
@@ -52,6 +51,12 @@
             {
                 display: inline;
                 font-weight: bold;
+            }
+
+            .background
+            {
+                background-color: #fff;
+                fill: #fff;
             }
 
             .key
@@ -85,13 +90,23 @@
             {
                 background-color: {{value}};
                 color: {{fg}}
+                fill: {{value}};
             }
             {{/each}}
+
+            .y-axis
+            {
+                stroke: #000;
+            }
+
+            .tick
+            {
+                stroke: #ccc;
+            }
 
             .resource-detail
             {
                 position: absolute;
-                /* Not using display:none here because we need to read offsetWidth while the element is hidden */
                 visibility: hidden;
             }
 
@@ -100,12 +115,10 @@
                 padding: 16px;
                 border: 1px solid #ccc;
                 border-radius: 5px;
-                background-color: #fff;
             }
 
             .visually-hidden
             {
-                /* ...but accessible to screen-readers */
                 width: 1px;
                 height: 1px;
                 position: absolute;
@@ -123,9 +136,99 @@
                 margin-top: 6px;
             }
         </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                'use strict';
+
+                var resourceGroups, i, detailDimensions;
+
+                resourceGroups = document.querySelectorAll('[data-resource]');
+
+                for (i = 0; i < resourceGroups.length; i += 1) {
+                    addResourceHoverEffects(resourceGroups.item(i), i);
+                }
+
+                function addResourceHoverEffects (group, index) {
+                    group.addEventListener('mouseover', function (event) {
+                        highlightResourceGroup(group);
+                        showResourceDetail(index, event);
+                    });
+                    group.addEventListener('mousemove', moveResourceDetail.bind(null, index));
+                    group.addEventListener('mouseout', function () {
+                        unhighlightResourceGroups();
+                        hideResourceDetail(index);
+                    });
+                }
+
+                function highlightResourceGroup (group) {
+                    resourceGroups.style.opacity = 0.2;
+                    group.style.opacity = 1;
+                }
+
+                function showResourceDetail (index, event) {
+                    moveResourceDetail(index, event).style.visibility = 'visible';
+                }
+
+                function moveResourceDetail (index, event) {
+                    var detail, position;
+
+                    detail = document.querySelector('[data-resource-detail="' + index + '"]');
+
+                    if (typeof detailDimensions[index] === 'undefined') {
+                        detailDimensions[index] = {
+                            x: detail.offsetWidth,
+                            y: detail.offsetHeight
+                        };
+                    }
+
+                    position = {
+                        x: event.pageX + {{svg.padding}},
+                        y: event.pageY + {{svg.padding}}
+                    };
+
+                    updatePositionX(detailDimensions[resourceIndex], position, event);
+                    updatePositionY(detailDimensions[resourceIndex], position, event);
+
+                    detail.style.left = pixelify(position.x);
+                    detail.style.top = pixelify(position.y);
+
+                    return detail;
+                }
+
+                function updatePositionX (dimensions, position, event) {
+                    updatePosition(dimensions, 'x', event.clientX, event.pageX, innerWidth, position);
+                }
+
+                function updatePositionY (dimensions, position, event) {
+                    updatePosition(dimensions, 'y', event.clientY, event.pageY, innerHeight, position);
+                }
+
+                function updatePosition (dimensions, dimension, clientPosition, pagePostion, viewSize, position) {
+                    if (
+                        clientPosition + dimensions[dimension] + attributes.padding > viewSize &&
+                        clientPosition - dimensions[dimension] - attributes.padding >= 0
+                    ) {
+                        position[dimension] = pagePostion - dimensions[dimension] - attributes.padding;
+                    }
+                }
+
+                function pixelify (number) {
+                    return number + 'px';
+                }
+
+                function unhighlightResourceGroups () {
+                    resourceGroups.style.opacity = 1;
+                }
+
+                function hideResourceDetail (index) {
+                    moveResourceDetail(resourceIndex).style.visibility = 'hidden';
+                }
+            });
+        </script>
     </head>
 
-    <body>
+    <body class="background">
         <h1>{{title}}</h1>
 
         <section>
@@ -140,10 +243,10 @@
                 {{/with}}
                 <g transform="translate({{offset.x}}, {{offset.y}})">
                     {{#each resources}}
-                    <g transform="translate(0, {{y}})">
-                        <rect x="-{{offset.x}}" width="100%" height="{{resourceHeight}}" style="fill: #fff;"></rect>
+                    <g transform="translate(0, {{y}})" data-resource="{{index}}">
+                        <rect x="-{{offset.x}}" width="100%" height="{{resourceHeight}}" class="background"></rect>
                         {{#each colours}}
-                        <rect x="{{x}}" y="{{barPadding}}" width="{{width}}" height="{{barHeight}}" style="fill: {{value}};"></rect>
+                        <rect x="{{x}}" y="{{barPadding}}" width="{{width}}" height="{{barHeight}}" class="{{name}}"></rect>
                         {{/each}}
                         {{#with label}}
                         <text x="-{{offset.x}}" y="{{y}}" dy="{{dy}}">{{text}}</text>
@@ -151,14 +254,14 @@
                     </g>
                     {{/each}}
                     <g transform="translate(0, -{{padding}})">
-                        {{#each ticks}}
-                        <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{height}}" style="stroke: #ccc;"></line>
-                        <text x="{{x}}" y="0" dy="-3" text-anchor="middle">{{value}}</text>
-                        {{/each}}
                         {{#with yAxis}}
-                        <line x1="0" x2="0" y1="0" y2="{{height}}" style="stroke: #000;"></line>
+                        <line x1="0" x2="0" y1="0" y2="{{height}}" class="y-axis"></line>
                         <text x="0" y="0" dy="-3" text-anchor="middle">{{value}}</text>
                         {{/with}}
+                        {{#each ticks}}
+                        <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{height}}" class="tick"></line>
+                        <text x="{{x}}" y="0" dy="-3" text-anchor="middle">{{value}}</text>
+                        {{/each}}
                     </g>
                 </g>
             </svg>
@@ -187,7 +290,7 @@
 
         {{#each details}}
         <section>
-            <div class="resource-detail box" data-resource-detail="{{index}}">
+            <div class="resource-detail box background" data-resource-detail="{{index}}">
                 <h2 class="visually-hidden">{{name}}</h2>
                 <ul>
                     <li class="resource-type unbulleted">
