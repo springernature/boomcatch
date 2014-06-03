@@ -92,6 +92,8 @@ exports.listen = function (options) {
     workers = getWorkers(options);
     log = getLog(options);
 
+    log.info('starting boomcatch in process ' + process.pid + ' with options:\n' + JSON.stringify(options, null, '    ');
+
     if (workers > 0 && cluster.isMaster) {
         createWorkers(workers, log);
     } else {
