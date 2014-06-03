@@ -204,7 +204,7 @@ function createExceptionHandler (log) {
 }
 
 function handleException (log, error) {
-    log.error('unhandled exception: ' + error.message + '\n' + error.stack);
+    log.error('unhandled exception\n' + error.stack);
     process.exit(1);
 }
 
