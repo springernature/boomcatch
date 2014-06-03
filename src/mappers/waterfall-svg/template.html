@@ -244,12 +244,12 @@
                 <g transform="translate({{offset.x}}, {{offset.y}})">
                     {{#each resources}}
                     <g transform="translate(0, {{y}})" data-resource="{{index}}">
-                        <rect x="-{{offset.x}}" width="100%" height="{{resourceHeight}}" class="background"></rect>
-                        {{#each colours}}
-                        <rect x="{{x}}" y="{{barPadding}}" width="{{width}}" height="{{barHeight}}" class="{{name}}"></rect>
+                        <rect x="-{{../offset.x}}" width="100%" height="{{../resourceHeight}}" class="background"></rect>
+                        {{#each ../colours}}
+                        <rect x="{{x}}" y="{{../barPadding}}" width="{{width}}" height="{{../barHeight}}" class="{{name}}"></rect>
                         {{/each}}
                         {{#with label}}
-                        <text x="-{{offset.x}}" y="{{y}}" dy="{{dy}}">{{text}}</text>
+                        <text x="-{{../offset.x}}" y="{{y}}" dy="{{dy}}">{{text}}</text>
                         {{/with}}
                     </g>
                     {{/each}}

@@ -154,5 +154,30 @@ function mapRequestTiming (resource) {
 }
 
 function customiseSvgSettings (settings, resources) {
+    return {
+        width: settings.width,
+        height: (resources.length + 1) * (settings.barHeight + settings.padding) + settings.offset.x,
+        xAxis: {
+            x: settings.width / 1.8,
+            y: settings.offset.y / 2 - settings.padding
+        },
+        yAxis: {
+            height: resources.length * (settings.barHeight + settings.padding),
+            value: resources[0].start
+        },
+        ticks: getSvgTicks(settings.width, resources),
+        colours: settings.colours,
+        resourceHeight: settings.barHeight + settings.padding,
+        barPadding: settings.padding / 2,
+        barHeight: settings.barHeight,
+        padding: settings.padding,
+        resources: resources.map(mapSvgResource.bind(null, settings)
+    };
+}
+
+function getSvgTicks (width, resources) {
+}
+
+function mapSvgResource (settings, resource) {
 }
 
