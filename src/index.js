@@ -46,7 +46,7 @@ defaults = {
     workers: 0
 },
 
-normalisationMaps;
+signals, normalisationMaps;
 
 /**
  * Public function `listen`.
@@ -198,10 +198,16 @@ function getLog (options) {
 }
 
 function createSignalHandlers (log) {
-    process.on('SIGHUP', handleTerminalSignal.bind(null, log, 'SIGHUP', 1));
-    process.on('SIGINT', handleTerminalSignal.bind(null, log, 'SIGINT', 2));
-    process.on('SIGTERM', handleTerminalSignal.bind(null, log, 'SIGTERM', 15));
+    signals.forEach(function (signal) {
+        process.on(signal.name, handleTerminalSignal.bind(null, log, signal.name, signal.value));
+    });
 }
+
+signals = [
+    { name: 'SIGHUP', value: 1 },
+    { name: 'SIGINT', value: 2 },
+    { name: 'SIGTERM', value: 15 }
+};
 
 function handleTerminalSignal (log, signal, value) {
     log.info(signal + ' received, terminating process ' + process.pid);
