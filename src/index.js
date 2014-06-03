@@ -92,13 +92,17 @@ exports.listen = function (options) {
     workers = getWorkers(options);
     log = getLog(options);
 
-    log.info('starting boomcatch in process ' + process.pid + ' with options:\n' + JSON.stringify(options, null, '    ');
+    if (cluster.isMaster) {
+        log.info('starting boomcatch in process ' + process.pid + ' with options:\n' + JSON.stringify(options, null, '    ');
 
-    if (workers > 0 && cluster.isMaster) {
-        createWorkers(workers, log);
-    } else {
-        createServer(options, log);
+        createSignalHandlers();
+
+        if (workers > 0) {
+            return createWorkers(workers, log);
+        }
     }
+
+    createServer(options, log);
 };
 
 function verifyOptions (options) {
@@ -191,6 +195,17 @@ function getOption (name, options) {
 
 function getLog (options) {
     return getOption('log', options);
+}
+
+function createSignalHandlers (log) {
+    process.on('SIGHUP', handleTerminalSignal.bind(null, log, 'SIGHUP', 1));
+    process.on('SIGINT', handleTerminalSignal.bind(null, log, 'SIGINT', 2));
+    process.on('SIGTERM', handleTerminalSignal.bind(null, log, 'SIGTERM', 15));
+}
+
+function handleTerminalSignal (log, signal, value) {
+    log.info(signal + ' received, terminating process ' + process.pid);
+    process.exit(128 + value);
 }
 
 function createWorkers (count, log) {
