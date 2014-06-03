@@ -80,8 +80,7 @@ function map (template, settings, data, referer) {
     resources = data.restiming.map(mapResource.bind(null, referer));
 
     return template({
-        // TODO: Augment settings with timing-derived data
-        svg: settings,
+        svg: customiseSvgSettings(settings, resources),
         details: resources
     });
 }
@@ -152,5 +151,8 @@ function mapRequestTiming (resource) {
     }
 
     return mapTiming('request', requestTiming);
+}
+
+function customiseSvgSettings (settings, resources) {
 }
 
