@@ -215,8 +215,8 @@ function createWorkers (count, log) {
         log.info('worker process ' + worker.process.pid + ' has started');
     });
 
-    cluster.on('exit', function (worker) {
-        log.info('worker process ' + worker.process.pid + ' has died, respawning');
+    cluster.on('exit', function (worker, code, signal) {
+        log.info('worker process ' + worker.process.pid + ' has died (' + (signal || code) + '), respawning');
         cluster.fork();
     });
 
