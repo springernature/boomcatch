@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals require, exports */
+/*globals require, exports, process */
 
 'use strict';
 
@@ -95,7 +95,7 @@ exports.listen = function (options) {
     createExceptionHandler(log);
 
     if (cluster.isMaster) {
-        log.info('starting boomcatch in process ' + process.pid + ' with options:\n' + JSON.stringify(options, null, '    ');
+        log.info('starting boomcatch in process ' + process.pid + ' with options:\n' + JSON.stringify(options, null, '    '));
 
         createSignalHandlers(log);
 
@@ -218,7 +218,7 @@ signals = [
     { name: 'SIGHUP', value: 1 },
     { name: 'SIGINT', value: 2 },
     { name: 'SIGTERM', value: 15 }
-};
+];
 
 function handleTerminalSignal (log, signal, value) {
     log.info(signal + ' received, terminating process ' + process.pid);
