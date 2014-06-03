@@ -92,10 +92,12 @@ exports.listen = function (options) {
     workers = getWorkers(options);
     log = getLog(options);
 
+    createExceptionHandler(log);
+
     if (cluster.isMaster) {
         log.info('starting boomcatch in process ' + process.pid + ' with options:\n' + JSON.stringify(options, null, '    ');
 
-        createSignalHandlers();
+        createSignalHandlers(log);
 
         if (workers > 0) {
             return createWorkers(workers, log);
@@ -195,6 +197,15 @@ function getOption (name, options) {
 
 function getLog (options) {
     return getOption('log', options);
+}
+
+function createExceptionHandler (log) {
+    process.on('uncaughtException', handleException.bind(null, log));
+}
+
+function handleException (log, error) {
+    log.error('unhandled exception: ' + error.message + '\n' + error.stack);
+    process.exit(1);
 }
 
 function createSignalHandlers (log) {
