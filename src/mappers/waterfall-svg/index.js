@@ -171,7 +171,7 @@ function customiseSvgSettings (settings, resources) {
         barPadding: settings.padding / 2,
         barHeight: settings.barHeight,
         padding: settings.padding,
-        resources: resources.map(mapSvgResource.bind(null, settings)
+        resources: resources.map(mapSvgResource.bind(null, settings))
     };
 }
 
