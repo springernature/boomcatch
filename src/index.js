@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals require, exports */
+/*globals require, exports, process */
 
 'use strict';
 
@@ -46,7 +46,7 @@ defaults = {
     workers: 0
 },
 
-normalisationMaps;
+signals, normalisationMaps;
 
 /**
  * Public function `listen`.
@@ -94,11 +94,19 @@ exports.listen = function (options) {
     workers = getWorkers(options);
     log = getLog(options);
 
-    if (workers > 0 && cluster.isMaster) {
-        createWorkers(workers, log);
-    } else {
-        createServer(options, log);
+    createExceptionHandler(log);
+
+    if (cluster.isMaster) {
+        log.info('starting boomcatch in process ' + process.pid + ' with options:\n' + JSON.stringify(options, null, '    '));
+
+        createSignalHandlers(log);
+
+        if (workers > 0) {
+            return createWorkers(workers, log);
+        }
     }
+
+    createServer(options, log);
 };
 
 function verifyOptions (options) {
@@ -209,6 +217,32 @@ function getLog (options) {
     return getOption('log', options);
 }
 
+function createExceptionHandler (log) {
+    process.on('uncaughtException', handleException.bind(null, log));
+}
+
+function handleException (log, error) {
+    log.error('unhandled exception\n' + error.stack);
+    process.exit(1);
+}
+
+function createSignalHandlers (log) {
+    signals.forEach(function (signal) {
+        process.on(signal.name, handleTerminalSignal.bind(null, log, signal.name, signal.value));
+    });
+}
+
+signals = [
+    { name: 'SIGHUP', value: 1 },
+    { name: 'SIGINT', value: 2 },
+    { name: 'SIGTERM', value: 15 }
+];
+
+function handleTerminalSignal (log, signal, value) {
+    log.info(signal + ' received, terminating process ' + process.pid);
+    process.exit(128 + value);
+}
+
 function createWorkers (count, log) {
     var i;
 
@@ -216,8 +250,8 @@ function createWorkers (count, log) {
         log.info('worker process ' + worker.process.pid + ' has started');
     });
 
-    cluster.on('exit', function (worker) {
-        log.info('worker process ' + worker.process.pid + ' has died, respawning');
+    cluster.on('exit', function (worker, code, signal) {
+        log.info('worker process ' + worker.process.pid + ' has died (' + (signal || code) + '), respawning');
         cluster.fork();
     });
 

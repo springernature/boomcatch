@@ -80,7 +80,7 @@ function runServer () {
 
     normaliseWorkers();
 
-    impl.listen(cli);
+    impl.listen(getOptions());
 }
 
 function getLog () {
@@ -119,5 +119,15 @@ function normaliseWorkers () {
     if (check.not.number(cli.workers) || cli.workers < 0) {
         cli.workers = require('os').cpus().length;
     }
+}
+
+function getOptions () {
+    return Object.keys(cli).reduce(function (options, key) {
+        if (key.charAt(0) !== '_' && key !== 'commands' && key !== 'options' && key !== 'rawArgs' && key !== 'args') {
+            options[key] = cli[key];
+        }
+
+        return options;
+    }, {});
 }
 

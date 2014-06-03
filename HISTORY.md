@@ -1,5 +1,9 @@
 # History
 
+## 1.4.4
+
+* Improve the logging of process management, signals and uncaught exceptions.
+
 ## 1.4.3
 
 * Switch to a [pure JS implementation of toobusy](https://github.com/STRML/node-toobusy).
