@@ -214,10 +214,10 @@ function getSvgTicks (settings, resources) {
     ticks = new Array(settings.scale.size / settings.scale.step);
 
     for (i = 0; i < ticks.length; i += 1) {
-        value = i * settings.scale.step;
+        value = settings.scale.start + i * settings.scale.step;
 
         ticks[i] = {
-            x: settings.scale.to(settings.scale.start + value),
+            x: settings.scale.to(value),
             height: height,
             value: value
         };
