@@ -241,7 +241,7 @@
                     <g transform="translate(0, {{y}})" data-resource="{{index}}">
                         <rect x="-{{../offset.x}}" width="100%" height="{{../resourceHeight}}" class="background"></rect>
                         {{#each timings}}
-                        <rect x="{{x}}" y="{{../barPadding}}" width="{{width}}" height="{{../barHeight}}" class="{{name}}"></rect>
+                        <rect x="{{x}}" y="{{../../barPadding}}" width="{{width}}" height="{{../../barHeight}}" class="{{name}}"></rect>
                         {{/each}}
                         {{#with label}}
                         <text x="-{{../../offset.x}}" y="{{y}}" dy="5">{{text}}</text>
