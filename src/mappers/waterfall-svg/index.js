@@ -15,11 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals module, require */
+/*jshint nomen:false */
+/*globals module, require, __dirname */
 
 'use strict';
 
 var fs = require('fs'),
+    path = require('path'),
     check = require('check-types'),
     handlebars = require('handlebars');
 
@@ -30,7 +32,13 @@ module.exports = {
 };
 
 function getTemplate (options) {
-    return handlebars.compile(fs.readFileSync(options.svgTemplate || './template.html', { encoding: 'utf8' }));
+    return handlebars.compile(
+        fs.readFileSync(
+            options.svgTemplate ||
+            path.join(__dirname, './template.html'),
+            { encoding: 'utf8' }
+        )
+    );
 }
 
 function getSettings (options) {
