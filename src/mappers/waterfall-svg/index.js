@@ -238,7 +238,8 @@ function mapSvgResource (settings, resource, index) {
 function mapSvgTiming (settings, timing, index) {
     return {
         x: settings.scale.to(timing.start),
-        width: settings.scale.to(settings.scale.start + timing.duration)
+        width: settings.scale.to(settings.scale.start + timing.duration),
+        name: settings.colours[index].name
     };
 }
 
