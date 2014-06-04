@@ -35,7 +35,7 @@ function getTemplate (options) {
     return handlebars.compile(
         fs.readFileSync(
             options.svgTemplate ||
-            path.join(__dirname, './template.html'),
+            path.join(__dirname, 'template.html'),
             { encoding: 'utf8' }
         )
     );
