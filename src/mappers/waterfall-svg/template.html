@@ -59,6 +59,25 @@
                 fill: #fff;
             }
 
+            {{#each svg.colours}}
+            .{{name}}
+            {
+                fill: {{value}};
+                background-color: {{value}};
+                color: {{fg}};
+            }
+            {{/each}}
+
+            .resource-label
+            {
+                fill: #333;
+            }
+
+            .tick
+            {
+                stroke: #ccc;
+            }
+
             .key
             {
                 float: right;
@@ -83,20 +102,6 @@
             {
                 padding: 0.25em 1em;
                 border-top: 1px solid #111;
-            }
-
-            {{#each svg.colours}}
-            .{{name}}
-            {
-                background-color: {{value}};
-                color: {{fg}};
-                fill: {{value}};
-            }
-            {{/each}}
-
-            .tick
-            {
-                stroke: #ccc;
             }
 
             .resource-detail
@@ -244,7 +249,7 @@
                         <rect x="{{x}}px" y="{{../../barPadding}}px" width="{{width}}px" height="{{../../barHeight}}px" class="{{name}}"></rect>
                         {{/each}}
                         {{#with label}}
-                        <text x="-{{../../offset.x}}px" y="{{y}}px" dy="5px">{{text}}</text>
+                        <text x="-{{../../offset.x}}px" y="{{y}}px" dy="5px" class="resource-label">{{text}}</text>
                         {{/with}}
                     </g>
                     {{/each}}
