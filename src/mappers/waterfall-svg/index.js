@@ -89,7 +89,7 @@ function map (template, settings, data, referer) {
 
     return template({
         svg: customiseSvgSettings(settings, resources),
-        details: resources
+        details: resources // TODO: Needs mapping to inject index
     });
 }
 
@@ -199,6 +199,8 @@ function getSvgScale (settings, resources) {
             if (value === 0) {
                 return 0;
             }
+
+            console.log('SCALE::TO: value=' + value + ', minimum=' + minimum + ', pixelsPerUnit=' + pixelsPerUnit);
 
             return (value - minimum) * pixelsPerUnit;
         }
