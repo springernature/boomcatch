@@ -160,9 +160,10 @@ function customiseSvgSettings (settings, resources) {
         result[name] = settings[name];
     });
 
-    result.height = getSvgHeight(settings, resources);
-    result.ticks = getSvgTicks(settings, resources);
-    result.resources = resources.map(mapSvgResource.bind(null, settings));
+    result.height = getSvgHeight(result, resources);
+    result.scale = getSvgScale(result, resources);
+    result.ticks = getSvgTicks(result, resources);
+    result.resources = resources.map(mapSvgResource.bind(null, result));
 
     return result;
 }
@@ -171,8 +172,8 @@ function getSvgHeight (settings, resources) {
     return (resources.length + 1) * (settings.barHeight + settings.padding) + settings.offset.x;
 }
 
-function getSvgTicks (settings, resources) {
-    var minimum, maximum, step, difference, width, height, pixelsPerUnit, ticks;
+function getSvgScale (settings, resources) {
+    var minimum, maximum, step, difference, pixelsPerUnit;
 
     minimum = resources[0].start;
     maximum = resources.reduce(getMaximumValue, 0);
@@ -180,30 +181,39 @@ function getSvgTicks (settings, resources) {
     maximum += step - (maximum % step);
     minimum -= minimum % step;
     difference = maximum - minimum;
-    width = settings.width - settings.offset.x;
-    height = resources.length * (settings.barHeight + settings.padding);
-    pixelsPerUnit = width / difference;
+    pixelsPerUnit = (settings.width - settings.offset.x) / difference;
 
-    ticks = new Array(difference / step);
+    return {
+        start: minimum,
+        step: step,
+        size: difference,
+        to: function (value) {
+            if (value === 0) {
+                return 0;
+            }
+
+            return (value - minimum) * pixelsPerUnit;
+        }
+    };
+}
+
+function getSvgTicks (settings, resources) {
+    var height, ticks;
+
+    height = resources.length * (settings.barHeight + settings.padding);
+
+    ticks = new Array(settings.scale.size / settings.scale.step);
     ticks.forEach(function (t, index) {
-        var value = index * step;
+        var value = index * settings.scale.step;
 
         ticks[index] = {
-            x: getXPosition(value),
+            x: settings.scale.to(value),
             height: height,
             value: value
         };
     });
 
     return ticks;
-
-    function getXPosition (value) {
-        if (value === 0) {
-            return 0;
-        }
-
-        return (value - minimum) * pixelsPerUnit;
-    }
 }
 
 function getMaximumValue (maximum, resource) {
@@ -217,5 +227,41 @@ function getMaximumValue (maximum, resource) {
 }
 
 function mapSvgResource (settings, resource, index) {
+    return {
+        index: index,
+        y: index * settings.resourceHeight,
+        timings: resource.timings.map(mapSvgTiming.bind(null, settings)),
+        label: getSvgLabel(settings, resource)
+    };
+}
+
+function mapSvgTiming (settings, timing, index) {
+    return {
+        x: settings.scale.to(timing.start),
+        width: settings.scale.to(settings.scale.start + timing.duration)
+    };
+}
+
+function getSvgLabel (settings, resource) {
+    return {
+        y: settings.barHeight / 2,
+        text: getResourceName(resource)
+    };
+}
+
+function getResourceName (resource) {
+    var separatorIndex, resourceName = resource.name;
+
+    separatorIndex = resourceName.indexOf('?');
+    if (separatorIndex !== -1) {
+        resourceName = resourceName.substr(0, separatorIndex);
+    }
+
+    separatorIndex = resourceName.lastIndexOf('/');
+    if (separatorIndex !== -1) {
+        resourceName = resourceName.substr(separatorIndex + 1);
+    }
+
+    return resourceName;
 }
 
