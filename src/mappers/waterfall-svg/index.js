@@ -186,9 +186,9 @@ function getSvgScale (settings, resources) {
 
     minimum = resources[0].start;
     maximum = resources.reduce(getMaximumValue, 0);
-    step = 10 * Math.ceil(Math.log(maximum - minimum) / Math.log(10));
-    maximum += step - (maximum % step);
-    minimum -= minimum % step;
+    step = 20 * Math.ceil(Math.log(maximum - minimum) / Math.log(10));
+    maximum += 10 - (maximum % 10);
+    minimum -= minimum % 10;
     difference = maximum - minimum;
     pixelsPerUnit = (settings.width - settings.offset.x) / difference;
 
@@ -211,7 +211,7 @@ function getSvgTicks (settings, resources) {
 
     height = resources.length * (settings.barHeight + settings.padding);
 
-    ticks = new Array(settings.scale.size / settings.scale.step);
+    ticks = new Array(Math.ceil(settings.scale.size / settings.scale.step));
 
     for (i = 0; i < ticks.length; i += 1) {
         value = settings.scale.start + i * settings.scale.step;
