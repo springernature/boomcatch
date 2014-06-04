@@ -186,7 +186,7 @@ function getSvgScale (settings, resources) {
 
     minimum = resources[0].start;
     maximum = resources.reduce(getMaximumValue, 0);
-    step = Math.ceil((maximum - minimum) / 5);
+    step = 10 * Math.ceil(Math.log(maximum - minimum) / Math.log(10));
     maximum += step - (maximum % step);
     minimum -= minimum % step;
     difference = maximum - minimum;
