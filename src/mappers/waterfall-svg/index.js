@@ -94,21 +94,22 @@ function map (template, settings, data, referer) {
 }
 
 function mapResource (referer, resource) {
-    var duration, result;
-    
+    var start, duration, result;
+
+    start = resource.timestamps.start;
     duration = Object.keys(resource.events).reduce(
         getResourceDuration.bind(null, resource),
-        resource.timestamps.fetchStart - resource.timestamps.start
+        resource.timestamps.fetchStart - start
     );
 
     result = {
         page: referer,
         name: resource.name,
         type: resource.type,
-        start: resource.timestamps.start,
+        start: start,
         duration: duration,
         timings: [
-            mapTiming('blocked', { start: resource.timestamps.start, duration: duration }),
+            mapTiming('blocked', { start: start, end: start + duration }),
             mapEvent('redirect', resource),
             mapEvent('dns', resource),
             mapEvent('connect', resource),
@@ -199,8 +200,6 @@ function getSvgScale (settings, resources) {
             if (value === 0) {
                 return 0;
             }
-
-            console.log('SCALE::TO: value=' + value + ', minimum=' + minimum + ', pixelsPerUnit=' + pixelsPerUnit);
 
             return (value - minimum) * pixelsPerUnit;
         }
