@@ -230,7 +230,7 @@
             <h2>Waterfall chart</h2>
 
             {{#with svg}}
-            <svg width="{{width}}" height="{{height}}">
+            <svg width="{{width}}px" height="{{height}}px">
                 {{#with xAxis}}
                 <g transform="translate({{x}}, {{y}})">
                     <text>Time (milliseconds)</text>
@@ -239,19 +239,19 @@
                 <g transform="translate({{offset.x}}, {{offset.y}})">
                     {{#each resources}}
                     <g transform="translate(0, {{y}})" data-resource="{{index}}">
-                        <rect x="-{{../offset.x}}" width="100%" height="{{../resourceHeight}}" class="background"></rect>
+                        <rect x="-{{../offset.x}}px" width="100%" height="{{../resourceHeight}}px" class="background"></rect>
                         {{#each timings}}
-                        <rect x="{{x}}" y="{{../../barPadding}}" width="{{width}}" height="{{../../barHeight}}" class="{{name}}"></rect>
+                        <rect x="{{x}}px" y="{{../../barPadding}}px" width="{{width}}px" height="{{../../barHeight}}px" class="{{name}}"></rect>
                         {{/each}}
                         {{#with label}}
-                        <text x="-{{../../offset.x}}" y="{{y}}" dy="5">{{text}}</text>
+                        <text x="-{{../../offset.x}}px" y="{{y}}px" dy="5px">{{text}}</text>
                         {{/with}}
                     </g>
                     {{/each}}
                     <g transform="translate(0, -{{padding}})">
                         {{#each ticks}}
-                        <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{height}}" class="tick"></line>
-                        <text x="{{x}}" y="0" dy="-3" text-anchor="middle">{{value}}</text>
+                        <line x1="{{x}}px" x2="{{x}}px" y1="0px" y2="{{height}}px" class="tick"></line>
+                        <text x="{{x}}px" y="0px" dy="-3px" text-anchor="middle">{{value}}</text>
                         {{/each}}
                     </g>
                 </g>
