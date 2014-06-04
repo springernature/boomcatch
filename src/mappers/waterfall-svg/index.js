@@ -154,30 +154,71 @@ function mapRequestTiming (resource) {
 }
 
 function customiseSvgSettings (settings, resources) {
+    var result = {};
+
+    Object.keys(settings).forEach(function (name) {
+        result[name] = settings[name];
+    });
+
+    result.height = getSvgHeight(settings, resources);
+    result.yAxis = getSvgYAxis(settings, resources);
+    result.ticks = getSvgTicks(settings, resources);
+    result.resources = resources.map(mapSvgResource.bind(null, settings));
+
+    return result;
+}
+
+function getSvgHeight (settings, resources) {
+    return (resources.length + 1) * (settings.barHeight + settings.padding) + settings.offset.x;
+}
+
+function getSvgYAxis (settings, resources) {
     return {
-        width: settings.width,
-        height: (resources.length + 1) * (settings.barHeight + settings.padding) + settings.offset.x,
-        xAxis: {
-            x: settings.width / 1.8,
-            y: settings.offset.y / 2 - settings.padding
-        },
-        yAxis: {
-            height: resources.length * (settings.barHeight + settings.padding),
-            value: resources[0].start
-        },
-        ticks: getSvgTicks(settings.width, resources),
-        colours: settings.colours,
-        resourceHeight: settings.barHeight + settings.padding,
-        barPadding: settings.padding / 2,
-        barHeight: settings.barHeight,
-        padding: settings.padding,
-        resources: resources.map(mapSvgResource.bind(null, settings))
+        height: resources.length * (settings.barHeight + settings.padding),
+        value: resources[0].start
     };
 }
 
-function getSvgTicks (width, resources) {
+function getSvgTicks (settings, resources) {
+    var width = settings.width - settings.offset.x;
+    var height = resources.length * (settings.barHeight + settings.padding);
+    var minimum = resources[0].start;
+    var maximum = resources.reduce(getMaximumValue, 0);
+    var step = Math.ceil((maximum - minimum) / 5);
+    maximum += step - (maximum % step);
+    minimum -= minimum % step;
+    var difference = maximum - minimum;
+    var ticks = new Array(difference / step);
+    var pixelsPerUnit = width / difference;
+    ticks.forEach(function (tick, index) {
+        var value = index * step;
+
+        ticks[index] = {
+            x: getXPosition(value),
+            height: height,
+            value: value
+        };
+    });
+
+    function getXPosition (value) {
+        if (value === 0) {
+            return 0;
+        }
+
+        return (value - minimum) * pixelsPerUnit;
+    }
 }
 
-function mapSvgResource (settings, resource) {
+function getMaximumValue (maximum, resource) {
+    var end = resource.start + resource.duration;
+
+    if (end > maximum) {
+        return end;
+    }
+
+    return maximum;
+}
+
+function mapSvgResource (settings, resource, index) {
 }
 
