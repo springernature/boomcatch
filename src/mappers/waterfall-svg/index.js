@@ -161,7 +161,6 @@ function customiseSvgSettings (settings, resources) {
     });
 
     result.height = getSvgHeight(settings, resources);
-    result.yAxis = getSvgYAxis(settings, resources);
     result.ticks = getSvgTicks(settings, resources);
     result.resources = resources.map(mapSvgResource.bind(null, settings));
 
@@ -172,25 +171,21 @@ function getSvgHeight (settings, resources) {
     return (resources.length + 1) * (settings.barHeight + settings.padding) + settings.offset.x;
 }
 
-function getSvgYAxis (settings, resources) {
-    return {
-        height: resources.length * (settings.barHeight + settings.padding),
-        value: resources[0].start
-    };
-}
-
 function getSvgTicks (settings, resources) {
-    var width = settings.width - settings.offset.x;
-    var height = resources.length * (settings.barHeight + settings.padding);
-    var minimum = resources[0].start;
-    var maximum = resources.reduce(getMaximumValue, 0);
-    var step = Math.ceil((maximum - minimum) / 5);
+    var minimum, maximum, step, difference, width, height, pixelsPerUnit, ticks;
+
+    minimum = resources[0].start;
+    maximum = resources.reduce(getMaximumValue, 0);
+    step = Math.ceil((maximum - minimum) / 5);
     maximum += step - (maximum % step);
     minimum -= minimum % step;
-    var difference = maximum - minimum;
-    var ticks = new Array(difference / step);
-    var pixelsPerUnit = width / difference;
-    ticks.forEach(function (tick, index) {
+    difference = maximum - minimum;
+    width = settings.width - settings.offset.x;
+    height = resources.length * (settings.barHeight + settings.padding);
+    pixelsPerUnit = width / difference;
+
+    ticks = new Array(difference / step);
+    ticks.forEach(function (t, index) {
         var value = index * step;
 
         ticks[index] = {
@@ -199,6 +194,8 @@ function getSvgTicks (settings, resources) {
             value: value
         };
     });
+
+    return ticks;
 
     function getXPosition (value) {
         if (value === 0) {

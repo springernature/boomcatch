@@ -94,11 +94,6 @@
             }
             {{/each}}
 
-            .y-axis
-            {
-                stroke: #000;
-            }
-
             .tick
             {
                 stroke: #ccc;
@@ -254,10 +249,6 @@
                     </g>
                     {{/each}}
                     <g transform="translate(0, -{{padding}})">
-                        {{#with yAxis}}
-                        <line x1="0" x2="0" y1="0" y2="{{height}}" class="y-axis"></line>
-                        <text x="0" y="0" dy="-3" text-anchor="middle">{{value}}</text>
-                        {{/with}}
                         {{#each ticks}}
                         <line x1="{{x}}" x2="{{x}}" y1="0" y2="{{height}}" class="tick"></line>
                         <text x="{{x}}" y="0" dy="-3" text-anchor="middle">{{value}}</text>
