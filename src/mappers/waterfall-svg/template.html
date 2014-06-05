@@ -144,10 +144,15 @@
                 var resourceGroups, i, detailDimensions;
 
                 resourceGroups = document.querySelectorAll('[data-resource]');
+                resourceGroups.forEach = function (fn) {
+                    var i;
 
-                for (i = 0; i < resourceGroups.length; i += 1) {
-                    addResourceHoverEffects(resourceGroups.item(i), i);
-                }
+                    for (i = 0; i < resourceGroups.length; i += 1) {
+                        fn(resourceGroups.item(i), i);
+                    }
+                };
+
+                resourceGroups.forEach(addResourceHoverEffects);
 
                 function addResourceHoverEffects (group, index) {
                     group.addEventListener('mouseover', function (event) {
@@ -162,7 +167,9 @@
                 }
 
                 function highlightResourceGroup (group) {
-                    resourceGroups.style.opacity = 0.2;
+                    resourceGroups.forEach(function (g) {
+                        g.style.opacity = 0.2;
+                    });
                     group.style.opacity = 1;
                 }
 
@@ -218,7 +225,9 @@
                 }
 
                 function unhighlightResourceGroups () {
-                    resourceGroups.style.opacity = 1;
+                    resourceGroups.forEach(function (g) {
+                        g.style.opacity = 1;
+                    });
                 }
 
                 function hideResourceDetail (index) {
