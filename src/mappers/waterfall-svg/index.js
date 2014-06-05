@@ -88,6 +88,7 @@ function map (template, settings, data, referer) {
     resources = data.restiming.map(mapResource.bind(null, referer));
 
     return template({
+        title: referer,
         svg: customiseSvgSettings(settings, resources),
         details: resources // TODO: Needs mapping to inject index
     });
