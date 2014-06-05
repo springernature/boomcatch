@@ -33,6 +33,8 @@ mockery.registerAllowable('url');
 mockery.registerAllowable('qs');
 mockery.registerAllowable('fs');
 
+process.setMaxListeners(233);
+
 suite('index:', function () {
     var log, restrict, cluster, isTooBusy;
 
