@@ -1500,6 +1500,65 @@ suite('index:', function () {
                 });
             });
 
+            suite('reduced round-trip request:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon?rt.bstart=1000&rt.end=100000',
+                        method: 'GET',
+                        headers: {
+                            referer: 'blah',
+                            'user-agent': 'oovavu'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('end request:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('mapper was called correctly', function () {
+                        assert.lengthOf(Object.keys(log.args.mapper[0][0].rt), 4);
+                        assert.strictEqual(log.args.mapper[0][0].rt.timestamps.start, 1000);
+                        assert.strictEqual(log.args.mapper[0][0].rt.durations.load, 99000);
+                    });
+                });
+            });
+
             suite('application/x-www-form-urlencoded POST request', function () {
                 var request, response;
 
