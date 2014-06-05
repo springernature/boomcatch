@@ -24,7 +24,7 @@ var fs = require('fs'),
     path = require('path'),
     check = require('check-types'),
     handlebars = require('handlebars'),
-    packageInfo = require('../../package.json');
+    packageInfo = require('../../../package.json');
 
 module.exports = {
     initialise: function (options) {
