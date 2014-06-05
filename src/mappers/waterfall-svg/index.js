@@ -86,17 +86,17 @@ function map (template, settings, data, referer) {
         return '';
     }
 
-    resources = data.restiming.map(mapResource.bind(null, referer));
+    resources = data.restiming.map(mapResource);
 
     return template({
         version: packageInfo.version,
         title: referer,
         svg: customiseSvgSettings(settings, resources),
-        details: resources // TODO: Needs mapping to inject index
+        details: resources
     });
 }
 
-function mapResource (referer, resource) {
+function mapResource (resource, index) {
     var start, duration, result;
 
     start = resource.timestamps.start;
@@ -106,7 +106,7 @@ function mapResource (referer, resource) {
     );
 
     result = {
-        page: referer,
+        index: index,
         name: resource.name,
         type: resource.type,
         start: start,
@@ -239,10 +239,10 @@ function getMaximumValue (maximum, resource) {
     return maximum;
 }
 
-function mapSvgResource (settings, resource, index) {
+function mapSvgResource (settings, resource) {
     return {
-        index: index,
-        y: index * settings.resourceHeight,
+        index: resource.index,
+        y: resource.index * settings.resourceHeight,
         timings: resource.timings.map(mapSvgTiming.bind(null, settings)),
         label: getSvgLabel(settings, resource)
     };
