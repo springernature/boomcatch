@@ -23,7 +23,8 @@
 var fs = require('fs'),
     path = require('path'),
     check = require('check-types'),
-    handlebars = require('handlebars');
+    handlebars = require('handlebars'),
+    packageInfo = require('../../package.json');
 
 module.exports = {
     initialise: function (options) {
@@ -88,6 +89,7 @@ function map (template, settings, data, referer) {
     resources = data.restiming.map(mapResource.bind(null, referer));
 
     return template({
+        version: packageInfo.version,
         title: referer,
         svg: customiseSvgSettings(settings, resources),
         details: resources // TODO: Needs mapping to inject index
