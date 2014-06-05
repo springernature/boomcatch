@@ -585,12 +585,13 @@ function normaliseData (data) {
 function normaliseRtData (data) {
     /*jshint camelcase:false */
 
-    var start, timeToFirstByte, timeToLastByte, timeToLoad;
+    var start, end, timeToFirstByte, timeToLastByte, timeToLoad;
 
-    start = getOptionalDatum(data, 'rt.tstart');
+    start = getOptionalDatum(data, 'rt.tstart') || getOptionalDatum(data, 'rt.bstart');
+    end = getOptionalDatum(data, 'rt.end');
     timeToFirstByte = getOptionalDatum(data, 't_resp');
     timeToLastByte = getOptionalSum(data, 't_resp', 't_page');
-    timeToLoad = parseInt(data.t_done);
+    timeToLoad = getOptionalDatum(data, 't_done') || end - start;
 
     if (
         check.maybe.positiveNumber(start) &&
