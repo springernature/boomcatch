@@ -1,5 +1,9 @@
 # History
 
+## 1.4.5
+
+* Tolerate reduced round-trip data.
+
 ## 1.4.4
 
 * Improve the logging of process management, signals and uncaught exceptions.
