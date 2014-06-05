@@ -154,6 +154,8 @@
 
                 resourceGroups.forEach(addResourceHoverEffects);
 
+                detailDimensions = new Array({{details.length}});
+
                 function addResourceHoverEffects (group, index) {
                     group.addEventListener('mouseover', function (event) {
                         highlightResourceGroup(group);
@@ -180,7 +182,7 @@
                 function moveResourceDetail (index, event) {
                     var detail, position;
 
-                    detail = document.querySelector('[data-resource-detail="' + index + '"]');
+                    detail = getResourceDetail(index);
 
                     if (typeof detailDimensions[index] === 'undefined') {
                         detailDimensions[index] = {
@@ -194,13 +196,17 @@
                         y: event.pageY + {{svg.padding}}
                     };
 
-                    updatePositionX(detailDimensions[resourceIndex], position, event);
-                    updatePositionY(detailDimensions[resourceIndex], position, event);
+                    updatePositionX(detailDimensions[index], position, event);
+                    updatePositionY(detailDimensions[index], position, event);
 
                     detail.style.left = pixelify(position.x);
                     detail.style.top = pixelify(position.y);
 
                     return detail;
+                }
+
+                function getResourceDetail (index) {
+                    return document.querySelector('[data-resource-detail="' + index + '"]');
                 }
 
                 function updatePositionX (dimensions, position, event) {
@@ -213,10 +219,10 @@
 
                 function updatePosition (dimensions, dimension, clientPosition, pagePostion, viewSize, position) {
                     if (
-                        clientPosition + dimensions[dimension] + attributes.padding > viewSize &&
-                        clientPosition - dimensions[dimension] - attributes.padding >= 0
+                        clientPosition + dimensions[dimension] + {{svg.padding}} > viewSize &&
+                        clientPosition - dimensions[dimension] - {{svg.padding}} >= 0
                     ) {
-                        position[dimension] = pagePostion - dimensions[dimension] - attributes.padding;
+                        position[dimension] = pagePostion - dimensions[dimension] - {{svg.padding}};
                     }
                 }
 
@@ -231,7 +237,7 @@
                 }
 
                 function hideResourceDetail (index) {
-                    moveResourceDetail(resourceIndex).style.visibility = 'hidden';
+                    getResourceDetail(index).style.visibility = 'hidden';
                 }
             });
         </script>
