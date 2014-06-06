@@ -181,7 +181,7 @@ function customiseSvgSettings (settings, resources) {
 }
 
 function getSvgHeight (settings, resources) {
-    return (resources.length + 1) * (settings.barHeight + settings.padding) + settings.offset.x;
+    return resources.length * settings.resourceHeight + settings.offset.y;
 }
 
 function getSvgScale (settings, resources) {
