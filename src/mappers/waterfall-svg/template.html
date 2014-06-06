@@ -7,7 +7,7 @@
         <title>{{title}}</title>
 
         <style>
-            html, body, div, h1, h2, h3, p, a, abbr, ul, li, table, thead, tbody, tr, th, td, section
+            html, body, div, h1, h2, h3, p, a, abbr, ul, li, table, caption, thead, tbody, tr, th, td, section
             {
                 margin: 0;
                 padding: 0;
@@ -41,7 +41,7 @@
                 font-size: 2em;
             }
 
-            h2
+            h2, caption
             {
                 margin: 0.7em 0;
                 font-size: 1.4em;
@@ -80,8 +80,6 @@
 
             .key
             {
-                float: right;
-                margin-top: -13em;
                 border: 1px solid #111;
             }
 
@@ -277,11 +275,9 @@
                 </g>
             </svg>
             {{/with}}
-        </section>
 
-        <section>
-            <h2>Colour key</h2>
             <table class="description key" cellspacing="0" cellpadding="0">
+                <caption>Colour Key</caption>
                 <thead class="key-titles">
                     <tr>
                         <th class="key-title">State</th>
