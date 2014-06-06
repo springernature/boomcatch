@@ -157,7 +157,9 @@
             document.addEventListener('DOMContentLoaded', function () {
                 'use strict';
 
-                var resourceGroups, i, detailDimensions;
+                var detailDimensions, resourceGroups, i;
+
+                detailDimensions = new Array({{details.length}});
 
                 resourceGroups = document.querySelectorAll('[data-resource]');
                 resourceGroups.forEach = function (fn) {
@@ -170,7 +172,7 @@
 
                 resourceGroups.forEach(addResourceHoverEffects);
 
-                detailDimensions = new Array({{details.length}});
+                document.querySelector('[data-raw]').style.display = 'none';
 
                 function addResourceHoverEffects (group, index) {
                     group.addEventListener('mouseover', function (event) {
@@ -313,7 +315,7 @@
             </table>
         </section>
 
-        <section>
+        <section data-raw="true">
             <h2>Raw Data</h2>
 
             <table class="raw-data" cellspacing="0" cellpadding="0">
