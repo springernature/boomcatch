@@ -17,9 +17,11 @@
 
 'use strict';
 
-var assert, modulePath;
+var assert, jsdom, packageInfo, modulePath;
 
 assert = require('chai').assert;
+jsdom = require('jsdom').jsdom;
+packageInfo = require('../../package.json');
 modulePath = '../../src/mappers/waterfall';
 
 suite('mappers/waterfall:', function () {
@@ -48,17 +50,17 @@ suite('mappers/waterfall:', function () {
             assert.isFunction(waterfall.initialise);
         });
 
-        test('initialise does not throw', function () {
+        test('initialise does not throw with empty arguments', function () {
             assert.doesNotThrow(function () {
-                waterfall.initialise();
+                waterfall.initialise({});
             });
         });
 
-        suite('call initialise:', function () {
+        suite('call initialise with default arguments:', function () {
             var mapper;
 
             setup(function () {
-                mapper = waterfall.initialise();
+                mapper = waterfall.initialise({});
             });
 
             teardown(function () {
@@ -166,111 +168,43 @@ suite('mappers/waterfall:', function () {
                     assert.notEqual(result, '');
                 });
 
-                test('result was valid JSON', function () {
-                    assert.doesNotThrow(function () {
-                        JSON.parse(result);
-                    });
-                });
-
                 suite('parse result:', function () {
-                    var data;
+                    var document;
 
                     setup(function () {
-                        data = JSON.parse(result);
+                        document = jsdom(result).parentWindow.document;
                     });
 
                     teardown(function () {
-                        data = undefined;
+                        document = undefined;
                     });
 
-                    test('data is array', function () {
-                        assert.isArray(data);
+                    test('generator is correct', function () {
+                        assert.strictEqual(
+                            document.querySelector('meta[name="generator"]').content,
+                            'boomcatch ' + packageInfo.version
+                        );
                     });
 
-                    test('data is correct length', function () {
-                        assert.lengthOf(data, 2);
+                    test('title is correct', function () {
+                        assert.strictEqual(
+                            document.querySelector('title').innerHTML,
+                            'baz'
+                        );
                     });
 
-                    test('first datum is correct', function () {
-                        assert.isObject(data[0]);
-                        assert.lengthOf(Object.keys(data[0]), 6);
-                        assert.strictEqual(data[0].page, 'baz');
-                        assert.strictEqual(data[0].name, 'foo');
-                        assert.strictEqual(data[0].type, 'css');
-                        assert.strictEqual(data[0].start, 1);
-                        assert.strictEqual(data[0].duration, 11);
-                        assert.isArray(data[0].timings);
-                        assert.lengthOf(data[0].timings, 5);
+                    test('h1 is correct', function () {
+                        var h1 = document.querySelectorAll('h1');
+
+                        assert.strictEqual(h1.length, 1);
+                        assert.strictEqual(h1[0].innerHTML, 'baz');
                     });
 
-                    test('first redirect timing is correct', function () {
-                        assert.isObject(data[0].timings[0]);
-                        assert.lengthOf(Object.keys(data[0].timings[0]), 3);
-                        assert.strictEqual(data[0].timings[0].name, 'redirect');
-                        assert.strictEqual(data[0].timings[0].start, 5);
-                        assert.strictEqual(data[0].timings[0].duration, 1);
-                    });
+                    test('svg is correct', function () {
+                        var svg = document.querySelectorAll('svg');
 
-                    test('first dns timing is correct', function () {
-                        assert.strictEqual(data[0].timings[1].name, 'dns');
-                        assert.strictEqual(data[0].timings[1].start, 6);
-                        assert.strictEqual(data[0].timings[1].duration, 2);
-                    });
-
-                    test('first connect timing is correct', function () {
-                        assert.strictEqual(data[0].timings[2].name, 'connect');
-                        assert.strictEqual(data[0].timings[2].start, 7);
-                        assert.strictEqual(data[0].timings[2].duration, 3);
-                    });
-
-                    test('first request timing is correct', function () {
-                        assert.strictEqual(data[0].timings[3].name, 'request');
-                        assert.strictEqual(data[0].timings[3].start, 4);
-                        assert.strictEqual(data[0].timings[3].duration, 4);
-                    });
-
-                    test('first response timing is correct', function () {
-                        assert.strictEqual(data[0].timings[4].name, 'response');
-                        assert.strictEqual(data[0].timings[4].start, 8);
-                        assert.strictEqual(data[0].timings[4].duration, 4);
-                    });
-
-                    test('second datum is correct', function () {
-                        assert.strictEqual(data[1].page, 'baz');
-                        assert.strictEqual(data[1].name, 'bar');
-                        assert.strictEqual(data[1].type, 'img');
-                        assert.strictEqual(data[1].start, 9);
-                        assert.strictEqual(data[1].duration, 231);
-                    });
-
-                    test('second redirect timing is correct', function () {
-                        assert.strictEqual(data[1].timings[0].name, 'redirect');
-                        assert.strictEqual(data[1].timings[0].start, 130);
-                        assert.strictEqual(data[1].timings[0].duration, 50);
-                    });
-
-                    test('second dns timing is correct', function () {
-                        assert.strictEqual(data[1].timings[1].name, 'dns');
-                        assert.strictEqual(data[1].timings[1].start, 140);
-                        assert.strictEqual(data[1].timings[1].duration, 60);
-                    });
-
-                    test('second connect timing is correct', function () {
-                        assert.strictEqual(data[1].timings[2].name, 'connect');
-                        assert.strictEqual(data[1].timings[2].start, 150);
-                        assert.strictEqual(data[1].timings[2].duration, 70);
-                    });
-
-                    test('second request timing is correct', function () {
-                        assert.strictEqual(data[1].timings[3].name, 'request');
-                        assert.strictEqual(data[1].timings[3].start, 12);
-                        assert.strictEqual(data[1].timings[3].duration, 148);
-                    });
-
-                    test('second response timing is correct', function () {
-                        assert.strictEqual(data[1].timings[4].name, 'response');
-                        assert.strictEqual(data[1].timings[4].start, 160);
-                        assert.strictEqual(data[1].timings[4].duration, 80);
+                        assert.strictEqual(svg.length, 1);
+                        assert.strictEqual(svg[0].width, '960px');
                     });
                 });
             });

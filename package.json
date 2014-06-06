@@ -49,7 +49,8 @@
         "chai": "1.9.x",
         "mockery": "1.4.x",
         "spooks": "0.5.x",
-        "istanbul": "0.2.x"
+        "istanbul": "0.2.x",
+        "jsdom": "0.10.x"
     },
     "scripts": {
         "lint": "./node_modules/.bin/jshint src --config .jshintrc",
