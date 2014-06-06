@@ -54,6 +54,7 @@ function getSettings (options) {
 
     settings.resourceHeight = settings.barHeight + settings.padding;
     settings.barPadding = Math.floor(settings.padding / 2);
+    settings.colours[0].blocked = true;
 
     return settings;
 }

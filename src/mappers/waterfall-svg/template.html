@@ -45,6 +45,7 @@
             {
                 margin: 0.7em 0;
                 font-size: 1.4em;
+                text-align: left;
             }
 
             h3
@@ -56,6 +57,31 @@
             text
             {
                 fill: #333;
+            }
+
+            table
+            {
+                border: 1px solid #111;
+            }
+
+            th
+            {
+                padding: 0.5em 1em;
+                border-left: 1px solid #111;
+                font-weight: bold;
+                text-align: left;
+            }
+
+            td
+            {
+                padding: 0.25em 1em;
+                border-top: 1px solid #111;
+                border-left: 1px solid #111;
+            }
+
+            th:first-child, td:first-child
+            {
+                border-left: none;
             }
 
             .background
@@ -78,28 +104,20 @@
                 stroke: #ccc;
             }
 
-            .key
-            {
-                border: 1px solid #111;
-            }
-
             .key-titles
             {
-                font-weight: bold;
-                text-align: left;
                 background-color: #111;
                 color: #ccc;
             }
 
-            .key-title
+            .capitalise
             {
-                padding: 0.5em 1em;
+                text-transform: capitalize;
             }
 
-            .key-data
+            .upper-case
             {
-                padding: 0.25em 1em;
-                border-top: 1px solid #111;
+                text-transform: uppercase;
             }
 
             .resource-detail
@@ -276,19 +294,56 @@
             </svg>
             {{/with}}
 
-            <table class="description key" cellspacing="0" cellpadding="0">
+            <table class="key" cellspacing="0" cellpadding="0">
                 <caption>Colour Key</caption>
                 <thead class="key-titles">
                     <tr>
-                        <th class="key-title">State</th>
-                        <th class="key-title">Colour</th>
+                        <th>State</th>
+                        <th>Colour</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{#each svg.colours}}
                     <tr>
-                        <td class="key-data">{{name}}</td>
-                        <td class="key-data {{name}}">{{value}}</td>
+                        <td class="capitalise">{{name}}</td>
+                        <td class="upper-case {{name}}">{{value}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Raw Data</h2>
+
+            <table class="raw-data" cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <th>Resource Name</th>
+                        <th>Initiator Type</th>
+                        <th>Start Time</th>
+                        <th>Duration</th>
+                        {{#each svg.colours}}
+                        {{#unless blocked}}
+                        <th class="capitalise">{{name}} start time</th>
+                        <th class="capitalise">{{name}} duration</th>
+                        {{/unless}}
+                        {{/each}}
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each details}}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>{{type}}</td>
+                        <td>{{start}}</td>
+                        <td>{{duration}}</td>
+                        {{#each timings}}
+                        {{#unless blocked}}
+                        <td>{{start}}</td>
+                        <td>{{duration}}</td>
+                        {{/unless}}
+                        {{/each}}
                     </tr>
                     {{/each}}
                 </tbody>
