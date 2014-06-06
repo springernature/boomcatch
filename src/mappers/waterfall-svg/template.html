@@ -369,7 +369,7 @@
                         {{type}}
                     </li>
                     <li class="resource-start unbulleted padded-top">
-                        <h3>Start time</h3>:
+                        <h3>Start Time</h3>:
                         {{start}} <abbr title="milliseconds">ms</abbr>
                     </li>
                     <li class="resource-duration unbulleted">
@@ -379,11 +379,11 @@
                     {{#each timings}}
                     {{#unless blocked}}
                     <li class="resource-timing resource-start timing-{{name}} unbulleted padded-top">
-                        <h3>{{name}} start time</h3>:
+                        <h3 class="capitalised">{{name}} Start Time</h3>:
                         {{start}} <abbr title="milliseconds">ms</abbr>
                     </li>
                     <li class="resource-timing resource-duration timing-{{name}} unbulleted">
-                        <h3>{{name}} duration</h3>:
+                        <h3 class="capitalised">{{name}} Duration</h3>:
                         {{duration}} <abbr title="milliseconds">ms</abbr>
                     </li>
                     {{/unless}}
