@@ -54,7 +54,7 @@ function getSettings (options) {
 
     settings.resourceHeight = settings.barHeight + settings.padding;
     settings.barPadding = Math.floor(settings.padding / 2);
-    settings.colours.forEach(function (colour, index) {
+    settings.colours.forEach(function (colour) {
         colour[colour.name] = true;
     });
 
@@ -124,7 +124,7 @@ function mapResource (resource, index) {
         ]
     };
 
-    result.timings.forEach(function (timing, index) {
+    result.timings.forEach(function (timing) {
         timing[timing.name] = true;
     });
 
