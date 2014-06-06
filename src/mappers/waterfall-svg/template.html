@@ -312,7 +312,7 @@
                 <tbody>
                     {{#each svg.colours}}
                     <tr>
-                        <td class="capitalise">{{name}}</td>
+                        <td class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</td>
                         <td class="upper-case {{name}}">{{value}}</td>
                     </tr>
                     {{/each}}
@@ -327,14 +327,14 @@
                 <table cellspacing="0" cellpadding="0">
                     <thead>
                         <tr>
-                            <th>Resource Name</th>
-                            <th>Initiator Type</th>
-                            <th>Start Time</th>
+                            <th>Resource name</th>
+                            <th>Initiator type</th>
+                            <th>Start time</th>
                             <th>Duration</th>
                             {{#each svg.colours}}
                             {{#unless blocked}}
-                            <th class="capitalise">{{name}} start time</th>
-                            <th class="capitalise">{{name}} duration</th>
+                            <th><span class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</span> start time</th>
+                            <th><span class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</span> duration</th>
                             {{/unless}}
                             {{/each}}
                         </tr>
@@ -369,7 +369,7 @@
                         {{type}}
                     </li>
                     <li class="resource-start unbulleted padded-top">
-                        <h3>Start Time</h3>:
+                        <h3>Start time</h3>:
                         {{start}} <abbr title="milliseconds">ms</abbr>
                     </li>
                     <li class="resource-duration unbulleted">
@@ -379,11 +379,11 @@
                     {{#each timings}}
                     {{#unless blocked}}
                     <li class="resource-timing resource-start timing-{{name}} unbulleted padded-top">
-                        <h3 class="capitalised">{{name}} Start Time</h3>:
+                        <h3><span class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</span> start time</h3>:
                         {{start}} <abbr title="milliseconds">ms</abbr>
                     </li>
                     <li class="resource-timing resource-duration timing-{{name}} unbulleted">
-                        <h3 class="capitalised">{{name}} Duration</h3>:
+                        <h3><span class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</span> duration</h3>:
                         {{duration}} <abbr title="milliseconds">ms</abbr>
                     </li>
                     {{/unless}}
