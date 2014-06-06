@@ -151,6 +151,11 @@
             {
                 margin-top: 6px;
             }
+
+            .js-enabled .raw-data
+            {
+                display: none;
+            }
         </style>
 
         <script>
@@ -172,7 +177,7 @@
 
                 resourceGroups.forEach(addResourceHoverEffects);
 
-                document.querySelector('[data-raw]').style.display = 'none';
+                document.body.className += ' js-enabled';
 
                 function addResourceHoverEffects (group, index) {
                     group.addEventListener('mouseover', function (event) {
@@ -315,42 +320,44 @@
             </table>
         </section>
 
-        <section data-raw="true">
-            <h2>Raw Data</h2>
+        <div class="raw-data">
+            <section>
+                <h2>Raw Data</h2>
 
-            <table class="raw-data" cellspacing="0" cellpadding="0">
-                <thead>
-                    <tr>
-                        <th>Resource Name</th>
-                        <th>Initiator Type</th>
-                        <th>Start Time</th>
-                        <th>Duration</th>
-                        {{#each svg.colours}}
-                        {{#unless blocked}}
-                        <th class="capitalise">{{name}} start time</th>
-                        <th class="capitalise">{{name}} duration</th>
-                        {{/unless}}
+                <table cellspacing="0" cellpadding="0">
+                    <thead>
+                        <tr>
+                            <th>Resource Name</th>
+                            <th>Initiator Type</th>
+                            <th>Start Time</th>
+                            <th>Duration</th>
+                            {{#each svg.colours}}
+                            {{#unless blocked}}
+                            <th class="capitalise">{{name}} start time</th>
+                            <th class="capitalise">{{name}} duration</th>
+                            {{/unless}}
+                            {{/each}}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each details}}
+                        <tr>
+                            <td>{{name}}</td>
+                            <td>{{type}}</td>
+                            <td>{{start}}</td>
+                            <td>{{duration}}</td>
+                            {{#each timings}}
+                            {{#unless blocked}}
+                            <td>{{start}}</td>
+                            <td>{{duration}}</td>
+                            {{/unless}}
+                            {{/each}}
+                        </tr>
                         {{/each}}
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each details}}
-                    <tr>
-                        <td>{{name}}</td>
-                        <td>{{type}}</td>
-                        <td>{{start}}</td>
-                        <td>{{duration}}</td>
-                        {{#each timings}}
-                        {{#unless blocked}}
-                        <td>{{start}}</td>
-                        <td>{{duration}}</td>
-                        {{/unless}}
-                        {{/each}}
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-        </section>
+                    </tbody>
+                </table>
+            </section>
+        </div>
 
         {{#each details}}
         <section>
