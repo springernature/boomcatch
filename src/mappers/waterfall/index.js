@@ -29,7 +29,8 @@ var fs = require('fs'),
 module.exports = {
     initialise: function (options) {
         return map.bind(null, getTemplate(options), getSettings(options));
-    }
+    },
+    type: 'html'
 };
 
 function getTemplate (options) {

@@ -126,7 +126,7 @@ suite('forwarders/file:', function () {
                         name: 'callback',
                         log: log
                     });
-                    forwarder('foo bar', null, callback);
+                    forwarder('foo bar', null, null, callback);
                 });
 
                 teardown(function () {
@@ -141,7 +141,7 @@ suite('forwarders/file:', function () {
                     assert.strictEqual(log.these.join[0], require('path'));
                     assert.lengthOf(log.args.join[0], 2);
                     assert.strictEqual(log.args.join[0][0], 'wibble');
-                    assert.match(log.args.join[0][1], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
+                    assert.match(log.args.join[0][1], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.txt$/);
                 });
 
                 test('fs.writeFile was called once', function () {
@@ -161,7 +161,7 @@ suite('forwarders/file:', function () {
 
                 suite('call forwarder:', function () {
                     setup(function () {
-                        forwarder('foo bar', null, function () {});
+                        forwarder('foo bar', null, null, function () {});
                     });
 
                     test('path.join was called once', function () {
@@ -169,7 +169,7 @@ suite('forwarders/file:', function () {
                     });
 
                     test('path.join was called correctly', function () {
-                        assert.match(log.args.join[1][1], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
+                        assert.match(log.args.join[1][1], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.txt$/);
                         assert.notEqual(log.args.join[0][1], log.args.join[1][1]);
                     });
 
@@ -193,6 +193,46 @@ suite('forwarders/file:', function () {
                         assert.strictEqual(log.args.callback[0][0], 'some error');
                         assert.strictEqual(log.args.callback[0][1], 7);
                     });
+                });
+            });
+
+            suite('call forwarder with json type:', function () {
+                var callback;
+
+                setup(function () {
+                    callback = spooks.fn({
+                        name: 'callback',
+                        log: log
+                    });
+                    forwarder('foo bar', 'json', null, callback);
+                });
+
+                teardown(function () {
+                    callback = undefined;
+                });
+
+                test('path.join was called correctly', function () {
+                    assert.match(log.args.join[0][1], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.json$/);
+                });
+            });
+
+            suite('call forwarder with html type:', function () {
+                var callback;
+
+                setup(function () {
+                    callback = spooks.fn({
+                        name: 'callback',
+                        log: log
+                    });
+                    forwarder('foo bar', 'html', null, callback);
+                });
+
+                teardown(function () {
+                    callback = undefined;
+                });
+
+                test('path.join was called correctly', function () {
+                    assert.match(log.args.join[0][1], /^boomcatch-[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}.html$/);
                 });
             });
         });

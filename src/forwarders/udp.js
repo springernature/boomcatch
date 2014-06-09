@@ -46,7 +46,7 @@ function normaliseSize (size) {
     return normaliseValue(size, 'positiveNumber', 512);
 }
 
-function send (host, port, size, data, separator, callback) {
+function send (host, port, size, data, type, separator, callback) {
     var socket, buffer;
 
     try {

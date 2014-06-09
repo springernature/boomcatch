@@ -354,7 +354,7 @@ function getFilter (options) {
 }
 
 function getMapper (options) {
-    return getExtension('mapper', options, ['separator']);
+    return getExtension('mapper', options, ['type','separator']);
 }
 
 function getForwarder (options) {
@@ -540,7 +540,7 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
 
         log.info('sending ' + mappedData);
 
-        forwarder(mappedData, mapper.separator, function (error, bytesSent) {
+        forwarder(mappedData, mapper.type, mapper.separator, function (error, bytesSent) {
             if (error) {
                 return fail(log, request, response, 502, error);
             }

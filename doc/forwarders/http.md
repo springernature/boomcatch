@@ -13,6 +13,13 @@ It accepts two options:
   HTTP method to use for the request.
   The default is `'GET'`.
 
+If the active [mapper]
+has specified
+a data type,
+this will be used to set
+the `Content-Type` header appropriately.
+
 [http]: http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
 [https]: http://en.wikipedia.org/wiki/HTTP_Secure
+[mapper]: ../mappers/README.md
 

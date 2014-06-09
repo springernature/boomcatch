@@ -128,7 +128,7 @@ suite('forwarders/udp:', function () {
 
             suite('call forwarder:', function () {
                 setup(function () {
-                    forwarder('foo bar', null, spooks.fn({
+                    forwarder('foo bar', null, null, spooks.fn({
                         name: 'callback',
                         log: log
                     }));
@@ -197,7 +197,7 @@ suite('forwarders/udp:', function () {
 
             suite('call forwarder with alternative data:', function () {
                 setup(function () {
-                    forwarder('baz', spooks.fn({
+                    forwarder('baz', null, null, spooks.fn({
                         name: 'callback',
                         log: log
                     }));
@@ -255,7 +255,7 @@ suite('forwarders/udp:', function () {
 
             suite('call forwarder with separator:', function () {
                 setup(function () {
-                    forwarder('12 34 5 67890', ' ', spooks.fn({
+                    forwarder('12 34 5 67890', null, ' ', spooks.fn({
                         name: 'callback',
                         log: log
                     }));
@@ -332,7 +332,7 @@ suite('forwarders/udp:', function () {
 
             suite('call forwarder without separator:', function () {
                 setup(function () {
-                    forwarder('12 34 5 67890', null, spooks.fn({
+                    forwarder('12 34 5 67890', null, null, spooks.fn({
                         name: 'callback',
                         log: log
                     }));

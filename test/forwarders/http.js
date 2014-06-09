@@ -197,7 +197,7 @@ suite('forwarders/http:', function () {
                         name: 'callback',
                         log: log
                     });
-                    forwarder('foo bar', null, callback);
+                    forwarder('foo bar', null, null, callback);
                 });
 
                 teardown(function () {
@@ -223,6 +223,8 @@ suite('forwarders/http:', function () {
                     assert.strictEqual(log.args.http[0][0].pathname, '/');
                     assert.strictEqual(log.args.http[0][0].href, 'http://www.example.com/');
                     assert.strictEqual(log.args.http[0][0].method, 'GET');
+                    assert.isObject(log.args.http[0][0].headers);
+                    assert.strictEqual(log.args.http[0][0].headers['Content-Type'], 'text/plain');
                     assert.isFunction(log.args.http[0][1]);
                 });
 
@@ -314,7 +316,7 @@ suite('forwarders/http:', function () {
                         name: 'callback',
                         log: log
                     });
-                    forwarder({ foo: 'bar', baz: 'qux' }, null, callback);
+                    forwarder({ foo: 'bar', baz: 'qux' }, null, null, callback);
                 });
 
                 teardown(function () {
@@ -394,6 +396,46 @@ suite('forwarders/http:', function () {
                     });
                 });
             });
+
+            suite('call forwarder with json type:', function () {
+                var callback;
+
+                setup(function () {
+                    callback = spooks.fn({
+                        name: 'callback',
+                        log: log
+                    });
+                    forwarder('foo bar', 'json', null, callback);
+                });
+
+                teardown(function () {
+                    callback = undefined;
+                });
+
+                test('http.request was called correctly', function () {
+                    assert.strictEqual(log.args.http[0][0].headers['Content-Type'], 'application/json');
+                });
+            });
+
+            suite('call forwarder with html type:', function () {
+                var callback;
+
+                setup(function () {
+                    callback = spooks.fn({
+                        name: 'callback',
+                        log: log
+                    });
+                    forwarder('foo bar', 'html', null, callback);
+                });
+
+                teardown(function () {
+                    callback = undefined;
+                });
+
+                test('http.request was called correctly', function () {
+                    assert.strictEqual(log.args.http[0][0].headers['Content-Type'], 'text/html');
+                });
+            });
         });
 
         suite('call initialise with custom method:', function () {
@@ -434,7 +476,7 @@ suite('forwarders/http:', function () {
                         name: 'callback',
                         log: log
                     });
-                    forwarder('foo bar', null, callback);
+                    forwarder('foo bar', null, null, callback);
                 });
 
                 teardown(function () {
