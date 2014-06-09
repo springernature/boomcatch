@@ -32,5 +32,11 @@ for the `log.pages.title` field.
 Otherwise,
 the page URL will be used.
 
+This mapper
+also exports
+a data type,
+`'json'`,
+for use by forwarders.
+
 [har]: http://www.softwareishard.com/blog/har-12-spec/
 
