@@ -200,98 +200,36 @@ suite('mappers/waterfall:', function () {
                         assert.strictEqual(h1[0].innerHTML, 'baz');
                     });
 
-                    test('svg is correct', function () {
-                        var svg = document.querySelectorAll('svg');
-
-                        assert.strictEqual(svg.length, 1);
-                        assert.strictEqual(svg[0].width, '960px');
-                    });
-                });
-            });
-
-            suite('call mapper with minimal data:', function () {
-                var result;
-
-                setup(function () {
-                    result = mapper({
-                        restiming: [
-                            {
-                                name: 'wibble',
-                                type: 'css',
-                                timestamps: {
-                                    start: 42,
-                                    fetchStart: 420
-                                },
-                                events: {}
-                            }
-                        ]
-                    }, 'referer');
-                });
-
-                teardown(function () {
-                    result = undefined;
-                });
-
-                test('result was not empty string', function () {
-                    assert.notEqual(result, '');
-                });
-
-                test('result was valid JSON', function () {
-                    assert.doesNotThrow(function () {
-                        JSON.parse(result);
-                    });
-                });
-
-                suite('parse result:', function () {
-                    var data;
-
-                    setup(function () {
-                        data = JSON.parse(result);
+                    test('svg seems correct', function () {
+                        assert.strictEqual(document.querySelectorAll('svg').length, 1);
+                        assert.strictEqual(document.querySelectorAll('g').length, 5);
+                        assert.strictEqual(document.querySelectorAll('svg > g').length, 2);
+                        assert.strictEqual(document.querySelectorAll('rect').length, 14);
+                        assert.strictEqual(document.querySelectorAll('text').length, 8);
+                        assert.strictEqual(document.querySelectorAll('line').length, 5);
+                        assert.notEqual(result.indexOf('<svg width="960px" height="98px">'), -1);
+                        assert.notEqual(result.indexOf('<g transform="translate(0, 0)" data-resource="0">'), -1);
+                        assert.notEqual(result.indexOf('<g transform="translate(0, 24)" data-resource="1">'), -1);
                     });
 
-                    teardown(function () {
-                        data = undefined;
+                    test('colour key seems correct', function () {
+                        assert.strictEqual(document.querySelectorAll('table.key').length, 1);
+                        assert.strictEqual(document.querySelectorAll('table.key th').length, 2);
+                        assert.strictEqual(document.querySelectorAll('table.key > tbody > tr').length, 6);
                     });
 
-                    test('data is correct length', function () {
-                        assert.lengthOf(data, 1);
+                    test('raw data seems correct', function () {
+                        assert.strictEqual(document.querySelectorAll('.raw-data table').length, 1);
+                        assert.strictEqual(document.querySelectorAll('.raw-data th').length, 14);
+                        assert.strictEqual(document.querySelectorAll('.raw-data table > tbody > tr').length, 2);
                     });
 
-                    test('datum is correct', function () {
-                        assert.strictEqual(data[0].page, 'referer');
-                        assert.strictEqual(data[0].name, 'wibble');
-                        assert.strictEqual(data[0].type, 'css');
-                        assert.strictEqual(data[0].start, 42);
-                    });
-
-                    test('redirect timing is correct', function () {
-                        assert.strictEqual(data[0].timings[0].name, 'redirect');
-                        assert.strictEqual(data[0].timings[0].start, 0);
-                        assert.strictEqual(data[0].timings[0].duration, 0);
-                    });
-
-                    test('dns timing is correct', function () {
-                        assert.strictEqual(data[0].timings[1].name, 'dns');
-                        assert.strictEqual(data[0].timings[1].start, 0);
-                        assert.strictEqual(data[0].timings[1].duration, 0);
-                    });
-
-                    test('connect timing is correct', function () {
-                        assert.strictEqual(data[0].timings[2].name, 'connect');
-                        assert.strictEqual(data[0].timings[2].start, 0);
-                        assert.strictEqual(data[0].timings[2].duration, 0);
-                    });
-
-                    test('request timing is correct', function () {
-                        assert.strictEqual(data[0].timings[3].name, 'request');
-                        assert.strictEqual(data[0].timings[3].start, 0);
-                        assert.strictEqual(data[0].timings[3].duration, 0);
-                    });
-
-                    test('response timing is correct', function () {
-                        assert.strictEqual(data[0].timings[4].name, 'response');
-                        assert.strictEqual(data[0].timings[4].start, 0);
-                        assert.strictEqual(data[0].timings[4].duration, 0);
+                    test('mouseover details seem correct', function () {
+                        assert.strictEqual(document.querySelectorAll('.resource-detail').length, 2);
+                        assert.strictEqual(document.querySelectorAll('.resource-detail .resource-type').length, 2);
+                        assert.strictEqual(document.querySelectorAll('.resource-detail .resource-start').length, 12);
+                        assert.strictEqual(document.querySelectorAll('.resource-detail .resource-duration').length, 12);
+                        assert.strictEqual(document.querySelectorAll('.resource-detail .resource-timing').length, 20);
                     });
                 });
             });
