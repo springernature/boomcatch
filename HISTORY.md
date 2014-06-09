@@ -1,5 +1,11 @@
 # History
 
+
+## 1.5.0
+
+* Expose data type from mappers.
+* Replace JSON waterfall mapper with an SVG waterfall mapper.
+
 ## 1.4.5
 
 * Tolerate reduced round-trip data.
