@@ -24,7 +24,7 @@ var check = require('check-types'),
     url = require('url'),
     qs = require('qs'),
     fs = require('fs'),
-    toobusy = require('toobusy-js'),
+    toobusy = require('toobusy'),
     cluster = require('cluster'),
 
 defaults = {
