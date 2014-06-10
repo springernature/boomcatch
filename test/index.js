@@ -149,7 +149,7 @@ suite('index:', function () {
                 })
             }
         }));
-        mockery.registerMock('toobusy', function () {
+        mockery.registerMock('toobusy-js', function () {
             log.counts.toobusy += 1;
             log.these.toobusy.push(this);
             log.args.toobusy.push(arguments);
@@ -162,7 +162,7 @@ suite('index:', function () {
 
     teardown(function () {
         mockery.deregisterMock('cluster');
-        mockery.deregisterMock('toobusy');
+        mockery.deregisterMock('toobusy-js');
         mockery.deregisterMock('./mappers/failing');
         mockery.deregisterMock('./forwarders/forwarder');
         mockery.deregisterMock('./mappers/mapper');
