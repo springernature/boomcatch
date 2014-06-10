@@ -219,9 +219,9 @@ suite('mappers/waterfall:', function () {
                     });
 
                     test('raw data seems correct', function () {
-                        assert.strictEqual(document.querySelectorAll('.raw-data table').length, 1);
-                        assert.strictEqual(document.querySelectorAll('.raw-data th').length, 14);
-                        assert.strictEqual(document.querySelectorAll('.raw-data table > tbody > tr').length, 2);
+                        assert.strictEqual(document.querySelectorAll('[data-raw] table').length, 1);
+                        assert.strictEqual(document.querySelectorAll('[data-raw] th').length, 14);
+                        assert.strictEqual(document.querySelectorAll('[data-raw] table > tbody > tr').length, 2);
                     });
 
                     test('mouseover details seem correct', function () {
