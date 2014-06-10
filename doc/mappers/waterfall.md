@@ -13,8 +13,9 @@ It accepts two options,
 (`-T` from the command line),
 which allows you
 to specify a path
-to the template
-that will be rendered,
+to a [handlebars] template
+that will be rendered
+with the data,
 and `svgSettings`
 (`-S` from the command line),
 which enables you
@@ -29,4 +30,5 @@ a data type,
 for use by forwarders.
 
 [svg]: https://developer.mozilla.org/en/docs/Web/SVG
+[handlebars]: http://handlebarsjs.com/
 
