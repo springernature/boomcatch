@@ -23,7 +23,7 @@ exports.initialise = function () {
     return send;
 };
 
-function send (data, separator, callback) {
+function send (data, type, separator, callback) {
     console.log(data);
     callback(null, data.length);
 }

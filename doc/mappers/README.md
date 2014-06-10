@@ -12,7 +12,7 @@ The choice of mapper
 can be specified at the command line,
 using the `-m` [option].
 Three mappers are availble out-of-the-box,
-[statsd], [statsd-npg] and [har].
+[statsd], [statsd-npg], [har] and [waterfall].
 
 Defining custom mappers is simple.
 The [source code for the statsd mapper][src]
@@ -89,6 +89,7 @@ as `'\n'`.
 [statsd]: statsd.md
 [statsd-npg]: statsd-npg.md
 [har]: har.md
+[waterfall]: waterfall.md
 [src]: ../../src/mappers/statsd.js
 [normalised]: ../data.md
 

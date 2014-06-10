@@ -21,7 +21,8 @@
 
 var url = require('url'),
     querystring = require('querystring'),
-    check = require('check-types');
+    check = require('check-types'),
+    contentTypes;
 
 exports.initialise = function (options) {
     return send.bind(null, getProtocol(options.fwdUrl), url.parse(options.fwdUrl), normaliseMethod(options.fwdMethod));
@@ -39,7 +40,7 @@ function normaliseMethod (method) {
     return 'GET';
 }
 
-function send (protocol, url, method, data, separator, callback) {
+function send (protocol, url, method, data, type, separator, callback) {
     var length, request;
 
     try {
@@ -55,6 +56,9 @@ function send (protocol, url, method, data, separator, callback) {
         }
 
         url.method = method;
+        url.headers = {
+            'Content-Type': contentTypes[type || 'default']
+        };
 
         request = protocol.request(url, function (response) {
             if (data) {
@@ -71,4 +75,10 @@ function send (protocol, url, method, data, separator, callback) {
         callback(error.message);
     }
 }
+
+contentTypes = {
+    json: 'application/json',
+    html: 'text/html',
+    default: 'text/plain'
+};
 

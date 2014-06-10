@@ -1049,10 +1049,11 @@ suite('index:', function () {
 
                     test('forwarder was called correctly', function () {
                         assert.isUndefined(log.these.forwarder[0]);
-                        assert.lengthOf(log.args.forwarder[0], 3);
+                        assert.lengthOf(log.args.forwarder[0], 4);
                         assert.strictEqual(log.args.forwarder[0][0], 'default mapped data');
                         assert.isUndefined(log.args.forwarder[0][1]);
-                        assert.isFunction(log.args.forwarder[0][2]);
+                        assert.isUndefined(log.args.forwarder[0][2]);
+                        assert.isFunction(log.args.forwarder[0][3]);
                     });
 
                     test('response.end was not called', function () {
@@ -1061,7 +1062,7 @@ suite('index:', function () {
 
                     suite('error:', function () {
                         setup(function () {
-                            log.args.forwarder[0][2]('wibble');
+                            log.args.forwarder[0][3]('wibble');
                         });
 
                         test('response.setHeader was called once', function () {
@@ -1092,7 +1093,7 @@ suite('index:', function () {
 
                     suite('success:', function () {
                         setup(function () {
-                            log.args.forwarder[0][2](null, 1977);
+                            log.args.forwarder[0][3](null, 1977);
                         });
 
                         test('response.setHeader was not called', function () {
@@ -1647,7 +1648,7 @@ suite('index:', function () {
 
                         suite('success:', function () {
                             setup(function () {
-                                log.args.forwarder[0][2](null, 1);
+                                log.args.forwarder[0][3](null, 1);
                             });
 
                             test('response.setHeader was not called', function () {

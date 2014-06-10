@@ -31,7 +31,8 @@ module.exports = {
         useragent(true);
 
         return map;
-    }
+    },
+    type: 'json'
 };
 
 function map (data, referer, userAgent) {

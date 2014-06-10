@@ -21,16 +21,17 @@
 
 var fs = require('fs'),
     path = require('path'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    extensions;
 
 exports.initialise = function (options) {
     return send.bind(null, options.fwdDir);
 };
 
-function send (directory, data, separator, callback) {
+function send (directory, data, type, separator, callback) {
     try {
         fs.writeFile(
-            path.join(directory, 'boomcatch-' + uuid.v4() + '.json'),
+            path.join(directory, 'boomcatch-' + uuid.v4() + '.' + extensions[type || 'default']),
             data,
             { mode: 420 },
             function (error) {
@@ -41,4 +42,10 @@ function send (directory, data, separator, callback) {
         callback(error.message);
     }
 }
+
+extensions = {
+    json: 'json',
+    html: 'html',
+    default: 'txt'
+};
 

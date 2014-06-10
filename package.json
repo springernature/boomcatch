@@ -1,7 +1,7 @@
 {
     "name": "boomcatch",
-    "version": "1.4.5",
-    "description": "Standalone beacon server for boomerang.",
+    "version": "1.5.0",
+    "description": "A standalone, node.js-based beacon receiver for boomerang.",
     "homepage": "https://github.com/nature/boomcatch",
     "bugs": "https://github.com/nature/boomcatch/issues",
     "license": "GPL-3.0+",
@@ -37,7 +37,8 @@
         "yamlparser": "0.0.x",
         "request": "2.34.x",
         "node-uuid": "1.4.x",
-        "toobusy-js": "0.3.x"
+        "toobusy-js": "0.3.x",
+        "handlebars": "1.3.x"
     },
     "optionalDependencies": {
         "rconsole": "0.2.x"
@@ -48,7 +49,8 @@
         "chai": "1.9.x",
         "mockery": "1.4.x",
         "spooks": "0.5.x",
-        "istanbul": "0.2.x"
+        "istanbul": "0.2.x",
+        "jsdom": "0.10.x"
     },
     "scripts": {
         "lint": "./node_modules/.bin/jshint src --config .jshintrc",

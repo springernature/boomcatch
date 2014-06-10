@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="generator" content="boomcatch {{version}}"/>
+
+        <title>{{title}}</title>
+
+        <style>
+            html, body, div, h1, h2, h3, p, a, abbr, ul, li, table, caption, thead, tbody, tr, th, td, section
+            {
+                margin: 0;
+                padding: 0;
+                border: none;
+                font-size: 100%;
+                font: inherit;
+                vertical-align: baseline;
+            }
+
+            html, body
+            {
+                height: 100%;
+            }
+
+            html
+            {
+                font-size: 100.01%;
+            }
+
+            body
+            {
+                padding: 0 32px;
+                font-family: helvetica, arial, sans-serif;
+                font-size: 75%;
+                color: #333;
+            }
+
+            h1
+            {
+                margin: 1em 0;
+                font-size: 2em;
+            }
+
+            h2, caption
+            {
+                margin: 0.7em 0;
+                font-size: 1.4em;
+                text-align: left;
+            }
+
+            h3
+            {
+                display: inline;
+                font-weight: bold;
+            }
+
+            text
+            {
+                fill: #333;
+            }
+
+            table
+            {
+                border: 1px solid #111;
+            }
+
+            th
+            {
+                padding: 0.5em 1em;
+                border-left: 1px solid #111;
+                font-weight: bold;
+                text-align: left;
+            }
+
+            td
+            {
+                padding: 0.25em 1em;
+                border-top: 1px solid #111;
+                border-left: 1px solid #111;
+            }
+
+            th:first-child, td:first-child
+            {
+                border-left: none;
+            }
+
+            .background
+            {
+                background-color: #fff;
+                fill: #fff;
+            }
+
+            {{#each svg.colours}}
+            .{{name}}
+            {
+                fill: {{value}};
+                background-color: {{value}};
+                color: {{fg}};
+            }
+            {{/each}}
+
+            .tick
+            {
+                stroke: #ccc;
+            }
+
+            .key-titles
+            {
+                background-color: #111;
+                color: #ccc;
+            }
+
+            .capitalise
+            {
+                text-transform: capitalize;
+            }
+
+            .upper-case
+            {
+                text-transform: uppercase;
+            }
+
+            .resource-detail
+            {
+                position: absolute;
+                visibility: hidden;
+            }
+
+            .box
+            {
+                padding: 16px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .visually-hidden
+            {
+                width: 1px;
+                height: 1px;
+                position: absolute;
+                clip: rect(1px 1px 1px 1px);
+                clip: rect(1px, 1px, 1px, 1px);
+                overflow: hidden;
+            }
+
+            .unbulleted
+            {
+                list-style-type: none;
+            }
+
+            .padded-top
+            {
+                margin-top: 6px;
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                'use strict';
+
+                var detailDimensions, resourceGroups;
+
+                detailDimensions = new Array({{details.length}});
+
+                resourceGroups = document.querySelectorAll('[data-resource]');
+                resourceGroups.forEach = function (fn) {
+                    var i;
+
+                    for (i = 0; i < resourceGroups.length; i += 1) {
+                        fn(resourceGroups.item(i), i);
+                    }
+                };
+
+                resourceGroups.forEach(addResourceHoverEffects);
+
+                document.querySelector('[data-raw]').className = "visually-hidden";
+
+                function addResourceHoverEffects (group, index) {
+                    group.addEventListener('mouseover', function (event) {
+                        highlightResourceGroup(group);
+                        showResourceDetail(index, event);
+                    });
+                    group.addEventListener('mousemove', moveResourceDetail.bind(null, index));
+                    group.addEventListener('mouseout', function () {
+                        unhighlightResourceGroups();
+                        hideResourceDetail(index);
+                    });
+                }
+
+                function highlightResourceGroup (group) {
+                    resourceGroups.forEach(function (g) {
+                        g.style.opacity = 0.2;
+                    });
+                    group.style.opacity = 1;
+                }
+
+                function showResourceDetail (index, event) {
+                    moveResourceDetail(index, event).style.visibility = 'visible';
+                }
+
+                function moveResourceDetail (index, event) {
+                    var detail, position;
+
+                    detail = getResourceDetail(index);
+
+                    if (typeof detailDimensions[index] === 'undefined') {
+                        detailDimensions[index] = {
+                            x: detail.offsetWidth,
+                            y: detail.offsetHeight
+                        };
+                    }
+
+                    position = {
+                        x: event.pageX + {{svg.padding}},
+                        y: event.pageY + {{svg.padding}}
+                    };
+
+                    updatePositionX(detailDimensions[index], position, event);
+                    updatePositionY(detailDimensions[index], position, event);
+
+                    detail.style.left = pixelify(position.x);
+                    detail.style.top = pixelify(position.y);
+
+                    return detail;
+                }
+
+                function getResourceDetail (index) {
+                    return document.querySelector('[data-resource-detail="' + index + '"]');
+                }
+
+                function updatePositionX (dimensions, position, event) {
+                    updatePosition(dimensions, 'x', event.clientX, event.pageX, innerWidth, position);
+                }
+
+                function updatePositionY (dimensions, position, event) {
+                    updatePosition(dimensions, 'y', event.clientY, event.pageY, innerHeight, position);
+                }
+
+                function updatePosition (dimensions, dimension, clientPosition, pagePostion, viewSize, position) {
+                    if (
+                        clientPosition + dimensions[dimension] + {{svg.padding}} > viewSize &&
+                        clientPosition - dimensions[dimension] - {{svg.padding}} >= 0
+                    ) {
+                        position[dimension] = pagePostion - dimensions[dimension] - {{svg.padding}};
+                    }
+                }
+
+                function pixelify (number) {
+                    return number + 'px';
+                }
+
+                function unhighlightResourceGroups () {
+                    resourceGroups.forEach(function (g) {
+                        g.style.opacity = 1;
+                    });
+                }
+
+                function hideResourceDetail (index) {
+                    getResourceDetail(index).style.visibility = 'hidden';
+                }
+            });
+        </script>
+    </head>
+
+    <body class="background">
+        <h1>{{title}}</h1>
+
+        <section>
+            <h2>Waterfall chart</h2>
+
+            {{#with svg}}
+            <svg width="{{width}}px" height="{{height}}px">
+                {{#with xAxis}}
+                <g transform="translate({{x}}, {{y}})">
+                    <text>Time (milliseconds)</text>
+                </g>
+                {{/with}}
+                <g transform="translate({{offset.x}}, {{offset.y}})">
+                    {{#each resources}}
+                    <g transform="translate(0, {{y}})" data-resource="{{index}}">
+                        <rect x="-{{../offset.x}}px" width="100%" height="{{../resourceHeight}}px" class="background"></rect>
+                        {{#each timings}}
+                        <rect x="{{x}}px" y="{{../../barPadding}}px" width="{{width}}px" height="{{../../barHeight}}px" class="{{name}}"></rect>
+                        {{/each}}
+                        {{#with label}}
+                        <text x="-{{../../offset.x}}px" y="{{y}}px" dy="5px" class="resource-label">{{text}}</text>
+                        {{/with}}
+                    </g>
+                    {{/each}}
+                    <g transform="translate(0, -{{padding}})">
+                        {{#each ticks}}
+                        <line x1="{{x}}px" x2="{{x}}px" y1="0" y2="{{height}}px" class="tick"></line>
+                        <text x="{{x}}px" y="0" dy="-3px" text-anchor="middle">{{value}}</text>
+                        {{/each}}
+                    </g>
+                </g>
+            </svg>
+            {{/with}}
+
+            <table class="key" cellspacing="0" cellpadding="0">
+                <caption>Colour Key</caption>
+                <thead class="key-titles">
+                    <tr>
+                        <th>State</th>
+                        <th>Colour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each svg.colours}}
+                    <tr>
+                        <td class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</td>
+                        <td class="upper-case {{name}}">{{value}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </section>
+
+        <div data-raw="true">
+            <section>
+                <h2>Raw Data</h2>
+
+                <table cellspacing="0" cellpadding="0">
+                    <thead>
+                        <tr>
+                            <th>Resource name</th>
+                            <th>Initiator type</th>
+                            <th>Start time</th>
+                            <th>Duration</th>
+                            {{#each svg.colours}}
+                            {{#unless blocked}}
+                            <th><span class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</span> start time</th>
+                            <th><span class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</span> duration</th>
+                            {{/unless}}
+                            {{/each}}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each details}}
+                        <tr>
+                            <td>{{name}}</td>
+                            <td>{{type}}</td>
+                            <td>{{start}}</td>
+                            <td>{{duration}}</td>
+                            {{#each timings}}
+                            {{#unless blocked}}
+                            <td>{{start}}</td>
+                            <td>{{duration}}</td>
+                            {{/unless}}
+                            {{/each}}
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        {{#each details}}
+        <section>
+            <div class="resource-detail box background" data-resource-detail="{{index}}">
+                <h2 class="visually-hidden">{{name}}</h2>
+                <ul>
+                    <li class="resource-type unbulleted">
+                        <h3>Initiator type</h3>:
+                        {{type}}
+                    </li>
+                    <li class="resource-start unbulleted padded-top">
+                        <h3>Start time</h3>:
+                        {{start}} <abbr title="milliseconds">ms</abbr>
+                    </li>
+                    <li class="resource-duration unbulleted">
+                        <h3>Duration</h3>:
+                        {{duration}} <abbr title="milliseconds">ms</abbr>
+                    </li>
+                    {{#each timings}}
+                    {{#unless blocked}}
+                    <li class="resource-timing resource-start timing-{{name}} unbulleted padded-top">
+                        <h3><span class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</span> start time</h3>:
+                        {{start}} <abbr title="milliseconds">ms</abbr>
+                    </li>
+                    <li class="resource-timing resource-duration timing-{{name}} unbulleted">
+                        <h3><span class="{{#if dns}}upper-case{{else}}capitalise{{/if}}">{{name}}</span> duration</h3>:
+                        {{duration}} <abbr title="milliseconds">ms</abbr>
+                    </li>
+                    {{/unless}}
+                    {{/each}}
+                </ul>
+            </div>
+        </section>
+        {{/each}}
+    </body>
+</html>

@@ -48,7 +48,7 @@ the returned forwarder function
 should look like this:
 
 ```javascript
-function (/* bound options, ... */ data, separator, callback) {
+function (/* bound options, ... */ data, type, separator, callback) {
 }
 ```
 
@@ -59,7 +59,13 @@ are, in order:
 1. `data`:
    Data returned by one of the mappers.
 
-2. `separator`:
+2. `type`:
+   Optional type
+   that can be used
+   to ensure
+   sane transfer of the data.
+
+3. `separator`:
    Optional separator
    that can be used
    to ensure
@@ -68,7 +74,7 @@ are, in order:
    it must be broken
    across multiple packets.
 
-3. `callback`:
+4. `callback`:
    Function to call
    after the data has been sent.
    The signature for this function

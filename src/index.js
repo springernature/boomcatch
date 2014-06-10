@@ -70,6 +70,8 @@ signals, normalisationMaps;
  * @option mapper {string}       Data mapper used to transform data before forwarding,
  *                               loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
+ * @option svgTemplate {string}  Path to alternative SVG handlebars template file (SVG mapper only).
+ * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper only).
  * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
  *                               Defaults to 'udp'.
  * @option fwdHost {string}      Host name to forward mapped data to (UDP only).
@@ -157,6 +159,10 @@ function verifyForwarderOptions (options) {
     check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
 
     switch (options.forwarder) {
+        case 'waterfall-svg':
+            verifyFile(options.svgTemplate, 'Invalid SVG template path');
+            verifyFile(options.svgSettings, 'Invalid SVG settings path');
+            break;
         case 'file':
             verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
             break;
@@ -171,20 +177,32 @@ function verifyForwarderOptions (options) {
     }
 }
 
-function verifyDirectory (path, message) {
+function verifyFile (path, message) {
+    verifyFs(true, path, 'isFile', message);
+}
+
+function verifyFs (isOptional, path, method, message) {
     var stat;
+
+    if (isOptional && !path) {
+        return;
+    }
 
     check.verify.unemptyString(path, message);
 
     if (fs.existsSync(path)) {
         stat = fs.statSync(path);
 
-        if (stat.isDirectory()) {
+        if (stat[method]()) {
             return;
         }
     }
 
     throw new Error(message);
+}
+
+function verifyDirectory (path, message) {
+    verifyFs(false, path, 'isDirectory', message);
 }
 
 function getWorkers (options) {
@@ -336,7 +354,7 @@ function getFilter (options) {
 }
 
 function getMapper (options) {
-    return getExtension('mapper', options, ['separator']);
+    return getExtension('mapper', options, ['type','separator']);
 }
 
 function getForwarder (options) {
@@ -522,7 +540,7 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
 
         log.info('sending ' + mappedData);
 
-        forwarder(mappedData, mapper.separator, function (error, bytesSent) {
+        forwarder(mappedData, mapper.type, mapper.separator, function (error, bytesSent) {
             if (error) {
                 return fail(log, request, response, 502, error);
             }
