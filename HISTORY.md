@@ -4,7 +4,6 @@
 
 * Expose data type from mappers.
 * Replace JSON waterfall mapper with an SVG waterfall mapper.
-* Revert to the C implementation of toobusy.
 
 ## 1.4.5
 
