@@ -140,6 +140,7 @@
                 position: absolute;
                 clip: rect(1px 1px 1px 1px);
                 clip: rect(1px, 1px, 1px, 1px);
+                overflow: hidden;
             }
 
             .unbulleted
@@ -151,18 +152,13 @@
             {
                 margin-top: 6px;
             }
-
-            .js-enabled .raw-data
-            {
-                display: none;
-            }
         </style>
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 'use strict';
 
-                var detailDimensions, resourceGroups, i;
+                var detailDimensions, resourceGroups;
 
                 detailDimensions = new Array({{details.length}});
 
@@ -177,7 +173,7 @@
 
                 resourceGroups.forEach(addResourceHoverEffects);
 
-                document.body.className += ' js-enabled';
+                document.querySelector('[data-raw]').className = "visually-hidden";
 
                 function addResourceHoverEffects (group, index) {
                     group.addEventListener('mouseover', function (event) {
@@ -320,7 +316,7 @@
             </table>
         </section>
 
-        <div class="raw-data">
+        <div data-raw="true">
             <section>
                 <h2>Raw Data</h2>
 
