@@ -207,7 +207,7 @@ suite('mappers/waterfall:', function () {
                         assert.strictEqual(document.querySelectorAll('rect').length, 14);
                         assert.strictEqual(document.querySelectorAll('text').length, 8);
                         assert.strictEqual(document.querySelectorAll('line').length, 5);
-                        assert.notEqual(result.indexOf('<svg width="960px" height="98px">'), -1);
+                        assert.notEqual(result.indexOf('<svg width="960px" height="98px" aria-describedby="colour-key">'), -1);
                         assert.notEqual(result.indexOf('<g transform="translate(0, 0)" data-resource="0">'), -1);
                         assert.notEqual(result.indexOf('<g transform="translate(0, 24)" data-resource="1">'), -1);
                     });
