@@ -269,7 +269,7 @@
             <h2>Waterfall chart</h2>
 
             {{#with svg}}
-            <svg width="{{width}}px" height="{{height}}px">
+            <svg width="{{width}}px" height="{{height}}px" aria-describedby="colour-key">
                 {{#with xAxis}}
                 <g transform="translate({{x}}, {{y}})">
                     <text>Time (milliseconds)</text>
@@ -297,7 +297,7 @@
             </svg>
             {{/with}}
 
-            <table class="key" cellspacing="0" cellpadding="0">
+            <table id="colour-key" class="key" cellspacing="0" cellpadding="0">
                 <caption>Colour Key</caption>
                 <thead class="key-titles">
                     <tr>
