@@ -21,6 +21,7 @@
 
 var check = require('check-types'),
     http = require('http'),
+    https = require('https'),
     url = require('url'),
     qs = require('qs'),
     fs = require('fs'),
@@ -31,10 +32,9 @@ defaults = {
     host: '0.0.0.0',
     port: 80,
     path: '/beacon',
-    https: {
-        key: false,
-        cert: false
-    },
+    https: 0,
+    key: '',
+    cert: '',
     referer: /.*/,
     origin: '*',
     limit: 0,
@@ -61,8 +61,9 @@ signals, normalisationMaps;
  *                               '0.0.0.0' (INADDR_ANY).
  * @option port {number}         HTTP port to accept connections on. Defaults to 80.
  * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
- * @option https {object}        Object containing `key` and `cert` paths. Defaults to `false` for
- *                               both object keys.
+ * @option https {integer}       Use a secure connection for the host. Defaults to 0.
+ * @option key {string}          Private key for secure connection. Defaults to ''.
+ * @option cert {string}         Public key for secure connection. Defaults to ''.
  * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
  * @option origin {string|array} URL(s) for the Access-Control-Allow-Origin header.
  * @option limit {number}        Minimum elapsed time between requests from the same IP
@@ -119,6 +120,7 @@ function verifyOptions (options) {
     check.verify.maybe.unemptyString(options.host, 'Invalid host');
     check.verify.maybe.positiveNumber(options.port, 'Invalid port');
     check.verify.maybe.unemptyString(options.path, 'Invalid path');
+    check.verify.maybe.number(options.https, 'Invalid https');
     check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
@@ -126,7 +128,7 @@ function verifyOptions (options) {
     check.verify.maybe.number(options.workers, 'Invalid workers');
     check.verify.not.negativeNumber(options.workers, 'Invalid workers');
 
-    verifyHttps(options.https);
+    verifyHttps(options);
     verifyOrigin(options.origin);
     verifyLog(options.log);
 
@@ -134,12 +136,10 @@ function verifyOptions (options) {
     verifyForwarderOptions(options);
 }
 
-function verifyHttps (https) {
-    check.verify.maybe.object(https, 'Invalid https object');
-
-    if (check.object(https)) {
-        check.verify.object(https.key, 'Invalid https.key value');
-        check.verify.object(https.cert, 'Invalid https.cert value');
+function verifyHttps (options) {
+    if (options.https === 1) {
+        check.verify.unemptyString(options.key, 'Invalid key');
+        check.verify.unemptyString(options.cert, 'Invalid cert');
     }
 }
 
