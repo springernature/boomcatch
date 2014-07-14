@@ -34,9 +34,6 @@ function parseCommandLine () {
         .option('-n, --host <name>', 'host name to accept HTTP connections on, default is 0.0.0.0 (INADDR_ANY)')
         .option('-p, --port <port>', 'port to accept HTTP connections on, default is 80', parseInt)
         .option('-u, --path <path>', 'URL path to accept requests to, default is /beacon')
-        .option('-H, --https <integer>', 'if a secure connection should be established, default is 0', parseInt)
-        .option('-k, --key <path>', 'path to private key for secure connection, default is "" (HTTPS only)')
-        .option('-c, --cert <path>', 'path to public key for secure connection, default is "" (HTTPS only)')
         .option('-r, --referer <regex>', 'HTTP referers to accept requests from, default is .*', parseRegExp)
         .option('-o, --origin <origin>', 'URL(s) for the Access-Control-Allow-Origin header, default is * (any origin), specify null to force same origin', parseOrigin)
         .option('-l, --limit <milliseconds>', 'minimum elapsed time between requests from the same IP address, default is 0', parseInt)
@@ -57,6 +54,9 @@ function parseCommandLine () {
         .option('-U, --fwdUrl <name>', 'URL to forward data to (HTTP only)')
         .option('-M, --fwdMethod <name>', 'method to forward data with (HTTP only)')
         .option('-D, --fwdDir <path>', 'directory to write data to (file forwarder only)')
+        .option('-H, --https <integer>', 'if a secure connection should be established, default is 0', parseInt)
+        .option('-k, --key <path>', 'path to private key for secure connection, default is "" (HTTPS only)')
+        .option('-c, --cert <path>', 'path to public key for secure connection, default is "" (HTTPS only)')
         .parse(process.argv);
 }
 

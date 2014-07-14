@@ -32,9 +32,6 @@ defaults = {
     host: '0.0.0.0',
     port: 80,
     path: '/beacon',
-    https: 0,
-    key: '',
-    cert: '',
     referer: /.*/,
     origin: '*',
     limit: 0,
@@ -47,7 +44,10 @@ defaults = {
     filter: 'unfiltered',
     mapper: 'statsd',
     forwarder: 'udp',
-    workers: 0
+    workers: 0,
+    https: 0,
+    key: '',
+    cert: '',
 },
 
 signals, normalisationMaps;
@@ -61,9 +61,6 @@ signals, normalisationMaps;
  *                               '0.0.0.0' (INADDR_ANY).
  * @option port {number}         HTTP port to accept connections on. Defaults to 80.
  * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
- * @option https {integer}       Use a secure connection for the host. Defaults to 0.
- * @option key {string}          Private key for secure connection. Defaults to ''.
- * @option cert {string}         Public key for secure connection. Defaults to ''.
  * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
  * @option origin {string|array} URL(s) for the Access-Control-Allow-Origin header.
  * @option limit {number}        Minimum elapsed time between requests from the same IP
@@ -88,6 +85,9 @@ signals, normalisationMaps;
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
+ * @option https {integer}       Use a secure connection for the host. Defaults to 0.
+ * @option key {string}          Private key for secure connection. Defaults to ''.
+ * @option cert {string}         Public key for secure connection. Defaults to ''.
  */
 exports.listen = function (options) {
     var workers, log;
@@ -120,13 +120,13 @@ function verifyOptions (options) {
     check.verify.maybe.unemptyString(options.host, 'Invalid host');
     check.verify.maybe.positiveNumber(options.port, 'Invalid port');
     check.verify.maybe.unemptyString(options.path, 'Invalid path');
-    check.verify.maybe.number(options.https, 'Invalid https');
     check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
     check.verify.maybe.number(options.workers, 'Invalid workers');
     check.verify.not.negativeNumber(options.workers, 'Invalid workers');
+    check.verify.maybe.number(options.https, 'Invalid https');
 
     verifyHttps(options);
     verifyOrigin(options.origin);
