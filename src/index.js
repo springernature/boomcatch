@@ -31,6 +31,10 @@ defaults = {
     host: '0.0.0.0',
     port: 80,
     path: '/beacon',
+    https: {
+        key: false,
+        cert: false
+    },
     referer: /.*/,
     origin: '*',
     limit: 0,
@@ -57,6 +61,8 @@ signals, normalisationMaps;
  *                               '0.0.0.0' (INADDR_ANY).
  * @option port {number}         HTTP port to accept connections on. Defaults to 80.
  * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
+ * @option https {object}        Object containing `key` and `cert` paths. Defaults to `false` for
+ *                               both object keys.
  * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
  * @option origin {string|array} URL(s) for the Access-Control-Allow-Origin header.
  * @option limit {number}        Minimum elapsed time between requests from the same IP
@@ -120,11 +126,21 @@ function verifyOptions (options) {
     check.verify.maybe.number(options.workers, 'Invalid workers');
     check.verify.not.negativeNumber(options.workers, 'Invalid workers');
 
+    verifyHttps(options.https);
     verifyOrigin(options.origin);
     verifyLog(options.log);
 
     verifyMapperOptions(options);
     verifyForwarderOptions(options);
+}
+
+function verifyHttps (https) {
+    check.verify.maybe.object(https, 'Invalid https object');
+
+    if (check.object(https)) {
+        check.verify.object(https.key, 'Invalid https.key value');
+        check.verify.object(https.cert, 'Invalid https.cert value');
+    }
 }
 
 function verifyOrigin (origin) {
