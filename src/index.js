@@ -277,7 +277,7 @@ function createWorkers (count, log) {
 }
 
 function createServer (options, log) {
-    var host, port, path;
+    var host, port, path, request, server;
 
     host = getHost(options);
     port = getPort(options);
@@ -285,21 +285,32 @@ function createServer (options, log) {
 
     log.info('listening for ' + host + ':' + port + path);
 
-    http.createServer(
-        handleRequest.bind(
-            null,
-            log,
-            path,
-            getReferer(options),
-            getLimit(options),
-            getOrigin(options),
-            getMaxSize(options),
-            getValidator(options),
-            getFilter(options),
-            getMapper(options),
-            getForwarder(options)
-        )
-    ).listen(port, host);
+    request = handleRequest.bind(
+        null,
+        log,
+        path,
+        getReferer(options),
+        getLimit(options),
+        getOrigin(options),
+        getMaxSize(options),
+        getValidator(options),
+        getFilter(options),
+        getMapper(options),
+        getForwarder(options)
+    );
+
+    if (options.https === 1) {
+        var httpsOptions = {
+            key: fs.readFileSync(options.key),
+            cert: fs.readFileSync(options.cert)
+        };
+
+        server = https.createServer(httpsOptions, request);
+    } else {
+        server = http.createServer(request);
+    }
+
+    server.listen(port, host);
 }
 
 function getHost (options) {
