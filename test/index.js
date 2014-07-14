@@ -50,6 +50,11 @@ suite('index:', function () {
             log: log,
             chains: { createServer: true }
         }));
+        mockery.registerMock('https', spooks.obj({
+            archetype: { options: {}, createServer: nop, listen: nop },
+            log: log,
+            chains: { createServer: true }
+        }));
         mockery.registerMock('./validators/permissive', spooks.obj({
             archetype: { initialise: nop },
             log: log,
@@ -173,6 +178,7 @@ suite('index:', function () {
         mockery.deregisterMock('./filters/unfiltered');
         mockery.deregisterMock('./validators/permissive');
         mockery.deregisterMock('http');
+        mockery.deregisterMock('https');
         mockery.disable();
         log = undefined;
     });
