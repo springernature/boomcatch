@@ -277,7 +277,7 @@ function createWorkers (count, log) {
 }
 
 function createServer (options, log) {
-    var host, port, path, request, server;
+    var host, port, path, request, httpsOptions, server;
 
     host = getHost(options);
     port = getPort(options);
@@ -300,7 +300,7 @@ function createServer (options, log) {
     );
 
     if (options.https === 1) {
-        var httpsOptions = {
+        httpsOptions = {
             key: fs.readFileSync(options.key),
             cert: fs.readFileSync(options.cert)
         };
