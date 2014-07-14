@@ -54,7 +54,6 @@ function parseCommandLine () {
         .option('-U, --fwdUrl <name>', 'URL to forward data to (HTTP only)')
         .option('-M, --fwdMethod <name>', 'method to forward data with (HTTP only)')
         .option('-D, --fwdDir <path>', 'directory to write data to (file forwarder only)')
-        .option('-H, --https <integer>', 'if a secure connection should be established, default is 0', parseInt)
         .option('-k, --key <path>', 'path to private key for secure connection, default is "" (HTTPS only)')
         .option('-c, --cert <path>', 'path to public key for secure connection, default is "" (HTTPS only)')
         .parse(process.argv);

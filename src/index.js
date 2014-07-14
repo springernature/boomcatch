@@ -45,9 +45,8 @@ defaults = {
     mapper: 'statsd',
     forwarder: 'udp',
     workers: 0,
-    https: 0,
     key: '',
-    cert: '',
+    cert: ''
 },
 
 signals, normalisationMaps;
@@ -85,7 +84,6 @@ signals, normalisationMaps;
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
- * @option https {integer}       Use a secure connection for the host. Defaults to 0.
  * @option key {string}          Private key for secure connection. Defaults to ''.
  * @option cert {string}         Public key for secure connection. Defaults to ''.
  */
@@ -126,21 +124,14 @@ function verifyOptions (options) {
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
     check.verify.maybe.number(options.workers, 'Invalid workers');
     check.verify.not.negativeNumber(options.workers, 'Invalid workers');
-    check.verify.maybe.number(options.https, 'Invalid https');
+    check.verify.maybe.unemptyString(options.key, 'Invalid key');
+    check.verify.maybe.unemptyString(options.cert, 'Invalid cert');
 
-    verifyHttps(options);
     verifyOrigin(options.origin);
     verifyLog(options.log);
 
     verifyMapperOptions(options);
     verifyForwarderOptions(options);
-}
-
-function verifyHttps (options) {
-    if (options.https === 1) {
-        check.verify.unemptyString(options.key, 'Invalid key');
-        check.verify.unemptyString(options.cert, 'Invalid cert');
-    }
 }
 
 function verifyOrigin (origin) {
@@ -299,7 +290,7 @@ function createServer (options, log) {
         getForwarder(options)
     );
 
-    if (options.https === 1) {
+    if (check.unemptyString(options.key) && check.unemptyString(options.cert)) {
         httpsOptions = {
             key: fs.readFileSync(options.key),
             cert: fs.readFileSync(options.cert)
