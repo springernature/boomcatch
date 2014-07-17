@@ -349,7 +349,7 @@ function createServer (options, log) {
         getForwarder(options)
     );
 
-    if (check.unemptyString(options.key) && check.unemptyString(options.cert)) {
+    if (options.https === 1) {
         httpsOptions = {
             key: fs.readFileSync(options.key),
             cert: fs.readFileSync(options.cert)
