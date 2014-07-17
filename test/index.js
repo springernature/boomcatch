@@ -235,7 +235,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -287,7 +302,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -313,7 +343,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -339,7 +384,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -365,7 +425,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -391,7 +466,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -417,7 +507,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -443,7 +548,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -469,7 +589,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -495,7 +630,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -521,7 +671,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -547,7 +712,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -573,7 +753,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -599,7 +794,22 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -625,7 +835,22 @@ suite('index:', function () {
                     fwdSize: '256',
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -651,7 +876,22 @@ suite('index:', function () {
                     fwdSize: '256',
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: '4'
+                    workers: '4',
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -677,7 +917,22 @@ suite('index:', function () {
                     fwdSize: '256',
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: -1
+                    workers: -1,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
         });
@@ -706,7 +961,33 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    key: '/path/to/key',
+                    cert: '/path/to/cert',
+                    pfx: 'key-string',
+                    passphrase: 'passphrase',
+                    ca: [
+                        "ca1",
+                        "ca2"
+                    ],
+                    crl: [
+                        "crl1",
+                        "crl2"
+                    ],
+                    ciphers: 'mock-cipher-sting',
+                    handshakeTimeout: 1,
+                    honorCipherOrder: 1,
+                    requestCert: 1,
+                    rejectUnauthorized: 1,
+                    NPNProtocols: [
+                        "protocol1",
+                        "protocol2"
+                    ],
+                    SNICallback: function() {
+                        console.log('test')
+                    },
+                    sessionIdContext: 'contextID',
+                    secureProtocol: 'SSLv3_method'
                 });
             });
         });
@@ -732,7 +1013,22 @@ suite('index:', function () {
                     fwdSize: null,
                     fwdUrl: null,
                     fwdMethod: null,
-                    workers: null
+                    workers: null,
+                    key: null,
+                    cert: null,
+                    pfx: null,
+                    passphrase: null,
+                    ca: null,
+                    crl: null,
+                    ciphers: null,
+                    handshakeTimeout: null,
+                    honorCipherOrder: null,
+                    requestCert: null,
+                    rejectUnauthorized: null,
+                    NPNProtocols: null,
+                    SNICallback: null,
+                    sessionIdContext: null,
+                    secureProtocol: null
                 });
             });
         });
@@ -1983,7 +2279,22 @@ suite('index:', function () {
                     fwdHost: 'bar host',
                     fwdPort: 1234,
                     fwdSize: 256,
-                    workers: 2
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
                 });
             });
 
