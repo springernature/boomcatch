@@ -56,6 +56,19 @@ function parseCommandLine () {
         .option('-D, --fwdDir <path>', 'directory to write data to (file forwarder only)')
         .option('-k, --key <path>', 'path to private key for secure connection, default is "" (HTTPS only)')
         .option('-c, --cert <path>', 'path to public key for secure connection, default is "" (HTTPS only)')
+        .option('--pfx <string>', 'string containing the private key, certificate and CA certs of the server in PFX or PKCS12 format, default is ""')
+        .option('--passphrase <string>', 'passphrase for the private key or pfx, default is ""')
+        .option('--ca <array>', 'array of strings of trusted certificates in PEM format, default is empty array')
+        .option('--crl <array>', 'array of strings of PEM encoded CRLs, default is empty array')
+        .option('--ciphers <string>', 'string describing the ciphers to use or exclude, default is "AES128-GCM-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH"')
+        .option('--handshakeTimeout <milliseconds>', 'abort the connection if the SSL/TLS handshake does not finish in this many milliseconds, default is 120', parseInt)
+        .option('--honorCipherOrder <number>', 'use the cipher order added with the ciphers argument, default is 0', parseInt)
+        .option('--requestCert <number>', 'if true the server will request a certificate from clients that connect and attempt to verify that certificate, default is 0', parseInt)
+        .option('--rejectUnauthorized <number>', 'if true the server will reject any connection which is not authorized with the list of supplied CAs, default is 0', parseInt)
+        .option('--NPNProtocols <array>', 'array of possible NPN protocols, default is empty array')
+        .option('--SNICallback <function>', 'function that will be called if client supports SNI TLS extension')
+        .option('--sessionIdContext <string>', 'string containing a opaque identifier for session resumption, default is MD5 hash value generated from command-line, otherwise, the default is not provided')
+        .option('--secureProtocol <string>', 'SSL method to use')
         .parse(process.argv);
 }
 

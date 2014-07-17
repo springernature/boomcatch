@@ -46,7 +46,20 @@ defaults = {
     forwarder: 'udp',
     workers: 0,
     key: '',
-    cert: ''
+    cert: '',
+    pfx: '',
+    passphrase: '',
+    ca: [],
+    crl: [],
+    ciphers: '',
+    handshakeTimeout: 0,
+    honorCipherOrder: 0,
+    requestCert: 0,
+    rejectUnauthorized: 0,
+    NPNProtocols: [],
+    SNICallback: function() {},
+    sessionIdContext: '',
+    secureProtocol: ''
 },
 
 signals, normalisationMaps;
@@ -56,36 +69,58 @@ signals, normalisationMaps;
  *
  * Forwards performance metrics calculated from Boomerang beacon requests.
  *
- * @option host {string}         HTTP host name to accept connections on. Defaults to
- *                               '0.0.0.0' (INADDR_ANY).
- * @option port {number}         HTTP port to accept connections on. Defaults to 80.
- * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
- * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
- * @option origin {string|array} URL(s) for the Access-Control-Allow-Origin header.
- * @option limit {number}        Minimum elapsed time between requests from the same IP
- *                               address. Defaults to 0.
- * @option maxSize {number}      Maximum body size for POST requests.
- * @option log {object}          Object with `info` and `error` log functions.
- * @option validator {string}    Validator used to accept or reject beacon requests,
- *                               loaded with `require`. Defaults to 'permissive'.
- * @option filter {string}       Filter used to purge unwanted data, loaded with `require`.
- *                               Defaults to `unfiltered`.
- * @option mapper {string}       Data mapper used to transform data before forwarding,
- *                               loaded with `require`. Defaults to 'statsd'.
- * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
- * @option svgTemplate {string}  Path to alternative SVG handlebars template file (SVG mapper only).
- * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper only).
- * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
- *                               Defaults to 'udp'.
- * @option fwdHost {string}      Host name to forward mapped data to (UDP only).
- * @option fwdPort {number}      Port to forward mapped data on (UDP only).
- * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP only).
- * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
- * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
- * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
- * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
- * @option key {string}          Private key for secure connection. Defaults to ''.
- * @option cert {string}         Public key for secure connection. Defaults to ''.
+ * @option host {string}                   HTTP host name to accept connections on. Defaults to
+ *                                         '0.0.0.0' (INADDR_ANY).
+ * @option port {number}                   HTTP port to accept connections on. Defaults to 80.
+ * @option path {string}                   URL path to accept requests to. Defaults to '/beacon'.
+ * @option referer {regexp}                HTTP referers to accept requests from. Defaults to `.*`.
+ * @option origin {string|array}           URL(s) for the Access-Control-Allow-Origin header.
+ * @option limit {number}                  Minimum elapsed time between requests from the same IP
+ *                                         address. Defaults to 0.
+ * @option maxSize {number}                Maximum body size for POST requests.
+ * @option log {object}                    Object with `info` and `error` log functions.
+ * @option validator {string}              Validator used to accept or reject beacon requests,
+ *                                         loaded with `require`. Defaults to 'permissive'.
+ * @option filter {string}                 Filter used to purge unwanted data, loaded with `require`.
+ *                                         Defaults to `unfiltered`.
+ * @option mapper {string}                 Data mapper used to transform data before forwarding,
+ *                                         loaded with `require`. Defaults to 'statsd'.
+ * @option prefix {string}                 Prefix to use for mapped metric names. Defaults to ''.
+ * @option svgTemplate {string}            Path to alternative SVG handlebars template file (SVG mapper only).
+ * @option svgSettings {string}            Path to alternative SVG settings JSON file (SVG mapper only).
+ * @option forwarder {string}              Forwarder used to send data, loaded with `require`.
+ *                                         Defaults to 'udp'.
+ * @option fwdHost {string}                Host name to forward mapped data to (UDP only).
+ * @option fwdPort {number}                Port to forward mapped data on (UDP only).
+ * @option fwdSize {bytes}                 Maximum allowable packet size for data forwarding (UDP only).
+ * @option fwdUrl {string}                 URL to forward mapped data to (HTTP only).
+ * @option fwdMethod {string}              Method to forward mapped data with (HTTP only).
+ * @option fwdDir {string}                 Directory to write mapped data to (file forwarder only).
+ * @option workers {number}                Number of child worker processes to fork. Defaults to 0.
+ * @option key {string}                    Private key for secure connection. Defaults to ''.
+ * @option cert {string}                   Public key for secure connection. Defaults to ''.
+ * @option pfx {string}                    String containing the private key, certificate and CA certs of the
+ *                                         server in PFX or PKCS12 format. Defaults to ''.
+ * @option passphrase {string}             Passphrase for the private key or pfx. Defaults to ''.
+ * @option ca {array}                      Array of strings of trusted certificates in PEM format. Defaults to
+ *                                         empty array.
+ * @option crl {array}                     Array of strings of PEM encoded CRLs. Defaults to empty array.
+ * @option ciphers {string}                String describing the ciphers to use or exclude. Defaults to
+ *                                         "AES128-GCM-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH".
+ * @option handshakeTimeout {milliseconds} Abort the connection if the SSL/TLS handshake does not
+ *                                         finish in this many milliseconds. Defaults to 120.
+ * @option honorCipherOrder {number}       Use the cipher order added with the ciphers argument. Defaults
+ *                                         to 0.
+ * @option requestCert {number}            If 1, the server will request a certificate from clients that connect
+ *                                         and attempt to verify that certificate. Defaults to 0.
+ * @option rejectUnauthorized {number}     If 1, the server will reject any connection which is not authorized
+ *                                         with the list of supplied CAs. Defaults to 0.
+ * @option NPNProtocols {array}            Array of possible NPN protocols. Defaults to empty array.
+ * @option SNICallback {function}          Function that will be called if client supports SNI TLS extension.
+ * @option sessionIdContext {string}       String containing a opaque identifier for session resumption.
+ *                                         Defaults to MD5 hash value generated from command-line, otherwise,
+ *                                         the default is not provided.
+ * @option secureProtocol {string}         SSL method to use.
  */
 exports.listen = function (options) {
     var workers, log;
@@ -124,14 +159,38 @@ function verifyOptions (options) {
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
     check.verify.maybe.number(options.workers, 'Invalid workers');
     check.verify.not.negativeNumber(options.workers, 'Invalid workers');
-    check.verify.maybe.unemptyString(options.key, 'Invalid key');
-    check.verify.maybe.unemptyString(options.cert, 'Invalid cert');
 
     verifyOrigin(options.origin);
     verifyLog(options.log);
 
     verifyMapperOptions(options);
     verifyForwarderOptions(options);
+
+    // Secure connection options
+    check.verify.maybe.unemptyString(options.key, 'Invalid key');
+    check.verify.maybe.unemptyString(options.cert, 'Invalid cert');
+
+    // At a minimum, key and cert are required for secure connection
+    if (check.unemptyString(options.key) && check.unemptyString(options.cert)) {
+        options.https = 1;
+    } else {
+        options.https = 0;
+    }
+
+    check.verify.maybe.unemptyString(options.pfx, 'Invalid pfx');
+    check.verify.maybe.unemptyString(options.passphrase, 'Invalid passphrase');
+    check.verify.maybe.array(options.ca, 'Invalid ca');
+    check.verify.maybe.array(options.crl, 'Invalid crl');
+    check.verify.maybe.unemptyString(options.ciphers, 'Invalid ciphers');
+    check.verify.maybe.number(options.handshakeTimeout, 'Invalid handshakeTimeout');
+    check.verify.not.negativeNumber(options.handshakeTimeout, 'Invalid handshakeTimeout');
+    check.verify.maybe.number(options.honorCipherOrder, 'Invalid honorCipherOrder');
+    check.verify.maybe.number(options.requestCert, 'Invalid requestCert');
+    check.verify.maybe.number(options.rejectUnauthorized, 'Invalid rejectUnauthorized');
+    check.verify.maybe.array(options.NPNProtocols, 'Invalid NPNProtocols');
+    check.verify.maybe.fn(options.SNICallback, 'Invalid SNICallback');
+    check.verify.maybe.unemptyString(options.sessionIdContext, 'Invalid sessionIdContext');
+    check.verify.maybe.unemptyString(options.secureProtocol, 'Invalid secureProtocol');
 }
 
 function verifyOrigin (origin) {
