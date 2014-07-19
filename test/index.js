@@ -2485,21 +2485,59 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdPort: 1234,
                     fwdSize: 256,
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    key: 'test.key',
+                    cert: 'test.crt',
+                    pfx: 'test.pfx',
+                    passphrase: 'testcert',
+                    ca: [
+                        '-----BEGIN CERTIFICATE-----\
+MIIDIDCCAomgAwIBAgIENd70zzANBgkqhkiG9w0BAQUFADBOMQswCQYDVQQGEwJV\
+UzEQMA4GA1UEChMHRXF1aWZheDEtMCsGA1UECxMkRXF1aWZheCBTZWN1cmUgQ2Vy\
+dGlmaWNhdGUgQXV0aG9yaXR5MB4XDTk4MDgyMjE2NDE1MVoXDTE4MDgyMjE2NDE1\
+MVowTjELMAkGA1UEBhMCVVMxEDAOBgNVBAoTB0VxdWlmYXgxLTArBgNVBAsTJEVx\
+dWlmYXggU2VjdXJlIENlcnRpZmljYXRlIEF1dGhvcml0eTCBnzANBgkqhkiG9w0B\
+AQEFAAOBjQAwgYkCgYEAwV2xWGcIYu6gmi0fCG2RFGiYCh7+2gRvE4RiIcPRfM6f\
+BeC4AfBONOziipUEZKzxa1NfBbPLZ4C/QgKO/t0BCezhABRP/PvwDN1Dulsr4R+A\
+cJkVV5MW8Q+XarfCaCMczE1ZMKxRHjuvK9buY0V7xdlfUNLjUA86iOe/FP3gx7kC\
+AwEAAaOCAQkwggEFMHAGA1UdHwRpMGcwZaBjoGGkXzBdMQswCQYDVQQGEwJVUzEQ\
+MA4GA1UEChMHRXF1aWZheDEtMCsGA1UECxMkRXF1aWZheCBTZWN1cmUgQ2VydGlm\
+aWNhdGUgQXV0aG9yaXR5MQ0wCwYDVQQDEwRDUkwxMBoGA1UdEAQTMBGBDzIwMTgw\
+ODIyMTY0MTUxWjALBgNVHQ8EBAMCAQYwHwYDVR0jBBgwFoAUSOZo+SvSspXXR9gj\
+IBBPM5iQn9QwHQYDVR0OBBYEFEjmaPkr0rKV10fYIyAQTzOYkJ/UMAwGA1UdEwQF\
+MAMBAf8wGgYJKoZIhvZ9B0EABA0wCxsFVjMuMGMDAgbAMA0GCSqGSIb3DQEBBQUA\
+A4GBAFjOKer89961zgK5F7WF0bnj4JXMJTENAKaSbn+2kmOeUJXRmm/kEd5jhW6Y\
+7qj/WsjTVbJmcVfewCHrPSqnI0kBBIZCe/zuf6IWUrVnZ9NA2zsmWLIodz2uFHdh\
+1voqZiegDfqnc1zqcPGUIWVEX/r87yloqaKHee9570+sB3c4\
+-----END CERTIFICATE-----'
+                    ],
+                    crl: [
+                        '-----BEGIN X509 CRL-----\
+MIIBxTCBrgIBATANBgkqhkiG9w0BAQUFADB8MRMwEQYKCZImiZPyLGQBGRYDZ292\
+MRQwEgYKCZImiZPyLGQBGRYEZm5hbDERMA8GA1UEChMIRmVybWlsYWIxIDAeBgNV\
+BAsTF0NlcnRpZmljYXRlIEF1dGhvcml0aWVzMRowGAYDVQQDExFLZXJiZXJpemVk\
+IENBIEhTTRcNMTQwNzE0MTcwMDExWhcNMTQwODEzMTcwMDExWjANBgkqhkiG9w0B\
+AQUFAAOCAQEAbkMWs+jMY6Mt9o9Y9gK+aJlCq7SNcExkVDgbXy1W8l2+3iTQcwZE\
+LcjF7sUADL4+IW2QZLf0+bdMNXnTSEIA40rv02h7PgZttWwv26WKkU/KIRZG+YRL\
+CcjPUDlpgRwm7Mox+xlYK9TMLw9SqrL2LfMzsM5UIDV+cWEnbweycrFgv62uEO0f\
+06qkpHxDD75ksyp2JKuSQAWYqroIriRnptIB/Y1a3LRJvMbxJIiiwa7V0UVIEvwd\
+NpGkV64r06OQqIGXtpI2q0uoGxML0WOp1knvau4Qqq6xKDOrHwjst65jLvrrwEMX\
+TWL20RlpV/ePUJ8Q4hFyYch0/bhK6zBByw==\
+-----END X509 CRL-----'
+                    ],
+                    ciphers: 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK',
+                    handshakeTimeout: 1,
+                    honorCipherOrder: 1,
+                    requestCert: 1,
+                    rejectUnauthorized: 1,
+                    NPNProtocols: [
+                        'http/1.1',
+                        'http/1.0'
+                    ],
+                    SNICallback: function() {
+                        return '';
+                    },
+                    sessionIdContext: '098f6bcd4621d373cade4e832627b4f6',
+                    secureProtocol: 'TLSv1_method'
                 });
             });
 
