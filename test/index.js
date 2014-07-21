@@ -3263,6 +3263,837 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdHost: 'bar host',
                     fwdPort: 1234,
                     fwdSize: 256,
+                    workers: 2
+                });
+            });
+
+            test('?.initialise was called four times', function () {
+                assert.strictEqual(log.counts.initialise, 4);
+            });
+
+            test('validator.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[0], require('./validators/restrictive'));
+                assert.isObject(log.args.initialise[0][0]);
+            });
+
+            test('filter.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[1], require('./filters/filtered'));
+                assert.isObject(log.args.initialise[1][0]);
+            });
+
+            test('mapper.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[2], require('./mappers/mapper'));
+                assert.strictEqual(log.args.initialise[2][0].prefix, 'foo prefix');
+            });
+
+            test('forwarder.initialise was called correctly', function () {
+                assert.strictEqual(log.these.initialise[3], require('./forwarders/forwarder'));
+                assert.strictEqual(log.args.initialise[3][0].fwdHost, 'bar host');
+                assert.strictEqual(log.args.initialise[3][0].fwdPort, 1234);
+            });
+
+            test('http.listen was called correctly', function () {
+                assert.strictEqual(log.args.listen[0][0], 8080);
+                assert.strictEqual(log.args.listen[0][1], '192.168.1.1');
+            });
+
+            test('log.info was called once', function () {
+                assert.strictEqual(log.counts.info, 1);
+            });
+
+            test('log.info was called correctly', function () {
+                assert.lengthOf(log.args.info[0], 1);
+                assert.strictEqual(log.args.info[0][0], 'listening for 192.168.1.1:8080/foo/bar');
+            });
+
+            test('cluster.fork was not called', function () {
+                assert.strictEqual(log.counts.fork, 0);
+            });
+
+            test('cluster.on was not called', function () {
+                assert.strictEqual(log.counts.on, 0);
+            });
+
+            suite('valid request:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar',
+                        method: 'POST',
+                        headers: {
+                            referer: 'foo.bar.baz.qux',
+                            origin: 'http://bar',
+                            'content-type': 'application/x-www-form-urlencoded'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('response.setHeader was called correctly', function () {
+                    assert.strictEqual(log.args.setHeader[0][0], 'Access-Control-Allow-Origin');
+                    assert.strictEqual(log.args.setHeader[0][1], 'http://bar');
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
+                });
+
+                test('log.info was called once', function () {
+                    assert.strictEqual(log.counts.info, 2);
+                });
+
+                test('log.info was called correctly', function () {
+                    assert.strictEqual(log.args.info[1][0], 'referer=foo.bar.baz.qux address=foo.bar[] method=POST url=/foo/bar');
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                suite('receive valid body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=t_done%3D100%26r%3D');
+                    });
+
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('validator was called once', function () {
+                            assert.strictEqual(log.counts.validator, 1);
+                        });
+
+                        test('validator was called correctly', function () {
+                            assert.isObject(log.args.validator[0][0]);
+                            assert.lengthOf(Object.keys(log.args.validator[0][0]), 2);
+                            assert.strictEqual(log.args.validator[0][0].r, '');
+                            assert.strictEqual(log.args.validator[0][0].t_done, '100');
+                        });
+
+                        test('filter was called once', function () {
+                            assert.strictEqual(log.counts.filter, 1);
+                        });
+
+                        test('filter was called correctly', function () {
+                            assert.isObject(log.args.filter[0][0]);
+                            assert.isObject(log.args.filter[0][0].rt);
+                            assert.strictEqual(log.args.filter[0][0].rt.url, '');
+                            assert.strictEqual(log.args.filter[0][0].rt.durations.load, 100);
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('mapper was called correctly', function () {
+                            assert.isObject(log.args.mapper[0][0]);
+                            assert.lengthOf(Object.keys(log.args.mapper[0][0]), 0);
+                        });
+
+                        test('forwarder was called once', function () {
+                            assert.strictEqual(log.counts.forwarder, 1);
+                        });
+
+                        test('forwarder was called correctly', function () {
+                            assert.strictEqual(log.args.forwarder[0][0], 'alternative mapped data');
+                        });
+
+                        test('response.end was not called', function () {
+                            assert.strictEqual(log.counts.end, 0);
+                        });
+
+                        test('request.socket.destroy was not called', function () {
+                            assert.strictEqual(log.counts.destroy, 0);
+                        });
+                    });
+                });
+
+                suite('receive too much body data:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('data=t_done%3D100%26r%3Dwibbley');
+                    });
+
+                    test('response.setHeader was called once', function () {
+                        assert.strictEqual(log.counts.setHeader, 2);
+                    });
+
+                    test('response.end was called once', function () {
+                        assert.strictEqual(log.counts.end, 1);
+                    });
+
+                    test('response.end was called correctly', function () {
+                        assert.strictEqual(log.args.end[0][0], '{ "error": "Body too large" }');
+                    });
+
+                    test('response.statusCode was set correctly', function () {
+                        assert.strictEqual(response.statusCode, 413);
+                    });
+
+                    test('request.socket.destroy was called once', function () {
+                        assert.strictEqual(log.counts.destroy, 1);
+                    });
+                });
+            });
+
+            suite('valid request without referer:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {},
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+            });
+
+            suite('invalid referer:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'foo.bar.bz.qux'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called once', function () {
+                    assert.strictEqual(log.counts.setHeader, 1);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.end was called correctly', function () {
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid referer `foo.bar.bz.qux`" }');
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 403);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
+                test('request.on was not called', function () {
+                    assert.strictEqual(log.counts.on, 0);
+                });
+            });
+
+            suite('immediately repeated request:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'baz'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.end was called correctly', function () {
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Exceeded rate `1000`" }');
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 429);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
+                test('request.on was not called', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+            });
+
+            suite('immediate request from different address:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'baz'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                    request.socket.remoteAddress = 'wibble';
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
+                });
+
+                test('request.on was called four times', function () {
+                    assert.strictEqual(log.counts.on, 4);
+                });
+            });
+
+            suite('immediate request from different proxied address:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'baz'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    request.headers['x-forwarded-for'] = 'wibble';
+                    log.args.createServer[0][0](request, response);
+                    request.headers['x-forwarded-for'] = 'wobble';
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
+                });
+
+                test('request.on was called four times', function () {
+                    assert.strictEqual(log.counts.on, 4);
+                });
+            });
+
+            suite('immediate request from same proxied address:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'baz'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    request.headers['x-forwarded-for'] = 'wibble';
+                    log.args.createServer[0][0](request, response);
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 429);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
+                test('request.on was not called', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+            });
+
+            suite('immediate request from first proxied address:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'baz'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                    request.headers['x-forwarded-for'] = 'wibble';
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
+                });
+
+                test('request.on was called four times', function () {
+                    assert.strictEqual(log.counts.on, 4);
+                });
+            });
+
+            suite('immediate request from first unproxied address:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'baz'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    request.headers['x-forwarded-for'] = 'wibble';
+                    log.args.createServer[0][0](request, response);
+                    request.headers['x-forwarded-for'] = null;
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('request.socket.destroy was not called', function () {
+                    assert.strictEqual(log.counts.destroy, 0);
+                });
+
+                test('request.on was called four times', function () {
+                    assert.strictEqual(log.counts.on, 4);
+                });
+            });
+
+            suite('later repeated request', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'baz'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                    request.socket.remoteAddress = 'baz';
+                    log.args.createServer[0][0](request, response);
+                    request.socket.remoteAddress = 'foo.bar';
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called three times', function () {
+                    assert.strictEqual(log.counts.setHeader, 3);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 429);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
+                test('request.on was not called', function () {
+                    assert.strictEqual(log.counts.on, 4);
+                });
+            });
+
+            suite('later request from same proxied address:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = false;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'baz'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    request.headers['x-forwarded-for'] = 'wibble';
+                    log.args.createServer[0][0](request, response);
+                    request.headers['x-forwarded-for'] = 'wobble';
+                    log.args.createServer[0][0](request, response);
+                    request.headers['x-forwarded-for'] = 'wubble';
+                    log.args.createServer[0][0](request, response);
+                    request.headers['x-forwarded-for'] = 'wibble';
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('response.setHeader was called four times', function () {
+                    assert.strictEqual(log.counts.setHeader, 4);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 429);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+
+                test('request.on was not called', function () {
+                    assert.strictEqual(log.counts.on, 6);
+                });
+            });
+
+            suite('invalid request:', function () {
+                var request, response;
+
+                setup(function () {
+                    restrict = true;
+                    request = {
+                        url: '/foo/bar?rt.tstart=1&t_resp=2&t_done=3',
+                        method: 'GET',
+                        headers: {
+                            referer: 'foo.bar.baz.qux'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                    log.args.on[1][1]();
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                test('request.on was called twice', function () {
+                    assert.strictEqual(log.counts.on, 2);
+                });
+
+                test('response.setHeader was called twice', function () {
+                    assert.strictEqual(log.counts.setHeader, 2);
+                });
+
+                test('response.end was called once', function () {
+                    assert.strictEqual(log.counts.end, 1);
+                });
+
+                test('response.end was called correctly', function () {
+                    assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                });
+
+                test('response.statusCode was set correctly', function () {
+                    assert.strictEqual(response.statusCode, 400);
+                });
+
+                test('request.socket.destroy was called once', function () {
+                    assert.strictEqual(log.counts.destroy, 1);
+                });
+            });
+        });
+
+        suite('call listen with custom options using secure connection:', function () {
+            setup(function () {
+                boomcatch.listen({
+                    host: '192.168.1.1',
+                    port: 8080,
+                    path: '/foo/bar',
+                    referer: /baz/,
+                    origin: [ 'http://foo', 'http://bar' ],
+                    limit: 1000,
+                    maxSize: 30,
+                    log: {
+                        info: spooks.fn({
+                            name: 'info',
+                            log: log
+                        }),
+                        error: spooks.fn({
+                            name: 'error',
+                            log: log
+                        })
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'foo prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: 'bar host',
+                    fwdPort: 1234,
+                    fwdSize: 256,
                     workers: 2,
                     key: 'test.key',
                     cert: 'test.crt',
