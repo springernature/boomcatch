@@ -1142,6 +1142,785 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
             });
         });
 
+        test('listen throws if key is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: 9,
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if cert is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: 9,
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if pfx is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: 9,
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if passphrase is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: 9,
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if ca is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: 'test',
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if ca is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: 9,
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if crl is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: 'test',
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if crl is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: 9,
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if ciphers is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: 9,
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if handshakeTimeout is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 'test',
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if honorCipherOrder is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 'test',
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if requestCert is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 'test',
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if rejectUnauthorized is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 'test',
+                    NPNProtocols: [],
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if NPNProtocols is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: 'test',
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if NPNProtocols is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: 9,
+                    SNICallback: function() {},
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if SNICallback is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: 'test',
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if SNICallback is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: 9,
+                    sessionIdContext: '',
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if sessionIdContext is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function () {},
+                    sessionIdContext: 9,
+                    secureProtocol: ''
+                });
+            });
+        });
+
+        test('listen throws if sessionIdContext is integer', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: function () {},
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    key: '',
+                    cert: '',
+                    pfx: '',
+                    passphrase: '',
+                    ca: [],
+                    crl: [],
+                    ciphers: '',
+                    handshakeTimeout: 0,
+                    honorCipherOrder: 0,
+                    requestCert: 0,
+                    rejectUnauthorized: 0,
+                    NPNProtocols: [],
+                    SNICallback: function () {},
+                    sessionIdContext: '',
+                    secureProtocol: 9
+                });
+            });
+        });
+
         test('listen does not throw if options are valid', function () {
             assert.doesNotThrow(function () {
                 boomcatch.listen({
