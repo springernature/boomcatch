@@ -76,6 +76,10 @@ function mapDurations (prefix, data) {
 }
 
 function mapMetric (prefix, name, value) {
+    if (value < 0) {
+        return '';
+    }
+
     return prefix + name + ':' + value + '|ms' + '\n';
 }
 
