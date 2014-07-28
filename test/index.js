@@ -2039,7 +2039,8 @@ suite('index:', function () {
                         headers: {
                             referer: 'foo.bar.baz.qux',
                             origin: 'http://bar',
-                            'content-type': 'application/x-www-form-urlencoded'
+                            'content-type': 'application/x-www-form-urlencoded',
+                            'user-agent': 'wibble'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -2082,7 +2083,7 @@ suite('index:', function () {
                 });
 
                 test('log.info was called correctly', function () {
-                    assert.strictEqual(log.args.info[1][0], 'referer=foo.bar.baz.qux address=foo.bar[] method=POST url=/foo/bar');
+                    assert.strictEqual(log.args.info[1][0], 'method=POST, url=/foo/bar, user-agent=wibble, address=foo.bar[], referer=foo.bar.baz.qux');
                 });
 
                 test('request.on was called twice', function () {
