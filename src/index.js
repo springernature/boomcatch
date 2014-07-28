@@ -389,11 +389,11 @@ function handleRequest (log, path, referer, limit, origin, maxSize, validator, f
 
 function logRequest (log, request) {
     log.info(
-        'method=' + request.method + ', ' +
-        'url=' + request.url + ', ' +
-        'user-agent=' + request.headers['user-agent'] + ', ' +
-        'address=' + request.socket.remoteAddress + '[' + (request.headers['x-forwarded-for'] || '') + ']' + ', ' +
-        'referer=' + (request.headers.referer || '')
+        'referer=' + (request.headers.referer || '') + ' ' +
+        'user-agent=' + request.headers['user-agent'] + ' ' +
+        'address=' + request.socket.remoteAddress + '[' + (request.headers['x-forwarded-for'] || '') + ']' + ' ' +
+        'method=' + request.method + ' ' +
+        'url=' + request.url
     );
 }
 

@@ -2083,7 +2083,7 @@ suite('index:', function () {
                 });
 
                 test('log.info was called correctly', function () {
-                    assert.strictEqual(log.args.info[1][0], 'method=POST, url=/foo/bar, user-agent=wibble, address=foo.bar[], referer=foo.bar.baz.qux');
+                    assert.strictEqual(log.args.info[1][0], 'referer=foo.bar.baz.qux user-agent=wibble address=foo.bar[] method=POST url=/foo/bar');
                 });
 
                 test('request.on was called twice', function () {
