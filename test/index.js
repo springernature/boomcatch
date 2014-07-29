@@ -1555,9 +1555,7 @@ suite('index:', function () {
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.lengthOf(Object.keys(log.args.mapper[0][0].rt), 4);
-                        assert.strictEqual(log.args.mapper[0][0].rt.timestamps.start, 1000);
-                        assert.strictEqual(log.args.mapper[0][0].rt.durations.load, 99000);
+                        assert.isUndefined(log.args.mapper[0][0].rt);
                     });
                 });
             });
