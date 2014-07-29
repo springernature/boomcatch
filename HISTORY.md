@@ -1,5 +1,12 @@
 # History
 
+## 1.5.1
+
+* Proper toleration of `beforeunload` beacon data.
+* Reversion of an earlier, [misguided attempt](https://github.com/nature/boomcatch/issues/33) to infer load times for `beforeunload` beacon data.
+* Add the user agent details to the log.
+* Improve accessibility in the SVG waterfall mapper.
+
 ## 1.5.0
 
 * Expose data type from mappers.
