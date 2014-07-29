@@ -591,14 +591,14 @@ function normaliseRtData (data) {
     start = getOptionalDatum(data, 'rt.tstart');
     timeToFirstByte = getOptionalDatum(data, 't_resp');
     timeToLastByte = getOptionalSum(data, 't_resp', 't_page');
-    timeToLoad = parseInt(data.t_done);
+    timeToLoad = getOptionalDatum(data, 't_done');
 
-    if (
-        check.maybe.positiveNumber(start) &&
-        check.maybe.positiveNumber(timeToFirstByte) &&
-        check.maybe.positiveNumber(timeToLastByte) &&
-        check.positiveNumber(timeToLoad)
-    ) {
+    check.verify.maybe.positiveNumber(start);
+    check.verify.maybe.positiveNumber(timeToFirstByte);
+    check.verify.maybe.positiveNumber(timeToLastByte);
+    check.verify.maybe.positiveNumber(timeToLoad);
+
+    if (check.positiveNumber(timeToFirstByte) || check.positiveNumber(timeToLastByte) || check.positiveNumber(timeToLoad)) {
         return {
             timestamps: {
                 start: start

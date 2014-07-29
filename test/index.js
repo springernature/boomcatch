@@ -1124,7 +1124,7 @@ suite('index:', function () {
 
                 setup(function () {
                     request = {
-                        url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&r=wibble&nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=0&nt_red_end=0&nt_fet_st=40&nt_dns_st=50&nt_dns_end=60&nt_con_st=70&nt_con_end=80&nt_ssl_st=90&nt_req_st=100&nt_res_st=110&nt_res_end=120&nt_domloading=130&nt_domint=140&nt_domcontloaded_st=150&nt_domcontloaded_end=160&nt_domcomp=170&nt_load_st=180&nt_nav_type=foo&nt_red_cnt=0',
+                        url: '/beacon?rt.tstart=1&r=wibble&nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=0&nt_red_end=0&nt_fet_st=40&nt_dns_st=50&nt_dns_end=60&nt_con_st=70&nt_con_end=80&nt_ssl_st=90&nt_req_st=100&nt_res_st=110&nt_res_end=120&nt_domloading=130&nt_domint=140&nt_domcontloaded_st=150&nt_domcontloaded_end=160&nt_domcomp=170&nt_load_st=180&nt_nav_type=foo&nt_red_cnt=0',
                         method: 'GET',
                         headers: {
                             referer: 'wibble',
