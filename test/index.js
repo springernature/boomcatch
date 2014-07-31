@@ -2842,8 +2842,8 @@ suite('index:', function () {
                         assert.strictEqual(log.counts.forwarder, 0);
                     });
 
-                    test('response.setHeader was called once', function () {
-                        assert.strictEqual(log.counts.setHeader, 2);
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
                     });
 
                     test('response.end was called once', function () {
@@ -2851,15 +2851,15 @@ suite('index:', function () {
                     });
 
                     test('response.end was called correctly', function () {
-                        assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                        assert.lengthOf(log.args.end[0], 0);
                     });
 
                     test('response.statusCode was set correctly', function () {
-                        assert.strictEqual(response.statusCode, 400);
+                        assert.strictEqual(response.statusCode, 204);
                     });
 
-                    test('request.socket.destroy was called once', function () {
-                        assert.strictEqual(log.counts.destroy, 1);
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
                     });
                 });
             });

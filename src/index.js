@@ -536,7 +536,7 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
 
         mappedData = mapper(filter(normaliseData(data)), referer, userAgent, remoteAddress);
         if (mappedData === '') {
-            throw null;
+            return pass(log, response, 204, 0);
         }
 
         log.info('sending ' + mappedData);
