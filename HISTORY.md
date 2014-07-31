@@ -1,5 +1,9 @@
 # History
 
+## 1.5.2
+
+* Prevent mappers from failing requests if they return the empty string.
+
 ## 1.5.1
 
 * Proper toleration of `beforeunload` beacon data.
