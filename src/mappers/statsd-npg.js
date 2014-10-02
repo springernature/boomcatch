@@ -41,17 +41,22 @@ function normalisePrefix (prefix) {
 }
 
 function map (prefix, data, referer) {
-    var result = '';
+    var result = '', section = classifyReferer(referer);
 
     Object.keys(data).forEach(function (category) {
         var datum = data[category], mapper = mappers[category];
 
         if (check.object(datum) && check.fn(mapper)) {
-            result += mapper(prefix + category + '.', datum, referer);
+            result += mapper(prefix + category + '.', datum);
         }
     });
 
     return result;
+}
+
+function classifyReferer (referer) {
+    // TODO: Return live/staging/test/local
+    // TODO: Return journal/area
 }
 
 mappers = {
