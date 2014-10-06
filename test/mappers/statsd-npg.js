@@ -89,19 +89,19 @@ suite('mappers/statsd-npg:', function () {
 
             test('mapper throws without data', function () {
                 assert.throws(function () {
-                    mapper();
+                    mapper(null, 'http://www.nature.com', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:32.0) Gecko/20100101 Firefox/32.0');
                 });
             });
 
             test('mapper does not throw with empty data', function () {
                 assert.doesNotThrow(function () {
-                    mapper({}, 'http://www.nature.com');
+                    mapper({}, 'http://www.nature.com', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:32.0) Gecko/20100101 Firefox/32.0');
                 });
             });
 
             test('mapper throws with bad referer', function () {
                 assert.throws(function () {
-                    mapper({}, {});
+                    mapper({}, {}, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:32.0) Gecko/20100101 Firefox/32.0');
                 });
             });
 
@@ -109,77 +109,81 @@ suite('mappers/statsd-npg:', function () {
                 var result;
 
                 setup(function () {
-                    result = mapper({
-                        rt: {
-                            timestamps: {
-                                start: 1
-                            },
-                            events: {},
-                            durations: {
-                                firstbyte: 2,
-                                lastbyte: 3,
-                                load: 4
-                            },
-                            r: 'http://www.example.com/foo'
-                        },
-                        navtiming: {
-                            timestamps: {
-                                start: 5,
-                                fetchStart: 6,
-                                sslStart: 7,
-                                requestStart: 8,
-                                domInteractive: 9
-                            },
-                            events: {
-                                unload: { start: 10, end: 20 },
-                                redirect: { start: 11, end: 22 },
-                                dns: { start: 12, end: 24 },
-                                connect: { start: 13, end: 26 },
-                                response: { start: 14, end: 28 },
-                                dom: { start: 15, end: 30 },
-                                domContent: { start: 16, end: 32 },
-                                load: { start: 17, end: 34 }
-                            },
-                            durations: {},
-                            type: 'bar'
-                        },
-                        restiming: [
-                            {
+                    result = mapper(
+                        {
+                            rt: {
                                 timestamps: {
-                                    start: 18,
-                                    fetchStart: 19,
-                                    sslStart: 20,
-                                    requestStart: 21
+                                    start: 1
+                                },
+                                events: {},
+                                durations: {
+                                    firstbyte: 2,
+                                    lastbyte: 3,
+                                    load: 4
+                                },
+                                r: 'http://www.example.com/foo'
+                            },
+                            navtiming: {
+                                timestamps: {
+                                    start: 5,
+                                    fetchStart: 6,
+                                    sslStart: 7,
+                                    requestStart: 8,
+                                    domInteractive: 9
                                 },
                                 events: {
-                                    redirect: { start: 22, end: 44 },
-                                    dns: { start: 23, end: 46 },
-                                    connect: { start: 24, end: 48 },
-                                    response: { start: 25, end: 50 }
+                                    unload: { start: 10, end: 20 },
+                                    redirect: { start: 11, end: 22 },
+                                    dns: { start: 12, end: 24 },
+                                    connect: { start: 13, end: 26 },
+                                    response: { start: 14, end: 28 },
+                                    dom: { start: 15, end: 30 },
+                                    domContent: { start: 16, end: 32 },
+                                    load: { start: 17, end: 34 }
                                 },
                                 durations: {},
-                                name: 'http://www.example.com/baz',
-                                type: 'css'
+                                type: 'bar'
                             },
-                            {
-                                timestamps: {
-                                    start: 26,
-                                    fetchStart: 27,
-                                    sslStart: 28,
-                                    requestStart: 29
+                            restiming: [
+                                {
+                                    timestamps: {
+                                        start: 18,
+                                        fetchStart: 19,
+                                        sslStart: 20,
+                                        requestStart: 21
+                                    },
+                                    events: {
+                                        redirect: { start: 22, end: 44 },
+                                        dns: { start: 23, end: 46 },
+                                        connect: { start: 24, end: 48 },
+                                        response: { start: 25, end: 50 }
+                                    },
+                                    durations: {},
+                                    name: 'http://www.example.com/baz',
+                                    type: 'css'
                                 },
-                                events: {
-                                    redirect: { start: 30, end: 60 },
-                                    dns: { start: 31, end: 62 },
-                                    connect: { start: 32, end: 64 },
-                                    response: { start: 33, end: 66 }
-                                },
-                                durations: {},
-                                name: 'http://www.example.com/qux',
-                                type: 'img'
-                            }
-                        ]
-                    }, 'http://www.nature.com');
+                                {
+                                    timestamps: {
+                                        start: 26,
+                                        fetchStart: 27,
+                                        sslStart: 28,
+                                        requestStart: 29
+                                    },
+                                    events: {
+                                        redirect: { start: 30, end: 60 },
+                                        dns: { start: 31, end: 62 },
+                                        connect: { start: 32, end: 64 },
+                                        response: { start: 33, end: 66 }
+                                    },
+                                    durations: {},
+                                    name: 'http://www.example.com/qux',
+                                    type: 'img'
+                                }
+                            ]
+                        },
+                        'http://www.nature.com',
+                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:32.0) Gecko/20100101 Firefox/32.0'
+                    );
                 });
 
                 teardown(function () {
@@ -188,13 +192,13 @@ suite('mappers/statsd-npg:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, [
-                        'live.homepage.rt.firstbyte:2|ms',
-                        'live.homepage.rt.lastbyte:3|ms',
-                        'live.homepage.rt.load:4|ms',
-                        'live.homepage.navtiming.dns:19|ms',
-                        'live.homepage.navtiming.firstbyte:9|ms',
-                        'live.homepage.navtiming.domload:11|ms',
-                        'live.homepage.navtiming.load:12|ms',
+                        'live.homepage.rt.firstbyte.Firefox.MacOSX:2|ms',
+                        'live.homepage.rt.lastbyte.Firefox.MacOSX:3|ms',
+                        'live.homepage.rt.load.Firefox.MacOSX:4|ms',
+                        'live.homepage.navtiming.dns.Firefox.MacOSX:19|ms',
+                        'live.homepage.navtiming.firstbyte.Firefox.MacOSX:9|ms',
+                        'live.homepage.navtiming.domload.Firefox.MacOSX:11|ms',
+                        'live.homepage.navtiming.load.Firefox.MacOSX:12|ms',
                         ''
                     ].join('\n'));
                 });
@@ -204,15 +208,19 @@ suite('mappers/statsd-npg:', function () {
                 var result;
 
                 setup(function () {
-                    result = mapper({
-                        rt: {
-                            timestamps: {},
-                            events: {},
-                            durations: {
-                                load: 10
+                    result = mapper(
+                        {
+                            rt: {
+                                timestamps: {},
+                                events: {},
+                                durations: {
+                                    load: 10
+                                }
                             }
-                        }
-                    }, 'http://staging-www.nature.com/hortres?foo=bar');
+                        },
+                        'http://staging-www.nature.com/hortres?foo=bar',
+                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36'
+                    );
                 });
 
                 teardown(function () {
@@ -220,7 +228,7 @@ suite('mappers/statsd-npg:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'staging.hortres.rt.load:10|ms\n');
+                    assert.strictEqual(result, 'staging.hortres.rt.load.Chrome.MacOSX:10|ms\n');
                 });
             });
 
@@ -228,7 +236,11 @@ suite('mappers/statsd-npg:', function () {
                 var result;
 
                 setup(function () {
-                    result = mapper({}, 'http://www.nature.com');
+                    result = mapper(
+                        {},
+                        'http://www.nature.com',
+                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:32.0) Gecko/20100101 Firefox/32.0'
+                    );
                 });
 
                 teardown(function () {
@@ -262,15 +274,19 @@ suite('mappers/statsd-npg:', function () {
                 var result;
 
                 setup(function () {
-                    result = mapper({
-                        rt: {
-                            timestamps: {},
-                            events: {},
-                            durations: {
-                                load: 1
+                    result = mapper(
+                        {
+                            rt: {
+                                timestamps: {},
+                                events: {},
+                                durations: {
+                                    load: 1
+                                }
                             }
-                        }
-                    }, 'http://test-www.nature.com/mtm/');
+                        },
+                        'http://test-www.nature.com/mtm/',
+                        'Mozilla/5.0 (iPod touch; CPU iPhone OS 7_1_2 like Mac OS X) AppleWebKit/537.51.2 (KHTML, like Gecko) Version/7.0 Mobile/11D257 Safari/9537.53'
+                    );
                 });
 
                 teardown(function () {
@@ -278,7 +294,7 @@ suite('mappers/statsd-npg:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'foo.test.mtm.rt.load:1|ms\n');
+                    assert.strictEqual(result, 'foo.test.mtm.rt.load.MobileSafari.iOS:1|ms\n');
                 });
             });
         });
@@ -304,15 +320,19 @@ suite('mappers/statsd-npg:', function () {
                 var result;
 
                 setup(function () {
-                    result = mapper({
-                        rt: {
-                            timestamps: {},
-                            events: {},
-                            durations: {
+                    result = mapper(
+                        {
+                            rt: {
+                                timestamps: {},
+                                events: {},
+                                durations: {
                                 load: 2
+                                }
                             }
-                        }
-                    }, 'http://nature.local/');
+                        },
+                        'http://nature.local/',
+                        'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko'
+                    );
                 });
 
                 teardown(function () {
@@ -320,7 +340,7 @@ suite('mappers/statsd-npg:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'bar.development.homepage.rt.load:2|ms\n');
+                    assert.strictEqual(result, 'bar.development.homepage.rt.load.IE.Windows:2|ms\n');
                 });
             });
         });

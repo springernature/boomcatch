@@ -38,7 +38,8 @@
         "request": "2.34.x",
         "node-uuid": "1.4.x",
         "toobusy-js": "0.3.x",
-        "handlebars": "1.3.x"
+        "handlebars": "1.3.x",
+        "ua-parser-js": "0.7.x"
     },
     "optionalDependencies": {
         "rconsole": "0.2.x"
