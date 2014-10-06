@@ -44,7 +44,10 @@ function normalisePrefix (prefix) {
 }
 
 function map (prefix, data, referer) {
-    var result = '', refererPrefix = getRefererPrefix(url.parse(referer));
+    var result, refererPrefix;
+
+    result = '';
+    refererPrefix = getRefererPrefix(url.parse(referer));
 
     Object.keys(data).forEach(function (category) {
         var datum = data[category], mapper = mappers[category];
