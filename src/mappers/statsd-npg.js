@@ -19,10 +19,11 @@
 
 'use strict';
 
-var check, url, mappers;
+var check, url, UserAgentParser, mappers;
 
 check = require('check-types');
 url = require('url');
+UserAgentParser = require('ua-parser-js');
 
 module.exports = {
     initialise: function (options) {
@@ -43,17 +44,18 @@ function normalisePrefix (prefix) {
     return '';
 }
 
-function map (prefix, data, referer) {
-    var result, refererPrefix;
+function map (prefix, data, referer, userAgent) {
+    var result, refererPrefix, suffix;
 
     result = '';
     refererPrefix = getRefererPrefix(url.parse(referer));
+    suffix = getUserAgentSuffix(new UserAgentParser(userAgent));
 
     Object.keys(data).forEach(function (category) {
         var datum = data[category], mapper = mappers[category];
 
         if (check.object(datum) && check.fn(mapper)) {
-            result += mapper(prefix + refererPrefix + category + '.', datum);
+            result += mapper(prefix + refererPrefix + category + '.', suffix, datum);
         }
     });
 
@@ -97,39 +99,65 @@ function getRefererProject (path) {
     return project;
 }
 
+function getUserAgentSuffix (userAgent) {
+    return '.' + getUserAgentBrowser(userAgent) + '.' + getUserAgentOS(userAgent);
+}
+
+function getUserAgentBrowser (userAgent) {
+    return getUserAgentComponent(userAgent, 'getBrowser', 'unrecognisedUA');
+}
+
+function getUserAgentComponent (userAgent, method, defaultResult) {
+    var component = userAgent[method]().name;
+
+    if (component) {
+        return stripNonAlphanumerics(component);
+    }
+
+    return defaultResult;
+}
+
+function stripNonAlphanumerics (string) {
+    return string.replace(/[\W_]/g, '');
+}
+
+function getUserAgentOS (userAgent) {
+    return getUserAgentComponent(userAgent, 'getOS', 'unrecognisedOS');
+}
+
 mappers = {
     rt: mapRtData,
     navtiming: mapNavtimingData
 };
 
-function mapRtData (prefix, data) {
-    return mapDurations(prefix, data);
+function mapRtData (prefix, suffix, data) {
+    return mapDurations(prefix, suffix, data);
 }
 
-function mapDurations (prefix, data) {
+function mapDurations (prefix, suffix, data) {
     return Object.keys(data.durations).map(function (metric) {
         var datum = data.durations[metric];
 
         if (check.number(datum)) {
-            return mapMetric(prefix, metric, datum);
+            return mapMetric(prefix, metric, suffix, datum);
         }
 
         return '';
     }).join('');
 }
 
-function mapMetric (prefix, name, value) {
+function mapMetric (prefix, name, suffix, value) {
     if (value < 0) {
         return '';
     }
 
-    return prefix + name + ':' + value + '|ms' + '\n';
+    return prefix + name + suffix + ':' + value + '|ms' + '\n';
 }
 
-function mapNavtimingData (prefix, data) {
-    return mapMetric(prefix, 'dns', data.events.dns.end - data.timestamps.start) +
-           mapMetric(prefix, 'firstbyte', data.events.response.start - data.timestamps.start) +
-           mapMetric(prefix, 'domload', data.events.domContent.start - data.timestamps.start) +
-           mapMetric(prefix, 'load', data.events.load.start - data.timestamps.start);
+function mapNavtimingData (prefix, suffix, data) {
+    return mapMetric(prefix, 'dns', suffix, data.events.dns.end - data.timestamps.start) +
+           mapMetric(prefix, 'firstbyte', suffix, data.events.response.start - data.timestamps.start) +
+           mapMetric(prefix, 'domload', suffix, data.events.domContent.start - data.timestamps.start) +
+           mapMetric(prefix, 'load', suffix, data.events.load.start - data.timestamps.start);
 }
 
