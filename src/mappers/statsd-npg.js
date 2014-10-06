@@ -19,7 +19,10 @@
 
 'use strict';
 
-var check = require('check-types'), mappers;
+var check, url, mappers;
+
+check = require('check-types');
+url = require('url');
 
 module.exports = {
     initialise: function (options) {
@@ -41,17 +44,57 @@ function normalisePrefix (prefix) {
 }
 
 function map (prefix, data, referer) {
-    var result = '';
+    var result, refererPrefix;
+
+    result = '';
+    refererPrefix = getRefererPrefix(url.parse(referer));
 
     Object.keys(data).forEach(function (category) {
         var datum = data[category], mapper = mappers[category];
 
         if (check.object(datum) && check.fn(mapper)) {
-            result += mapper(prefix + category + '.', datum, referer);
+            result += mapper(prefix + refererPrefix + category + '.', datum);
         }
     });
 
     return result;
+}
+
+function getRefererPrefix (referer) {
+    // HACK: This function and the functions it calls are brittle and error-prone.
+    // TODO: Consider alternative methods for deriving this information, e.g. document metadata.
+    return getRefererEnvironment(referer.host) + '.' + getRefererProject(referer.pathname) + '.';
+}
+
+function getRefererEnvironment (domain) {
+    if (domain.indexOf('www.') === 0) {
+        return 'live';
+    }
+
+    if (domain.indexOf('staging-www.') === 0) {
+        return 'staging';
+    }
+
+    if (domain.indexOf('test-www.') === 0) {
+        return 'test';
+    }
+
+    return 'development';
+}
+
+function getRefererProject (path) {
+    var project;
+
+    if (!path || path === '/') {
+        return 'homepage';
+    }
+
+    project = path.substr(1);
+    if (project.indexOf('/') !== -1) {
+        project = project.substr(0, project.indexOf('/'));
+    }
+
+    return project;
 }
 
 mappers = {
