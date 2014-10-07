@@ -1,6 +1,6 @@
 {
     "name": "boomcatch",
-    "version": "1.5.2",
+    "version": "1.6.0",
     "description": "A standalone, node.js-based beacon receiver for boomerang.",
     "homepage": "https://github.com/nature/boomcatch",
     "bugs": "https://github.com/nature/boomcatch/issues",
