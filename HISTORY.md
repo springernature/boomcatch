@@ -1,5 +1,9 @@
 # History
 
+## 1.6.0
+
+* Modify the statsd-npg data mapper to incorporate referer and user agent information.
+
 ## 1.5.2
 
 * Prevent mappers from failing requests if they return the empty string.
