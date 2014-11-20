@@ -94,7 +94,7 @@ function mapEvents (prefix, data) {
 }
 
 function mapMetric (prefix, name, value) {
-    if (value < 0) {
+    if (value <= 0) {
         return '';
     }
 

@@ -178,7 +178,7 @@ function mapDurations (prefix, suffix, data) {
 }
 
 function mapMetric (prefix, name, suffix, value) {
-    if (value < 0) {
+    if (value <= 0) {
         return '';
     }
 

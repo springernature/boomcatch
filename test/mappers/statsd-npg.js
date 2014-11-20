@@ -232,6 +232,34 @@ suite('mappers/statsd-npg:', function () {
                 });
             });
 
+            suite('call mapper with zero value:', function () {
+                var result;
+
+                setup(function () {
+                    result = mapper(
+                        {
+                            rt: {
+                                timestamps: {},
+                                events: {},
+                                durations: {
+                                    load: 0
+                                }
+                            }
+                        },
+                        'http://staging-www.nature.com/hortres?foo=bar',
+                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36'
+                    );
+                });
+
+                teardown(function () {
+                    result = undefined;
+                });
+
+                test('result was correct', function () {
+                    assert.strictEqual(result, '');
+                });
+            });
+
             suite('call mapper with no data:', function () {
                 var result;
 
