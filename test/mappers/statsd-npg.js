@@ -192,13 +192,13 @@ suite('mappers/statsd-npg:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, [
-                        'live.homepage.rt.firstbyte.Firefox.MacOSX:2|ms',
-                        'live.homepage.rt.lastbyte.Firefox.MacOSX:3|ms',
-                        'live.homepage.rt.load.Firefox.MacOSX:4|ms',
-                        'live.homepage.navtiming.dns.Firefox.MacOSX:19|ms',
-                        'live.homepage.navtiming.firstbyte.Firefox.MacOSX:9|ms',
-                        'live.homepage.navtiming.domload.Firefox.MacOSX:11|ms',
-                        'live.homepage.navtiming.load.Firefox.MacOSX:12|ms',
+                        'live.homepage.rt.firstbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:2|ms',
+                        'live.homepage.rt.lastbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:3|ms',
+                        'live.homepage.rt.load.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:4|ms',
+                        'live.homepage.navtiming.dns.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:19|ms',
+                        'live.homepage.navtiming.firstbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:9|ms',
+                        'live.homepage.navtiming.domload.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:11|ms',
+                        'live.homepage.navtiming.load.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:12|ms',
                         ''
                     ].join('\n'));
                 });
@@ -228,7 +228,7 @@ suite('mappers/statsd-npg:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'staging.hortres.rt.load.Chrome.MacOSX:10|ms\n');
+                    assert.strictEqual(result, 'staging.hortres.rt.load.webkit.537_36.chrome.37_0_2062_124.desktop.unknown.mac_os.10_8_5:10|ms\n');
                 });
             });
 
@@ -294,7 +294,7 @@ suite('mappers/statsd-npg:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'foo.test.mtm.rt.load.MobileSafari.iOS:1|ms\n');
+                    assert.strictEqual(result, 'foo.test.mtm.rt.load.webkit.537_51_2.mobile_safari.7_0.mobile.apple.ios.7_1_2:1|ms\n');
                 });
             });
         });
@@ -340,7 +340,7 @@ suite('mappers/statsd-npg:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'bar.development.homepage.rt.load.IE.Windows:2|ms\n');
+                    assert.strictEqual(result, 'bar.development.homepage.rt.load.trident.7_0.ie.11_0.desktop.unknown.windows.8_1:2|ms\n');
                 });
             });
         });
