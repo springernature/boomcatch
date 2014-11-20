@@ -125,7 +125,7 @@ function getUserAgentComponent (userAgent, method, property, defaultResult) {
 }
 
 function stripNonAlphanumerics (string) {
-    return string.replace(/[\W_]/g, '');
+    return string.replace(/\W/g, '_');
 }
 
 function getUserAgentEngineVersion (userAgent) {
