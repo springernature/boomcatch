@@ -118,7 +118,7 @@ function getUserAgentComponent (userAgent, method, property, defaultResult) {
     var component = userAgent[method]()[property];
 
     if (component) {
-        return stripNonAlphanumerics(component);
+        return stripNonAlphanumerics(component).toLowerCase();
     }
 
     return defaultResult || 'unknown';
