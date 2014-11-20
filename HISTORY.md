@@ -1,5 +1,9 @@
 # History
 
+## 1.7.0
+
+* Ignore zero values in statsd mappers.
+
 ## 1.6.0
 
 * Modify the statsd-npg data mapper to incorporate referer and user agent information.
