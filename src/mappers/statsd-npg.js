@@ -100,29 +100,60 @@ function getRefererProject (path) {
 }
 
 function getUserAgentSuffix (userAgent) {
-    return '.' + getUserAgentBrowser(userAgent) + '.' + getUserAgentOS(userAgent);
+    return '.' + getUserAgentEngine(userAgent) + '.' +
+                 getUserAgentEngineVersion(userAgent) + '.' +
+                 getUserAgentBrowser(userAgent) + '.' +
+                 getUserAgentBrowserVersion(userAgent) + '.' +
+                 getUserAgentDeviceType(userAgent) + '.' +
+                 getUserAgentDeviceVendor(userAgent) + '.' +
+                 getUserAgentOS(userAgent) + '.' +
+                 getUserAgentOSVersion(userAgent);
 }
 
-function getUserAgentBrowser (userAgent) {
-    return getUserAgentComponent(userAgent, 'getBrowser', 'unrecognisedUA');
+function getUserAgentEngine (userAgent) {
+    return getUserAgentComponent(userAgent, 'getEngine', 'name');
 }
 
-function getUserAgentComponent (userAgent, method, defaultResult) {
-    var component = userAgent[method]().name;
+function getUserAgentComponent (userAgent, method, property, defaultResult) {
+    var component = userAgent[method]()[property];
 
     if (component) {
         return stripNonAlphanumerics(component);
     }
 
-    return defaultResult;
+    return defaultResult || 'unknown';
 }
 
 function stripNonAlphanumerics (string) {
     return string.replace(/[\W_]/g, '');
 }
 
+function getUserAgentEngineVersion (userAgent) {
+    return getUserAgentComponent(userAgent, 'getEngine', 'version');
+}
+
+function getUserAgentBrowser (userAgent) {
+    return getUserAgentComponent(userAgent, 'getBrowser', 'name');
+}
+
+function getUserAgentBrowserVersion (userAgent) {
+    return getUserAgentComponent(userAgent, 'getBrowser', 'version');
+}
+
+function getUserAgentDeviceType (userAgent) {
+    return getUserAgentComponent(userAgent, 'getDevice', 'type', 'desktop');
+}
+
+function getUserAgentDeviceVendor (userAgent) {
+    return getUserAgentComponent(userAgent, 'getDevice', 'vendor');
+}
+
 function getUserAgentOS (userAgent) {
-    return getUserAgentComponent(userAgent, 'getOS', 'unrecognisedOS');
+    return getUserAgentComponent(userAgent, 'getOS', 'name');
+}
+
+function getUserAgentOSVersion (userAgent) {
+    return getUserAgentComponent(userAgent, 'getOS', 'version');
 }
 
 mappers = {
