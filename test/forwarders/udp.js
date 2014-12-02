@@ -168,9 +168,9 @@ suite('forwarders/udp:', function () {
                     assert.strictEqual(log.counts.callback, 0);
                 });
 
-                suite('call callback:', function () {
+                suite('call send callback:', function () {
                     setup(function () {
-                        log.args.send[0][5]('foo', 'bar');
+                        log.args.send[0][5](null, 'bar');
                     });
 
                     test('socket.close was called once', function () {
@@ -189,7 +189,7 @@ suite('forwarders/udp:', function () {
                     test('callback was called correctly', function () {
                         assert.isUndefined(log.these.callback[0]);
                         assert.lengthOf(log.args.callback[0], 2);
-                        assert.strictEqual(log.args.callback[0][0], 'foo');
+                        assert.strictEqual(log.args.callback[0][0], null);
                         assert.strictEqual(log.args.callback[0][1], 'bar');
                     });
                 });
@@ -222,6 +222,105 @@ suite('forwarders/udp:', function () {
 
                 test('callback was not called', function () {
                     assert.strictEqual(log.counts.callback, 0);
+                });
+            });
+
+            suite('call forwarder with chunk-necessitating data:', function () {
+                var character, length, chunk;
+
+                setup(function () {
+                    var i, data;
+
+                    character = 'p';
+                    length = 512;
+
+                    for (i = 0, chunk = ''; i < length; i += 1) {
+                        chunk += character;
+                    }
+
+                    data = chunk + chunk + character;
+
+                    forwarder(data, null, null, spooks.fn({
+                        name: 'callback',
+                        log: log
+                    }));
+                });
+
+                teardown(function () {
+                    character = length = chunk = undefined;
+                });
+
+                test('dgram.createSocket was called once', function () {
+                    assert.strictEqual(log.counts.createSocket, 1);
+                });
+
+                test('socket.send was called three times', function () {
+                    assert.strictEqual(log.counts.send, 3);
+                });
+
+                test('socket.send was called correctly', function () {
+                    assert.strictEqual(log.args.send[0][0].toString(), chunk);
+                    assert.strictEqual(log.args.send[0][2], length);
+                    assert.strictEqual(log.args.send[0][3], 8125);
+                    assert.strictEqual(log.args.send[0][4], '127.0.0.1');
+                    assert.strictEqual(log.args.send[1][0].toString(), chunk);
+                    assert.strictEqual(log.args.send[1][2], length);
+                    assert.strictEqual(log.args.send[1][3], 8125);
+                    assert.strictEqual(log.args.send[1][4], '127.0.0.1');
+                    assert.strictEqual(log.args.send[2][0].toString(), character);
+                    assert.strictEqual(log.args.send[2][2], 1);
+                    assert.strictEqual(log.args.send[2][3], 8125);
+                    assert.strictEqual(log.args.send[2][4], '127.0.0.1');
+                });
+
+                test('socket.close was not called', function () {
+                    assert.strictEqual(log.counts.close, 0);
+                });
+
+                test('callback was not called', function () {
+                    assert.strictEqual(log.counts.callback, 0);
+                });
+
+                suite('call send callback first time:', function () {
+                    setup(function () {
+                        log.args.send[0][5](null, 'bar');
+                    });
+
+                    test('socket.close was not called', function () {
+                        assert.strictEqual(log.counts.close, 0);
+                    });
+
+                    test('callback was not called', function () {
+                        assert.strictEqual(log.counts.callback, 0);
+                    });
+
+                    suite('call send callback second time:', function () {
+                        setup(function () {
+                            log.args.send[0][5](null, 'bar');
+                        });
+
+                        test('socket.close was not called', function () {
+                            assert.strictEqual(log.counts.close, 0);
+                        });
+
+                        test('callback was not called', function () {
+                            assert.strictEqual(log.counts.callback, 0);
+                        });
+
+                        suite('call send callback third time:', function () {
+                            setup(function () {
+                                log.args.send[0][5](null, 'bar');
+                            });
+
+                            test('socket.close was called once', function () {
+                                assert.strictEqual(log.counts.close, 1);
+                            });
+
+                            test('callback was called once', function () {
+                                assert.strictEqual(log.counts.callback, 1);
+                            });
+                        });
+                    });
                 });
             });
         });
@@ -261,8 +360,8 @@ suite('forwarders/udp:', function () {
                     }));
                 });
 
-                test('dgram.createSocket was called six times', function () {
-                    assert.strictEqual(log.counts.createSocket, 6);
+                test('dgram.createSocket was called once', function () {
+                    assert.strictEqual(log.counts.createSocket, 1);
                 });
 
                 test('socket.send was called six times', function () {
@@ -270,55 +369,20 @@ suite('forwarders/udp:', function () {
                 });
 
                 test('socket.send was called correctly', function () {
-                    assert.strictEqual(log.these.send[0], require('dgram').createSocket());
-                    assert.lengthOf(log.args.send[0], 6);
-                    assert.instanceOf(log.args.send[0][0], Buffer);
                     assert.strictEqual(log.args.send[0][0].toString(), '12');
-                    assert.strictEqual(log.args.send[0][1], 0);
                     assert.strictEqual(log.args.send[0][2], 2);
                     assert.strictEqual(log.args.send[0][3], 5001);
                     assert.strictEqual(log.args.send[0][4], '192.168.50.4');
-                    assert.isFunction(log.args.send[0][5]);
-                    assert.lengthOf(log.args.send[1], 6);
-                    assert.instanceOf(log.args.send[1][0], Buffer);
                     assert.strictEqual(log.args.send[1][0].toString(), '34');
-                    assert.strictEqual(log.args.send[1][1], 0);
                     assert.strictEqual(log.args.send[1][2], 2);
-                    assert.strictEqual(log.args.send[1][3], 5001);
-                    assert.strictEqual(log.args.send[1][4], '192.168.50.4');
-                    assert.isFunction(log.args.send[1][5]);
-                    assert.lengthOf(log.args.send[2], 6);
-                    assert.instanceOf(log.args.send[2][0], Buffer);
                     assert.strictEqual(log.args.send[2][0].toString(), '5');
-                    assert.strictEqual(log.args.send[2][1], 0);
                     assert.strictEqual(log.args.send[2][2], 1);
-                    assert.strictEqual(log.args.send[2][3], 5001);
-                    assert.strictEqual(log.args.send[2][4], '192.168.50.4');
-                    assert.isFunction(log.args.send[2][5]);
-                    assert.lengthOf(log.args.send[3], 6);
-                    assert.instanceOf(log.args.send[3][0], Buffer);
                     assert.strictEqual(log.args.send[3][0].toString(), '67');
-                    assert.strictEqual(log.args.send[3][1], 0);
                     assert.strictEqual(log.args.send[3][2], 2);
-                    assert.strictEqual(log.args.send[3][3], 5001);
-                    assert.strictEqual(log.args.send[3][4], '192.168.50.4');
-                    assert.isFunction(log.args.send[3][5]);
-                    assert.lengthOf(log.args.send[4], 6);
-                    assert.instanceOf(log.args.send[4][0], Buffer);
                     assert.strictEqual(log.args.send[4][0].toString(), '89');
-                    assert.strictEqual(log.args.send[4][1], 0);
                     assert.strictEqual(log.args.send[4][2], 2);
-                    assert.strictEqual(log.args.send[4][3], 5001);
-                    assert.strictEqual(log.args.send[4][4], '192.168.50.4');
-                    assert.isFunction(log.args.send[4][5]);
-                    assert.lengthOf(log.args.send[5], 6);
-                    assert.instanceOf(log.args.send[5][0], Buffer);
                     assert.strictEqual(log.args.send[5][0].toString(), '0');
-                    assert.strictEqual(log.args.send[5][1], 0);
                     assert.strictEqual(log.args.send[5][2], 1);
-                    assert.strictEqual(log.args.send[5][3], 5001);
-                    assert.strictEqual(log.args.send[5][4], '192.168.50.4');
-                    assert.isFunction(log.args.send[5][5]);
                 });
 
                 test('socket.close was not called', function () {
@@ -338,8 +402,8 @@ suite('forwarders/udp:', function () {
                     }));
                 });
 
-                test('dgram.createSocket was called seven times', function () {
-                    assert.strictEqual(log.counts.createSocket, 7);
+                test('dgram.createSocket was called once', function () {
+                    assert.strictEqual(log.counts.createSocket, 1);
                 });
 
                 test('socket.send was called seven times', function () {
