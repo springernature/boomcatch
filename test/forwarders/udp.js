@@ -170,7 +170,7 @@ suite('forwarders/udp:', function () {
 
                 suite('call send callback:', function () {
                     setup(function () {
-                        log.args.send[0][5]('foo', 'bar');
+                        log.args.send[0][5](null, 'bar');
                     });
 
                     test('socket.close was called once', function () {
@@ -189,7 +189,7 @@ suite('forwarders/udp:', function () {
                     test('callback was called correctly', function () {
                         assert.isUndefined(log.these.callback[0]);
                         assert.lengthOf(log.args.callback[0], 2);
-                        assert.strictEqual(log.args.callback[0][0], 'foo');
+                        assert.strictEqual(log.args.callback[0][0], null);
                         assert.strictEqual(log.args.callback[0][1], 'bar');
                     });
                 });
@@ -283,7 +283,7 @@ suite('forwarders/udp:', function () {
 
                 suite('call send callback first time:', function () {
                     setup(function () {
-                        log.args.send[0][5]('foo', 'bar');
+                        log.args.send[0][5](null, 'bar');
                     });
 
                     test('socket.close was not called', function () {
@@ -293,33 +293,33 @@ suite('forwarders/udp:', function () {
                     test('callback was not called', function () {
                         assert.strictEqual(log.counts.callback, 0);
                     });
-                });
 
-                suite('call send callback second time:', function () {
-                    setup(function () {
-                        log.args.send[0][5]('foo', 'bar');
-                    });
+                    suite('call send callback second time:', function () {
+                        setup(function () {
+                            log.args.send[0][5](null, 'bar');
+                        });
 
-                    test('socket.close was not called', function () {
-                        assert.strictEqual(log.counts.close, 0);
-                    });
+                        test('socket.close was not called', function () {
+                            assert.strictEqual(log.counts.close, 0);
+                        });
 
-                    test('callback was not called', function () {
-                        assert.strictEqual(log.counts.callback, 0);
-                    });
-                });
+                        test('callback was not called', function () {
+                            assert.strictEqual(log.counts.callback, 0);
+                        });
 
-                suite('call send callback third time:', function () {
-                    setup(function () {
-                        log.args.send[0][5]('foo', 'bar');
-                    });
+                        suite('call send callback third time:', function () {
+                            setup(function () {
+                                log.args.send[0][5](null, 'bar');
+                            });
 
-                    test('socket.close was called once', function () {
-                        assert.strictEqual(log.counts.close, 1);
-                    });
+                            test('socket.close was called once', function () {
+                                assert.strictEqual(log.counts.close, 1);
+                            });
 
-                    test('callback was called once', function () {
-                        assert.strictEqual(log.counts.callback, 1);
+                            test('callback was called once', function () {
+                                assert.strictEqual(log.counts.callback, 1);
+                            });
+                        });
                     });
                 });
             });
@@ -402,8 +402,8 @@ suite('forwarders/udp:', function () {
                     }));
                 });
 
-                test('dgram.createSocket was called seven times', function () {
-                    assert.strictEqual(log.counts.createSocket, 7);
+                test('dgram.createSocket was called once', function () {
+                    assert.strictEqual(log.counts.createSocket, 1);
                 });
 
                 test('socket.send was called seven times', function () {

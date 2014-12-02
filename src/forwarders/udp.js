@@ -47,25 +47,41 @@ function normaliseSize (size) {
 }
 
 function send (host, port, size, data, type, separator, callback) {
-    var socket, buffer;
+    var count = 0, length = 1, socket, chunks;
 
     try {
-        if (size > 0 && data.length > size) {
-            return chunkData(data, size, separator || '', []).forEach(function (chunk) {
-                send(host, port, size, chunk, type, separator, callback);
-            });
+        socket = udp.createSocket('udp4');
+
+        if (data.length <= size) {
+            return sendToSocket(data);
         }
 
-        socket = udp.createSocket('udp4');
-        buffer = new Buffer(data);
-
-        socket.send(buffer, 0, buffer.length, port, host, function (error, bytesSent) {
-            socket.close();
-
-            callback(error, bytesSent);
+        chunks = chunkData(data, size, separator || '', []);
+        length = chunks.length;
+        chunks.forEach(function (chunk) {
+            sendToSocket(chunk);
         });
     } catch (error) {
+        socket.close();
         callback(error.message);
+    }
+
+    function sendToSocket (data) {
+        var buffer = new Buffer(data);
+        socket.send(buffer, 0, buffer.length, port, host, finish);
+    }
+
+    function finish (error, bytesSent) {
+        if (error) {
+            throw new Error(error);
+        }
+
+        count += 1;
+
+        if (count === length) {
+            socket.close();
+            callback(null, bytesSent);
+        }
     }
 }
 
