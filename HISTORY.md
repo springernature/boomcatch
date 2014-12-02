@@ -1,5 +1,10 @@
 # History
 
+
+## 1.8.0
+
+* Remove engine version metadata from the statsd-npg data mapper.
+
 ## 1.7.1
 
 * Fix broken chunking behaviour in UDP forwarder.
