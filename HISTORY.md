@@ -1,5 +1,10 @@
 # History
 
+## 1.7.1
+
+* Fix broken chunking behaviour in UDP forwarder.
+* Re-use UDP sockets when chunking.
+
 ## 1.7.0
 
 * Ignore zero values in statsd mappers.
