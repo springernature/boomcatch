@@ -101,7 +101,6 @@ function getRefererProject (path) {
 
 function getUserAgentSuffix (userAgent) {
     return '.' + getUserAgentEngine(userAgent) + '.' +
-                 getUserAgentEngineVersion(userAgent) + '.' +
                  getUserAgentBrowser(userAgent) + '.' +
                  getUserAgentBrowserVersion(userAgent) + '.' +
                  getUserAgentDeviceType(userAgent) + '.' +
@@ -126,10 +125,6 @@ function getUserAgentComponent (userAgent, method, property, defaultResult) {
 
 function stripNonAlphanumerics (string) {
     return string.replace(/\W/g, '_');
-}
-
-function getUserAgentEngineVersion (userAgent) {
-    return getUserAgentComponent(userAgent, 'getEngine', 'version');
 }
 
 function getUserAgentBrowser (userAgent) {
