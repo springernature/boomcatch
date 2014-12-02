@@ -52,7 +52,7 @@ function send (host, port, size, data, type, separator, callback) {
     try {
         if (size > 0 && data.length > size) {
             return chunkData(data, size, separator || '', []).forEach(function (chunk) {
-                send(host, port, size, chunk, separator, callback);
+                send(host, port, size, chunk, type, separator, callback);
             });
         }
 
