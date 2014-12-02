@@ -192,13 +192,13 @@ suite('mappers/statsd-npg:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, [
-                        'live.homepage.rt.firstbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:2|ms',
-                        'live.homepage.rt.lastbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:3|ms',
-                        'live.homepage.rt.load.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:4|ms',
-                        'live.homepage.navtiming.dns.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:19|ms',
-                        'live.homepage.navtiming.firstbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:9|ms',
-                        'live.homepage.navtiming.domload.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:11|ms',
-                        'live.homepage.navtiming.load.gecko.32_0.firefox.32_0.desktop.unknown.mac_os.10_8:12|ms',
+                        'live.homepage.rt.firstbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os_x.10_8:2|ms',
+                        'live.homepage.rt.lastbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os_x.10_8:3|ms',
+                        'live.homepage.rt.load.gecko.32_0.firefox.32_0.desktop.unknown.mac_os_x.10_8:4|ms',
+                        'live.homepage.navtiming.dns.gecko.32_0.firefox.32_0.desktop.unknown.mac_os_x.10_8:19|ms',
+                        'live.homepage.navtiming.firstbyte.gecko.32_0.firefox.32_0.desktop.unknown.mac_os_x.10_8:9|ms',
+                        'live.homepage.navtiming.domload.gecko.32_0.firefox.32_0.desktop.unknown.mac_os_x.10_8:11|ms',
+                        'live.homepage.navtiming.load.gecko.32_0.firefox.32_0.desktop.unknown.mac_os_x.10_8:12|ms',
                         ''
                     ].join('\n'));
                 });
@@ -228,7 +228,7 @@ suite('mappers/statsd-npg:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, 'staging.hortres.rt.load.webkit.537_36.chrome.37_0_2062_124.desktop.unknown.mac_os.10_8_5:10|ms\n');
+                    assert.strictEqual(result, 'staging.hortres.rt.load.webkit.537_36.chrome.37_0_2062_124.desktop.unknown.mac_os_x.10_8_5:10|ms\n');
                 });
             });
 
