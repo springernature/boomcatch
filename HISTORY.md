@@ -1,5 +1,8 @@
 # History
 
+## 1.8.1
+
+* Normalise projects to lower case in the statsd-npg mapper.
 
 ## 1.8.0
 
