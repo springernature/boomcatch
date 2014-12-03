@@ -96,7 +96,7 @@ function getRefererProject (path) {
         project = project.substr(0, project.indexOf('/'));
     }
 
-    return project;
+    return project.toLowerCase();
 }
 
 function getUserAgentSuffix (userAgent) {

@@ -218,7 +218,7 @@ suite('mappers/statsd-npg:', function () {
                                 }
                             }
                         },
-                        'http://staging-www.nature.com/hortres?foo=bar',
+                        'http://staging-www.nature.com/HortRes?foo=bar',
                         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36'
                     );
                 });
