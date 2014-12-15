@@ -251,6 +251,10 @@ function createWorkers (count, log) {
     });
 
     cluster.on('exit', function (worker, code, signal) {
+        if (worker.suicide) {
+            return log.info('worker process ' + worker.process.pid + ' has exited (' + (signal || code) + ')');
+        }
+
         log.info('worker process ' + worker.process.pid + ' has died (' + (signal || code) + '), respawning');
         cluster.fork();
     });

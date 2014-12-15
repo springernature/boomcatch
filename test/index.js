@@ -2923,7 +2923,7 @@ suite('index:', function () {
                 assert.notEqual(log.args.on[0][1], log.args.on[1][1]);
             });
 
-            suite('exit worker:', function () {
+            suite('kill worker:', function () {
                 var worker;
 
                 setup(function () {
@@ -2946,6 +2946,28 @@ suite('index:', function () {
                 test('cluster.fork was called correctly', function () {
                     assert.strictEqual(log.these.fork[2], cluster);
                     assert.lengthOf(log.args.fork[2], 0);
+                });
+            });
+
+            suite('exit worker:', function () {
+                var worker;
+
+                setup(function () {
+                    worker = {
+                        process: {
+                            pid: 19770610
+                        },
+                        suicide: true
+                    };
+                    log.args.on[1][1](worker);
+                });
+
+                teardown(function () {
+                    worker = undefined;
+                });
+
+                test('cluster.fork was not called', function () {
+                    assert.strictEqual(log.counts.fork, 2);
                 });
             });
         });
