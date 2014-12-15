@@ -33,7 +33,7 @@ mockery.registerAllowable('url');
 mockery.registerAllowable('qs');
 mockery.registerAllowable('fs');
 
-process.setMaxListeners(233);
+process.setMaxListeners(249);
 
 suite('index:', function () {
     var log, restrict, cluster, isTooBusy;
@@ -218,7 +218,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -229,7 +233,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -244,7 +250,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -255,7 +265,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -270,7 +282,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -281,7 +297,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -296,7 +314,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -307,7 +329,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -322,7 +346,11 @@ suite('index:', function () {
                     origin: 'baz',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -333,7 +361,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -348,7 +378,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: '100',
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -359,7 +393,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -374,7 +410,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: '1024',
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -385,12 +425,14 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
 
-        test('listen throws if log is object', function () {
+        test('listen throws if log.info is not function', function () {
             assert.throws(function () {
                 boomcatch.listen({
                     host: '127.0.0.1',
@@ -400,7 +442,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: {},
+                    log: {
+                        info: {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -411,7 +457,73 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if log.warn is not function', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if log.error is not function', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -426,7 +538,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: '',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -437,7 +553,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -452,7 +570,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: '',
                     mapper: 'mapper',
@@ -463,7 +585,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -478,7 +602,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: '',
@@ -489,7 +617,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -504,7 +634,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -515,7 +649,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -530,7 +666,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -541,7 +681,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -556,7 +698,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -567,7 +713,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -582,7 +730,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -593,7 +745,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -608,7 +762,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -619,7 +777,9 @@ suite('index:', function () {
                     fwdSize: '256',
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -634,7 +794,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -645,7 +809,9 @@ suite('index:', function () {
                     fwdSize: '256',
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: '4'
+                    workers: '4',
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -660,7 +826,11 @@ suite('index:', function () {
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -671,7 +841,105 @@ suite('index:', function () {
                     fwdSize: '256',
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: -1
+                    workers: -1,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if delayRespawn is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: '200',
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if delayRespawn is negative number', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: -1,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if maxRespawn is string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: '256',
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: '-1'
                 });
             });
         });
@@ -688,6 +956,7 @@ suite('index:', function () {
                     maxSize: 1024,
                     log: {
                         info: function () {},
+                        warn: function () {},
                         error: function () {}
                     },
                     validator: 'restrictive',
@@ -700,7 +969,9 @@ suite('index:', function () {
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -726,7 +997,9 @@ suite('index:', function () {
                     fwdSize: null,
                     fwdUrl: null,
                     fwdMethod: null,
-                    workers: null
+                    workers: null,
+                    delayRespawn: null,
+                    maxRespawn: null
                 });
             });
         });
@@ -1962,6 +2235,10 @@ suite('index:', function () {
                             name: 'info',
                             log: log
                         }),
+                        warn: spooks.fn({
+                            name: 'info',
+                            log: log
+                        }),
                         error: spooks.fn({
                             name: 'error',
                             log: log
@@ -2870,7 +3147,23 @@ suite('index:', function () {
                 cluster.isMaster = true;
 
                 boomcatch.listen({
-                    workers: 2
+                    log: {
+                        info: spooks.fn({
+                            name: 'info',
+                            log: log
+                        }),
+                        warn: spooks.fn({
+                            name: 'warn',
+                            log: log
+                        }),
+                        error: spooks.fn({
+                            name: 'error',
+                            log: log
+                        })
+                    },
+                    workers: 2,
+                    delayRespawn: 10,
+                    maxRespawn: 2
                 });
             });
 
@@ -2923,20 +3216,42 @@ suite('index:', function () {
                 assert.notEqual(log.args.on[0][1], log.args.on[1][1]);
             });
 
+            test('log.info was called once', function () {
+                assert.strictEqual(log.counts.info, 1);
+            });
+
+            test('log.warn was not called', function () {
+                assert.strictEqual(log.counts.warn, 0);
+            });
+
+            test('log.error was not called', function () {
+                assert.strictEqual(log.counts.error, 0);
+            });
+
             suite('kill worker:', function () {
                 var worker;
 
-                setup(function () {
+                setup(function (done) {
                     worker = {
                         process: {
                             pid: 19770610
                         }
                     };
-                    log.args.on[1][1](worker);
+                    log.args.on[1][1](worker, 77);
+                    setTimeout(done, 20);
                 });
 
                 teardown(function () {
                     worker = undefined;
+                });
+
+                test('log.warn was called once', function () {
+                    assert.strictEqual(log.counts.warn, 1);
+                });
+
+                test('log.warn was called correctly', function () {
+                    assert.lengthOf(log.args.warn[0], 1);
+                    assert.strictEqual(log.args.warn[0][0], 'worker 19770610 died (77), respawning');
                 });
 
                 test('cluster.fork was called once', function () {
@@ -2947,6 +3262,76 @@ suite('index:', function () {
                     assert.strictEqual(log.these.fork[2], cluster);
                     assert.lengthOf(log.args.fork[2], 0);
                 });
+
+                suite('kill worker:', function () {
+                    var worker;
+
+                    setup(function (done) {
+                        worker = {
+                            process: {
+                                pid: 'foo'
+                            }
+                        };
+                        log.args.on[1][1](worker, undefined, 'bar');
+                        setTimeout(done, 20);
+                    });
+
+                    teardown(function () {
+                        worker = undefined;
+                    });
+
+                    test('log.warn was called once', function () {
+                        assert.strictEqual(log.counts.warn, 2);
+                    });
+
+                    test('log.warn was called correctly', function () {
+                        assert.lengthOf(log.args.warn[1], 1);
+                        assert.strictEqual(log.args.warn[1][0], 'worker foo died (bar), respawning');
+                    });
+
+                    test('cluster.fork was called once', function () {
+                        assert.strictEqual(log.counts.fork, 4);
+                    });
+
+                    test('log.error was not called', function () {
+                        assert.strictEqual(log.counts.error, 0);
+                    });
+
+                    suite('kill worker:', function () {
+                        var worker;
+
+                        setup(function (done) {
+                            worker = {
+                                process: {
+                                    pid: 'wibble'
+                                }
+                            };
+                            log.args.on[1][1](worker, undefined, 'woo');
+                            setTimeout(done, 20);
+                        });
+
+                        teardown(function () {
+                            worker = undefined;
+                        });
+
+                        test('log.warn was not called', function () {
+                            assert.strictEqual(log.counts.warn, 2);
+                        });
+
+                        test('log.error was called once', function () {
+                            assert.strictEqual(log.counts.error, 1);
+                        });
+
+                        test('log.error was called correctly', function () {
+                            assert.lengthOf(log.args.error[0], 1);
+                            assert.strictEqual(log.args.error[0][0], 'exceeded respawn limit, worker wibble died (woo)');
+                        });
+
+                        test('cluster.fork was not called', function () {
+                            assert.strictEqual(log.counts.fork, 4);
+                        });
+                    });
+                });
             });
 
             suite('exit worker:', function () {
@@ -2955,15 +3340,24 @@ suite('index:', function () {
                 setup(function () {
                     worker = {
                         process: {
-                            pid: 19770610
+                            pid: 1
                         },
                         suicide: true
                     };
-                    log.args.on[1][1](worker);
+                    log.args.on[1][1](worker, null, 3);
                 });
 
                 teardown(function () {
                     worker = undefined;
+                });
+
+                test('log.info was called once', function () {
+                    assert.strictEqual(log.counts.info, 2);
+                });
+
+                test('log.info was called correctly', function () {
+                    assert.lengthOf(log.args.info[1], 1);
+                    assert.strictEqual(log.args.info[1][0], 'worker 1 exited (3)');
                 });
 
                 test('cluster.fork was not called', function () {
