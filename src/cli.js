@@ -42,7 +42,7 @@ function parseCommandLine () {
         .option('-y, --syslog <facility>', 'use syslog-compatible logging, with the specified facility level')
         .option('-w, --workers <count>', 'use a fixed number of worker processes to handle requests, default is -1 (one worker per CPU)', parseInt)
         .option('-d, --delayRespawn <milliseconds>', 'length of time to delay before respawning worker processes, default is 0 (no delay)', parseInt)
-        .option('-a, --maxRespawn <count>', 'maximum number of time to respawn worker processes, default is -1 (unlimited)', parseInt)
+        .option('-a, --maxRespawn <count>', 'maximum number of times to respawn worker processes, default is -1 (unlimited)', parseInt)
         .option('-v, --validator <path>', 'validator to use, default is permissive')
         .option('-i, --filter <path>', 'filter to use, default is unfiltered')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
