@@ -43,7 +43,9 @@ defaults = {
     filter: 'unfiltered',
     mapper: 'statsd',
     forwarder: 'udp',
-    workers: 0
+    workers: 0,
+    delayRespawn: 0,
+    maxRespawn: -1
 },
 
 signals, normalisationMaps;
@@ -102,7 +104,7 @@ exports.listen = function (options) {
         createSignalHandlers(log);
 
         if (workers > 0) {
-            return createWorkers(workers, log);
+            return createWorkers(workers, options, log);
         }
     }
 
@@ -117,8 +119,12 @@ function verifyOptions (options) {
     check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
     check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
     check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
+    check.verify.maybe.unemptyString(options.filter, 'Invalid filter');
     check.verify.maybe.number(options.workers, 'Invalid workers');
     check.verify.not.negativeNumber(options.workers, 'Invalid workers');
+    check.verify.maybe.number(options.delayRespawn, 'Invalid worker respawn delay');
+    check.verify.not.negativeNumber(options.delayRespawn, 'Invalid worker respawn delay');
+    check.verify.maybe.number(options.maxRespawn, 'Invalid worker respawn limit');
 
     verifyOrigin(options.origin);
     verifyLog(options.log);
@@ -146,6 +152,7 @@ function verifyLog (log) {
 
     if (check.object(log)) {
         check.verify.fn(log.info, 'Invalid log.info function');
+        check.verify.fn(log.warn, 'Invalid log.warn function');
         check.verify.fn(log.error, 'Invalid log.error function');
     }
 }
@@ -243,16 +250,32 @@ function handleTerminalSignal (log, signal, value) {
     process.exit(128 + value);
 }
 
-function createWorkers (count, log) {
-    var i;
+function createWorkers (count, options, log) {
+    var respawnCount, respawnLimit, respawnDelay, i;
+
+    respawnCount = 0;
+    respawnLimit = getOption('maxRespawn', options);
+    respawnDelay = getOption('delayRespawn', options);
 
     cluster.on('online', function (worker) {
-        log.info('worker process ' + worker.process.pid + ' has started');
+        log.info('worker ' + worker.process.pid + ' started');
     });
 
     cluster.on('exit', function (worker, code, signal) {
-        log.info('worker process ' + worker.process.pid + ' has died (' + (signal || code) + '), respawning');
-        cluster.fork();
+        if (worker.suicide) {
+            return log.info('worker ' + worker.process.pid + ' exited (' + (signal || code) + ')');
+        }
+
+        respawnCount += 1;
+
+        if (respawnLimit > 0 && respawnCount > respawnLimit) {
+            return log.error('exceeded respawn limit, worker ' + worker.process.pid + ' died (' + (signal || code) + ')');
+        }
+
+        setTimeout(function () {
+            log.warn('worker ' + worker.process.pid + ' died (' + (signal || code) + '), respawning');
+            cluster.fork();
+        }, respawnDelay);
     });
 
     for (i = 0; i < count; i += 1) {
