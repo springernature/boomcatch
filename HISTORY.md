@@ -1,5 +1,11 @@
 # History
 
+## 2.0.0
+
+* Add options `--delayRespawn` and `--maxRespawn`.
+* Don't respawn workers that have intentionally exited.
+* Logging tweaks.
+
 ## 1.8.1
 
 * Normalise projects to lower case in the statsd-npg mapper.
