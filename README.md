@@ -94,6 +94,17 @@ Available options are:
   The default is -1
   (one worker per CPU).
 
+* `--delayRespawn <milliseconds>`:
+  The length of time to delay
+  before respawning worker processes.
+  The default is 0.
+
+* `--maxRespawn <count>`:
+  The maximum number of times
+  to respawn worker processes.
+  The default is -1
+  (unlimited).
+
 * `--validator <path>`:
   Validator used to accept or reject request data.
   The default is permissive
