@@ -1,5 +1,9 @@
 # History
 
+## 2.0.1
+
+* Improve logging when worker processes terminate.
+
 ## 2.0.0
 
 * Add options `--delayRespawn` and `--maxRespawn`.
