@@ -288,7 +288,7 @@ function createWorkers (count, options, log) {
 }
 
 function getExitStatus (code, signal) {
-    if (check.unemptyString(signal)) {
+    if (check.assigned(signal)) {
         return 'signal ' + signal;
     }
 
