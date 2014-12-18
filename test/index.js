@@ -3251,7 +3251,7 @@ suite('index:', function () {
 
                 test('log.warn was called correctly', function () {
                     assert.lengthOf(log.args.warn[0], 1);
-                    assert.strictEqual(log.args.warn[0][0], 'worker 19770610 died (77), respawning');
+                    assert.strictEqual(log.args.warn[0][0], 'worker 19770610 died (code 77), respawning');
                 });
 
                 test('cluster.fork was called once', function () {
@@ -3286,7 +3286,7 @@ suite('index:', function () {
 
                     test('log.warn was called correctly', function () {
                         assert.lengthOf(log.args.warn[1], 1);
-                        assert.strictEqual(log.args.warn[1][0], 'worker foo died (bar), respawning');
+                        assert.strictEqual(log.args.warn[1][0], 'worker foo died (signal bar), respawning');
                     });
 
                     test('cluster.fork was called once', function () {
@@ -3324,7 +3324,7 @@ suite('index:', function () {
 
                         test('log.error was called correctly', function () {
                             assert.lengthOf(log.args.error[0], 1);
-                            assert.strictEqual(log.args.error[0][0], 'exceeded respawn limit, worker wibble died (woo)');
+                            assert.strictEqual(log.args.error[0][0], 'exceeded respawn limit, worker wibble died (signal woo)');
                         });
 
                         test('cluster.fork was not called', function () {
@@ -3357,7 +3357,7 @@ suite('index:', function () {
 
                 test('log.info was called correctly', function () {
                     assert.lengthOf(log.args.info[1], 1);
-                    assert.strictEqual(log.args.info[1][0], 'worker 1 exited (3)');
+                    assert.strictEqual(log.args.info[1][0], 'worker 1 exited (signal 3)');
                 });
 
                 test('cluster.fork was not called', function () {

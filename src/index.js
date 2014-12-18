@@ -264,18 +264,20 @@ function createWorkers (count, options, log) {
     });
 
     cluster.on('exit', function (worker, code, signal) {
+        var exitStatus = getExitStatus(code, signal);
+
         if (worker.suicide) {
-            return log.info('worker ' + worker.process.pid + ' exited (' + (signal || code) + ')');
+            return log.info('worker ' + worker.process.pid + ' exited (' + exitStatus + ')');
         }
 
         respawnCount += 1;
 
         if (respawnLimit > 0 && respawnCount > respawnLimit) {
-            return log.error('exceeded respawn limit, worker ' + worker.process.pid + ' died (' + (signal || code) + ')');
+            return log.error('exceeded respawn limit, worker ' + worker.process.pid + ' died (' + exitStatus + ')');
         }
 
         setTimeout(function () {
-            log.warn('worker ' + worker.process.pid + ' died (' + (signal || code) + '), respawning');
+            log.warn('worker ' + worker.process.pid + ' died (' + exitStatus + '), respawning');
             cluster.fork();
         }, respawnDelay);
     });
@@ -283,6 +285,14 @@ function createWorkers (count, options, log) {
     for (i = 0; i < count; i += 1) {
         cluster.fork();
     }
+}
+
+function getExitStatus (code, signal) {
+    if (signal) {
+        return 'signal ' + signal;
+    }
+
+    return 'code ' + code;
 }
 
 function createServer (options, log) {
