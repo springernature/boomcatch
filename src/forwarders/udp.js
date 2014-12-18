@@ -39,11 +39,11 @@ function normaliseValue (value, test, defaultValue) {
 }
 
 function normalisePort (port) {
-    return normaliseValue(port, 'positiveNumber', 8125);
+    return normaliseValue(port, 'positive', 8125);
 }
 
 function normaliseSize (size) {
-    return normaliseValue(size, 'positiveNumber', 512);
+    return normaliseValue(size, 'positive', 512);
 }
 
 function send (host, port, size, data, type, separator, callback) {

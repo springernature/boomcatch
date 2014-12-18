@@ -97,7 +97,7 @@ function getEntries (data) {
             pageref: '0',
             startedDateTime: getTime(datum.timestamps.start),
             time: Object.keys(timings).reduce(function (sum, name) {
-                if (name === 'ssl' || check.not.positiveNumber(timings[name])) {
+                if (name === 'ssl' || check.not.positive(timings[name])) {
                     return sum;
                 }
 
@@ -191,7 +191,7 @@ function getOptionalEventDifference (data, eventName, eventProperty, timestampNa
     event = data.events[eventName];
     timestamp = data.timestamps[timestampName];
 
-    if (!event || check.not.positiveNumber(timestamp)) {
+    if (!event || check.not.positive(timestamp)) {
         return -1;
     }
 
