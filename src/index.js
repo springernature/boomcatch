@@ -83,6 +83,8 @@ signals, normalisationMaps;
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
+ * @option delayRespawn {number} Number of milliseconds to delay respawning. Defaults to 0.
+ * @option maxRespawn {number}   Maximum number of respawn attempts. Defaults to -1.
  */
 exports.listen = function (options) {
     var workers, log;
