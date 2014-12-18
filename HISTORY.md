@@ -1,6 +1,6 @@
 # History
 
-## 2.0.1
+## 2.0.2
 
 * Improve logging when worker processes terminate.
 
