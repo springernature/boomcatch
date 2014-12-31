@@ -37,6 +37,7 @@ defaults = {
     maxSize: -1,
     log: {
         info: function () {},
+        warn: function () {},
         error: function () {}
     },
     validator: 'permissive',
