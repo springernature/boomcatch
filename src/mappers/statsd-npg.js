@@ -54,7 +54,7 @@ function map (prefix, data, referer, userAgent) {
     Object.keys(data).forEach(function (category) {
         var datum = data[category], mapper = mappers[category];
 
-        if (check.object(datum) && check.fn(mapper)) {
+        if (check.object(datum) && check.function(mapper)) {
             result += mapper(prefix + refererPrefix + category + '.', suffix, datum);
         }
     });

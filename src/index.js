@@ -84,6 +84,8 @@ signals, normalisationMaps;
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
+ * @option delayRespawn {number} Number of milliseconds to delay respawning. Defaults to 0.
+ * @option maxRespawn {number}   Maximum number of respawn attempts. Defaults to -1.
  */
 exports.listen = function (options) {
     var workers, log;
@@ -113,19 +115,19 @@ exports.listen = function (options) {
 };
 
 function verifyOptions (options) {
-    check.verify.maybe.unemptyString(options.host, 'Invalid host');
-    check.verify.maybe.positiveNumber(options.port, 'Invalid port');
-    check.verify.maybe.unemptyString(options.path, 'Invalid path');
-    check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
-    check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
-    check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
-    check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
-    check.verify.maybe.unemptyString(options.filter, 'Invalid filter');
-    check.verify.maybe.number(options.workers, 'Invalid workers');
-    check.verify.not.negativeNumber(options.workers, 'Invalid workers');
-    check.verify.maybe.number(options.delayRespawn, 'Invalid worker respawn delay');
-    check.verify.not.negativeNumber(options.delayRespawn, 'Invalid worker respawn delay');
-    check.verify.maybe.number(options.maxRespawn, 'Invalid worker respawn limit');
+    check.assert.maybe.unemptyString(options.host, 'Invalid host');
+    check.assert.maybe.positive(options.port, 'Invalid port');
+    check.assert.maybe.unemptyString(options.path, 'Invalid path');
+    check.assert.maybe.instance(options.referer, RegExp, 'Invalid referer');
+    check.assert.maybe.positive(options.limit, 'Invalid limit');
+    check.assert.maybe.positive(options.maxSize, 'Invalid max size');
+    check.assert.maybe.unemptyString(options.validator, 'Invalid validator');
+    check.assert.maybe.unemptyString(options.filter, 'Invalid filter');
+    check.assert.maybe.number(options.workers, 'Invalid workers');
+    check.assert.not.negative(options.workers, 'Invalid workers');
+    check.assert.maybe.number(options.delayRespawn, 'Invalid worker respawn delay');
+    check.assert.not.negative(options.delayRespawn, 'Invalid worker respawn delay');
+    check.assert.maybe.number(options.maxRespawn, 'Invalid worker respawn limit');
 
     verifyOrigin(options.origin);
     verifyLog(options.log);
@@ -137,11 +139,11 @@ function verifyOptions (options) {
 function verifyOrigin (origin) {
     if (check.string(origin)) {
         if (origin !== '*' && origin !== 'null') {
-            check.verify.webUrl(origin, 'Invalid access control origin');
+            check.assert.webUrl(origin, 'Invalid access control origin');
         }
-    } else if (Array.isArray(origin)) {
+    } else if (check.array(origin)) {
         origin.forEach(function (o) {
-            check.verify.webUrl(o, 'Invalid access control origin');
+            check.assert.webUrl(o, 'Invalid access control origin');
         });
     } else if (origin) {
         throw new Error('Invalid access control origin');
@@ -149,22 +151,22 @@ function verifyOrigin (origin) {
 }
 
 function verifyLog (log) {
-    check.verify.maybe.object(log, 'Invalid log object');
+    check.assert.maybe.object(log, 'Invalid log object');
 
     if (check.object(log)) {
-        check.verify.fn(log.info, 'Invalid log.info function');
-        check.verify.fn(log.warn, 'Invalid log.warn function');
-        check.verify.fn(log.error, 'Invalid log.error function');
+        check.assert.function(log.info, 'Invalid log.info function');
+        check.assert.function(log.warn, 'Invalid log.warn function');
+        check.assert.function(log.error, 'Invalid log.error function');
     }
 }
 
 function verifyMapperOptions (options) {
-    check.verify.maybe.unemptyString(options.mapper, 'Invalid data mapper');
-    check.verify.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
+    check.assert.maybe.unemptyString(options.mapper, 'Invalid data mapper');
+    check.assert.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
 }
 
 function verifyForwarderOptions (options) {
-    check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
+    check.assert.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
 
     switch (options.forwarder) {
         case 'waterfall-svg':
@@ -175,13 +177,13 @@ function verifyForwarderOptions (options) {
             verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
             break;
         case 'http':
-            check.verify.webUrl(options.fwdUrl, 'Invalid forwarding URL');
-            check.verify.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
+            check.assert.webUrl(options.fwdUrl, 'Invalid forwarding URL');
+            check.assert.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
             break;
         default:
-            check.verify.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
-            check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
-            check.verify.maybe.positiveNumber(options.fwdSize, 'Invalid forwarding packet size');
+            check.assert.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
+            check.assert.maybe.positive(options.fwdPort, 'Invalid forwarding port');
+            check.assert.maybe.positive(options.fwdSize, 'Invalid forwarding packet size');
     }
 }
 
@@ -196,7 +198,7 @@ function verifyFs (isOptional, path, method, message) {
         return;
     }
 
-    check.verify.unemptyString(path, message);
+    check.assert.unemptyString(path, message);
 
     if (fs.existsSync(path)) {
         stat = fs.statSync(path);
@@ -263,18 +265,20 @@ function createWorkers (count, options, log) {
     });
 
     cluster.on('exit', function (worker, code, signal) {
+        var exitStatus = getExitStatus(code, signal);
+
         if (worker.suicide) {
-            return log.info('worker ' + worker.process.pid + ' exited (' + (signal || code) + ')');
+            return log.info('worker ' + worker.process.pid + ' exited (' + exitStatus + ')');
         }
 
         respawnCount += 1;
 
         if (respawnLimit > 0 && respawnCount > respawnLimit) {
-            return log.error('exceeded respawn limit, worker ' + worker.process.pid + ' died (' + (signal || code) + ')');
+            return log.error('exceeded respawn limit, worker ' + worker.process.pid + ' died (' + exitStatus + ')');
         }
 
         setTimeout(function () {
-            log.warn('worker ' + worker.process.pid + ' died (' + (signal || code) + '), respawning');
+            log.warn('worker ' + worker.process.pid + ' died (' + exitStatus + '), respawning');
             cluster.fork();
         }, respawnDelay);
     });
@@ -282,6 +286,14 @@ function createWorkers (count, options, log) {
     for (i = 0; i < count; i += 1) {
         cluster.fork();
     }
+}
+
+function getExitStatus (code, signal) {
+    if (check.assigned(signal)) {
+        return 'signal ' + signal;
+    }
+
+    return 'code ' + code;
 }
 
 function createServer (options, log) {
@@ -364,7 +376,7 @@ function getExtension (type, options, properties) {
 
     result = extension.initialise(options);
 
-    if (Array.isArray(properties)) {
+    if (check.array(properties)) {
         properties.forEach(function (property) {
             result[property] = extension[property];
         });
@@ -503,7 +515,7 @@ function checkLimit (limit, remoteAddress) {
     now = Date.now();
     lastRequest = limit.requests[remoteAddress];
 
-    if (check.positiveNumber(lastRequest) && now <= lastRequest + limit.time) {
+    if (check.positive(lastRequest) && now <= lastRequest + limit.time) {
         return false;
     }
 
@@ -513,7 +525,7 @@ function checkLimit (limit, remoteAddress) {
 }
 
 function getAccessControlOrigin (headers, origin) {
-    if (Array.isArray(origin)) {
+    if (check.array(origin)) {
         if (headers.origin && contains(origin, headers.origin)) {
             return headers.origin;
         }
@@ -617,12 +629,12 @@ function normaliseRtData (data) {
     timeToLastByte = getOptionalSum(data, 't_resp', 't_page');
     timeToLoad = getOptionalDatum(data, 't_done');
 
-    check.verify.maybe.positiveNumber(start);
-    check.verify.maybe.positiveNumber(timeToFirstByte);
-    check.verify.maybe.positiveNumber(timeToLastByte);
-    check.verify.maybe.positiveNumber(timeToLoad);
+    check.assert.maybe.positive(start);
+    check.assert.maybe.positive(timeToFirstByte);
+    check.assert.maybe.positive(timeToLastByte);
+    check.assert.maybe.positive(timeToLoad);
 
-    if (check.positiveNumber(timeToFirstByte) || check.positiveNumber(timeToLastByte) || check.positiveNumber(timeToLoad)) {
+    if (check.positive(timeToFirstByte) || check.positive(timeToLastByte) || check.positive(timeToLoad)) {
         return {
             timestamps: {
                 start: start
@@ -712,14 +724,14 @@ function normaliseCategory (map, data, startKey) {
 
 function normaliseTimestamps (map, data) {
     return map.timestamps.reduce(function (result, timestamp) {
-        var value, verify;
+        var value, assert;
 
         if (data[timestamp.key]) {
             value = parseInt(data[timestamp.key]);
         }
 
-        verify = timestamp.optional ? check.verify.maybe : check.verify;
-        verify.positiveNumber(value);
+        assert = timestamp.optional ? check.assert.maybe : check.assert;
+        assert.positive(value);
 
         if (value) {
             result[timestamp.name] = value;
@@ -731,18 +743,18 @@ function normaliseTimestamps (map, data) {
 
 function normaliseEvents (map, data) {
     return map.events.reduce(function (result, event) {
-        var start, end, verify;
+        var start, end, assert;
 
         if (data[event.start] && data[event.end]) {
             start = parseInt(data[event.start]);
             end = parseInt(data[event.end]);
         }
 
-        verify = event.optional ? check.verify.maybe : check.verify;
-        verify.number(start);
-        check.verify.not.negativeNumber(start);
-        verify.number(end);
-        check.verify.not.negativeNumber(end);
+        assert = event.optional ? check.assert.maybe : check.assert;
+        assert.number(start);
+        check.assert.not.negative(start);
+        assert.number(end);
+        check.assert.not.negative(end);
 
         if (check.number(start) && check.number(end)) {
             result[event.name] = {
@@ -759,15 +771,15 @@ function normaliseDurations (map, data, startKey) {
     var start = parseInt(data[startKey]);
 
     return map.durations.reduce(function (result, duration) {
-        var value, verify;
+        var value, assert;
 
         if (data[duration.end]) {
             value = parseInt(data[duration.end]) - start;
         }
 
-        verify = duration.optional ? check.verify.maybe : check.verify;
-        verify.number(value);
-        check.verify.not.negativeNumber(value);
+        assert = duration.optional ? check.assert.maybe : check.assert;
+        assert.number(value);
+        check.assert.not.negative(value);
 
         if (value) {
             result[duration.name] = value;
@@ -779,7 +791,7 @@ function normaliseDurations (map, data, startKey) {
 
 function normaliseRestimingData (data) {
     /*jshint camelcase:false */
-    if (Array.isArray(data.restiming)) {
+    if (check.array(data.restiming)) {
         return data.restiming.map(function (datum) {
             var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
 
