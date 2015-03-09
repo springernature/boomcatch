@@ -51,7 +51,7 @@
         "mockery": "1.4.x",
         "spooks": "2.0.x",
         "istanbul": "0.3.x",
-        "jsdom": "0.6.x"
+        "jsdom": "1.5.x"
     },
     "scripts": {
         "lint": "./node_modules/.bin/jshint src --config .jshintrc",
