@@ -17,10 +17,9 @@
 
 'use strict';
 
-var assert, spooks, modulePath;
+var assert, modulePath;
 
 assert = require('chai').assert;
-spooks = require('spooks');
 
 modulePath = '../../src/mappers/statsd-npg';
 

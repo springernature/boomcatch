@@ -40,10 +40,12 @@ suite('forwarders/udp:', function () {
             archetype: { createSocket: nop },
             log: log,
             results: {
-                createSocket: spooks.obj({
-                    archetype: { send: nop, close: nop },
-                    log: log
-                })
+                createSocket: [
+                    spooks.obj({
+                        archetype: { send: nop, close: nop },
+                        log: log
+                    })
+                ]
             }
         }));
     });
