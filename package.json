@@ -42,7 +42,7 @@
         "ua-parser-js": "0.7.x"
     },
     "optionalDependencies": {
-        "strong-fork-syslog": "1.2.x"
+        "ain2": "1.5.x"
     },
     "devDependencies": {
         "jshint": "2.6.x",
