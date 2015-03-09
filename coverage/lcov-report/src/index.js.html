@@ -3,213 +3,22 @@
 <head>
     <title>Code coverage report for src/index.js</title>
     <meta charset="utf-8">
-
     <link rel="stylesheet" href="../prettify.css">
-
-    <style>
-        body, html {
-            margin:0; padding: 0;
+    <link rel="stylesheet" href="../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
         }
-        body {
-            font-family: Helvetica Neue, Helvetica,Arial;
-            font-size: 10pt;
-        }
-        div.header, div.footer {
-            background: #eee;
-            padding: 1em;
-        }
-        div.header {
-            z-index: 100;
-            position: fixed;
-            top: 0;
-            border-bottom: 1px solid #666;
-            width: 100%;
-        }
-        div.footer {
-            border-top: 1px solid #666;
-        }
-        div.body {
-            margin-top: 10em;
-        }
-        div.meta {
-            font-size: 90%;
-            text-align: center;
-        }
-        h1, h2, h3 {
-            font-weight: normal;
-        }
-        h1 {
-            font-size: 12pt;
-        }
-        h2 {
-            font-size: 10pt;
-        }
-        pre {
-            font-family: Consolas, Menlo, Monaco, monospace;
-            margin: 0;
-            padding: 0;
-            line-height: 14px;
-            font-size: 14px;
-            -moz-tab-size: 2;
-            -o-tab-size:  2;
-            tab-size: 2;
-        }
-
-        div.path { font-size: 110%; }
-        div.path a:link, div.path a:visited { color: #000; }
-        table.coverage { border-collapse: collapse; margin:0; padding: 0 }
-
-        table.coverage td {
-            margin: 0;
-            padding: 0;
-            color: #111;
-            vertical-align: top;
-        }
-        table.coverage td.line-count {
-            width: 50px;
-            text-align: right;
-            padding-right: 5px;
-        }
-        table.coverage td.line-coverage {
-            color: #777 !important;
-            text-align: right;
-            border-left: 1px solid #666;
-            border-right: 1px solid #666;
-        }
-
-        table.coverage td.text {
-        }
-
-        table.coverage td span.cline-any {
-            display: inline-block;
-            padding: 0 5px;
-            width: 40px;
-        }
-        table.coverage td span.cline-neutral {
-            background: #eee;
-        }
-        table.coverage td span.cline-yes {
-            background: #b5d592;
-            color: #999;
-        }
-        table.coverage td span.cline-no {
-            background: #fc8c84;
-        }
-
-        .cstat-yes { color: #111; }
-        .cstat-no { background: #fc8c84; color: #111; }
-        .fstat-no { background: #ffc520; color: #111 !important; }
-        .cbranch-no { background:  yellow !important; color: #111; }
-
-        .cstat-skip { background: #ddd; color: #111; }
-        .fstat-skip { background: #ddd; color: #111 !important; }
-        .cbranch-skip { background: #ddd !important; color: #111; }
-
-        .missing-if-branch {
-            display: inline-block;
-            margin-right: 10px;
-            position: relative;
-            padding: 0 4px;
-            background: black;
-            color: yellow;
-        }
-
-        .skip-if-branch {
-            display: none;
-            margin-right: 10px;
-            position: relative;
-            padding: 0 4px;
-            background: #ccc;
-            color: white;
-        }
-
-        .missing-if-branch .typ, .skip-if-branch .typ {
-            color: inherit !important;
-        }
-
-        .entity, .metric { font-weight: bold; }
-        .metric { display: inline-block; border: 1px solid #333; padding: 0.3em; background: white; }
-        .metric small { font-size: 80%; font-weight: normal; color: #666; }
-
-        div.coverage-summary table { border-collapse: collapse; margin: 3em; font-size: 110%; }
-        div.coverage-summary td, div.coverage-summary table  th { margin: 0; padding: 0.25em 1em; border-top: 1px solid #666; border-bottom: 1px solid #666; }
-        div.coverage-summary th { text-align: left; border: 1px solid #666; background: #eee; font-weight: normal; }
-        div.coverage-summary th.file { border-right: none !important; }
-        div.coverage-summary th.pic { border-left: none !important; text-align: right; }
-        div.coverage-summary th.pct { border-right: none !important; }
-        div.coverage-summary th.abs { border-left: none !important; text-align: right; }
-        div.coverage-summary td.pct { text-align: right; border-left: 1px solid #666; }
-        div.coverage-summary td.abs { text-align: right; font-size: 90%; color: #444; border-right: 1px solid #666; }
-        div.coverage-summary td.file { text-align: right; border-left: 1px solid #666; white-space: nowrap;  }
-        div.coverage-summary td.pic { min-width: 120px !important;  }
-        div.coverage-summary a:link { text-decoration: none; color: #000; }
-        div.coverage-summary a:visited { text-decoration: none; color: #333; }
-        div.coverage-summary a:hover { text-decoration: underline; }
-        div.coverage-summary tfoot td { border-top: 1px solid #666; }
-
-        div.coverage-summary .yui3-datatable-sort-indicator, div.coverage-summary .dummy-sort-indicator {
-            height: 10px;
-            width: 7px;
-            display: inline-block;
-            margin-left: 0.5em;
-        }
-        div.coverage-summary .yui3-datatable-sort-indicator {
-            background: url("http://yui.yahooapis.com/3.6.0/build/datatable-sort/assets/skins/sam/sort-arrow-sprite.png") no-repeat scroll 0 0 transparent;
-        }
-        div.coverage-summary .yui3-datatable-sorted .yui3-datatable-sort-indicator {
-            background-position: 0 -20px;
-        }
-        div.coverage-summary .yui3-datatable-sorted-desc .yui3-datatable-sort-indicator {
-            background-position: 0 -10px;
-        }
-
-        .high { background: #b5d592 !important; }
-        .medium { background: #ffe87c !important; }
-        .low { background: #fc8c84 !important; }
-
-        span.cover-fill, span.cover-empty {
-            display:inline-block;
-            border:1px solid #444;
-            background: white;
-            height: 12px;
-        }
-        span.cover-fill {
-            background: #ccc;
-            border-right: 1px solid #444;
-        }
-        span.cover-empty {
-            background: white;
-            border-left: none;
-        }
-        span.cover-full {
-            border-right: none !important;
-        }
-        pre.prettyprint {
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        .com { color: #999 !important; }
-        .ignore-none { color: #999; font-weight: normal; }
-
     </style>
 </head>
 <body>
 <div class="header high">
     <h1>Code coverage report for <span class="entity">src/index.js</span></h1>
     <h2>
-        
-        Statements: <span class="metric">89.09% <small>(294 / 330)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        
-        
-        Branches: <span class="metric">83.78% <small>(124 / 148)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        
-        
-        Functions: <span class="metric">89.71% <small>(61 / 68)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        
-        
-        Lines: <span class="metric">89.09% <small>(294 / 330)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        
+        Statements: <span class="metric">89.68% <small>(313 / 349)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">84.42% <small>(130 / 154)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">88.73% <small>(63 / 71)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">89.68% <small>(313 / 349)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; index.js</div>
@@ -994,7 +803,45 @@
 776
 777
 778
-779</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1015,7 +862,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">253</span>
+<span class="cline-any cline-yes">274</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1078,27 +925,34 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">253</span>
-<span class="cline-any cline-yes">250</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">250</span>
-<span class="cline-any cline-yes">121</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">274</span>
+<span class="cline-any cline-yes">271</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">271</span>
+<span class="cline-any cline-yes">142</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">129</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">232</span>
-<span class="cline-any cline-yes">232</span>
+<span class="cline-any cline-yes">248</span>
+<span class="cline-any cline-yes">248</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">232</span>
+<span class="cline-any cline-yes">248</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">232</span>
-<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">248</span>
+<span class="cline-any cline-yes">27</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">27</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1106,129 +960,134 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">121</span>
-<span class="cline-any cline-yes">120</span>
-<span class="cline-any cline-yes">119</span>
-<span class="cline-any cline-yes">118</span>
-<span class="cline-any cline-yes">117</span>
-<span class="cline-any cline-yes">116</span>
-<span class="cline-any cline-yes">115</span>
-<span class="cline-any cline-yes">114</span>
-<span class="cline-any cline-yes">113</span>
+<span class="cline-any cline-yes">142</span>
+<span class="cline-any cline-yes">141</span>
+<span class="cline-any cline-yes">140</span>
+<span class="cline-any cline-yes">139</span>
+<span class="cline-any cline-yes">138</span>
+<span class="cline-any cline-yes">137</span>
+<span class="cline-any cline-yes">136</span>
+<span class="cline-any cline-yes">135</span>
+<span class="cline-any cline-yes">134</span>
+<span class="cline-any cline-yes">133</span>
+<span class="cline-any cline-yes">132</span>
+<span class="cline-any cline-yes">131</span>
+<span class="cline-any cline-yes">130</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">112</span>
-<span class="cline-any cline-yes">111</span>
+<span class="cline-any cline-yes">129</span>
+<span class="cline-any cline-yes">128</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">103</span>
-<span class="cline-any cline-yes">103</span>
+<span class="cline-any cline-yes">125</span>
+<span class="cline-any cline-yes">123</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">112</span>
-<span class="cline-any cline-yes">10</span>
-<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">129</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">102</span>
+<span class="cline-any cline-yes">118</span>
 <span class="cline-any cline-yes">80</span>
 <span class="cline-any cline-yes">160</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-yes">38</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">111</span>
+<span class="cline-any cline-yes">128</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">104</span>
-<span class="cline-any cline-yes">82</span>
+<span class="cline-any cline-yes">128</span>
+<span class="cline-any cline-yes">117</span>
+<span class="cline-any cline-yes">116</span>
+<span class="cline-any cline-yes">115</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">125</span>
+<span class="cline-any cline-yes">124</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">123</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">122</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">122</span>
+<span class="cline-any cline-yes">121</span>
+<span class="cline-any cline-yes">120</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">248</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2981</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">248</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">248</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">27</span>
 <span class="cline-any cline-yes">81</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">103</span>
-<span class="cline-any cline-yes">103</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">103</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">103</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">103</span>
-<span class="cline-any cline-yes">103</span>
-<span class="cline-any cline-yes">103</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">232</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">2895</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">232</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">232</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-yes">33</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">253</span>
+<span class="cline-any cline-yes">274</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1240,20 +1099,46 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">27</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-yes">24</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20</span>
+<span class="cline-any cline-yes">20</span>
+<span class="cline-any cline-yes">20</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">54</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -1633,7 +1518,7 @@
 <span class="cline-any cline-yes">73</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">253</span>
+<span class="cline-any cline-yes">274</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1789,7 +1674,7 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see &lt;http://www.gnu.org/licenses/&gt;.
 &nbsp;
-/*globals require, exports, process */
+/*globals require, exports, process, setTimeout */
 &nbsp;
 'use strict';
 &nbsp;
@@ -1811,14 +1696,19 @@ defaults = {
     maxSize: -1,
     log: {
         info: function () {},
+        warn: <span class="fstat-no" title="function not covered" >function () {</span>},
         error: function () {}
     },
     validator: 'permissive',
     filter: 'unfiltered',
     mapper: 'statsd',
     forwarder: 'udp',
-    workers: 0
+    workers: 0,
+    delayRespawn: 0,
+    maxRespawn: -1
 },
+&nbsp;
+urlRegex = /^https?:\/\/.+/,
 &nbsp;
 signals, normalisationMaps;
 &nbsp;
@@ -1855,6 +1745,8 @@ signals, normalisationMaps;
  * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
+ * @option delayRespawn {number} Number of milliseconds to delay respawning. Defaults to 0.
+ * @option maxRespawn {number}   Maximum number of respawn attempts. Defaults to -1.
  */
 exports.listen = function (options) {
     var workers, log;
@@ -1876,7 +1768,7 @@ exports.listen = function (options) {
         createSignalHandlers(log);
 &nbsp;
         <span class="missing-if-branch" title="else path not taken" >E</span>if (workers &gt; 0) {
-            return createWorkers(workers, log);
+            return createWorkers(workers, options, log);
         }
     }
 &nbsp;
@@ -1884,15 +1776,19 @@ exports.listen = function (options) {
 };
 &nbsp;
 function verifyOptions (options) {
-    check.verify.maybe.unemptyString(options.host, 'Invalid host');
-    check.verify.maybe.positiveNumber(options.port, 'Invalid port');
-    check.verify.maybe.unemptyString(options.path, 'Invalid path');
-    check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
-    check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
-    check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
-    check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
-    check.verify.maybe.number(options.workers, 'Invalid workers');
-    check.verify.not.negativeNumber(options.workers, 'Invalid workers');
+    check.assert.maybe.unemptyString(options.host, 'Invalid host');
+    check.assert.maybe.positive(options.port, 'Invalid port');
+    check.assert.maybe.unemptyString(options.path, 'Invalid path');
+    check.assert.maybe.instance(options.referer, RegExp, 'Invalid referer');
+    check.assert.maybe.positive(options.limit, 'Invalid limit');
+    check.assert.maybe.positive(options.maxSize, 'Invalid max size');
+    check.assert.maybe.unemptyString(options.validator, 'Invalid validator');
+    check.assert.maybe.unemptyString(options.filter, 'Invalid filter');
+    check.assert.maybe.number(options.workers, 'Invalid workers');
+    check.assert.not.negative(options.workers, 'Invalid workers');
+    check.assert.maybe.number(options.delayRespawn, 'Invalid worker respawn delay');
+    check.assert.not.negative(options.delayRespawn, 'Invalid worker respawn delay');
+    check.assert.maybe.number(options.maxRespawn, 'Invalid worker respawn limit');
 &nbsp;
     verifyOrigin(options.origin);
     verifyLog(options.log);
@@ -1904,11 +1800,11 @@ function verifyOptions (options) {
 function verifyOrigin (origin) {
     if (check.string(origin)) {
         <span class="missing-if-branch" title="else path not taken" >E</span>if (origin !== '*' &amp;&amp; origin !== 'null') {
-            check.verify.webUrl(origin, 'Invalid access control origin');
+            check.assert.match(origin, urlRegex);
         }
-    } else if (Array.isArray(origin)) {
+    } else if (check.array(origin)) {
         origin.forEach(function (o) {
-            check.verify.webUrl(o, 'Invalid access control origin');
+            check.assert.match(o, urlRegex);
         });
     } else <span class="missing-if-branch" title="if path not taken" >I</span>if (origin) {
 <span class="cstat-no" title="statement not covered" >        throw new Error('Invalid access control origin');</span>
@@ -1916,21 +1812,22 @@ function verifyOrigin (origin) {
 }
 &nbsp;
 function verifyLog (log) {
-    check.verify.maybe.object(log, 'Invalid log object');
+    check.assert.maybe.object(log, 'Invalid log object');
 &nbsp;
     if (check.object(log)) {
-        check.verify.fn(log.info, 'Invalid log.info function');
-        check.verify.fn(log.error, 'Invalid log.error function');
+        check.assert.function(log.info, 'Invalid log.info function');
+        check.assert.function(log.warn, 'Invalid log.warn function');
+        check.assert.function(log.error, 'Invalid log.error function');
     }
 }
 &nbsp;
 function verifyMapperOptions (options) {
-    check.verify.maybe.unemptyString(options.mapper, 'Invalid data mapper');
-    check.verify.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
+    check.assert.maybe.unemptyString(options.mapper, 'Invalid data mapper');
+    check.assert.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
 }
 &nbsp;
 function verifyForwarderOptions (options) {
-    check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
+    check.assert.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
 &nbsp;
     switch (options.forwarder) {
 <span class="branch-0 cbranch-no" title="branch not covered" >        case 'waterfall-svg':</span>
@@ -1941,13 +1838,13 @@ function verifyForwarderOptions (options) {
 <span class="cstat-no" title="statement not covered" >            verifyDirectory(options.fwdDir, 'Invalid forwarding directory');</span>
 <span class="cstat-no" title="statement not covered" >            break;</span>
 <span class="branch-2 cbranch-no" title="branch not covered" >        case 'http':</span>
-<span class="cstat-no" title="statement not covered" >            check.verify.webUrl(options.fwdUrl, 'Invalid forwarding URL');</span>
-<span class="cstat-no" title="statement not covered" >            check.verify.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');</span>
+<span class="cstat-no" title="statement not covered" >            check.assert.match(options.fwdUrl, urlRegex);</span>
+<span class="cstat-no" title="statement not covered" >            check.assert.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');</span>
 <span class="cstat-no" title="statement not covered" >            break;</span>
         default:
-            check.verify.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
-            check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
-            check.verify.maybe.positiveNumber(options.fwdSize, 'Invalid forwarding packet size');
+            check.assert.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
+            check.assert.maybe.positive(options.fwdPort, 'Invalid forwarding port');
+            check.assert.maybe.positive(options.fwdSize, 'Invalid forwarding packet size');
     }
 }
 &nbsp;
@@ -1962,7 +1859,7 @@ function verifyForwarderOptions (options) {
 <span class="cstat-no" title="statement not covered" >        return;</span>
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    check.verify.unemptyString(path, message);</span>
+<span class="cstat-no" title="statement not covered" >    check.assert.unemptyString(path, message);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (fs.existsSync(path)) {</span>
 <span class="cstat-no" title="statement not covered" >        stat = fs.statSync(path);</span>
@@ -2017,21 +1914,47 @@ signals = [
 <span class="cstat-no" title="statement not covered" >    process.exit(128 + value);</span>
 }
 &nbsp;
-function createWorkers (count, log) {
-    var i;
+function createWorkers (count, options, log) {
+    var respawnCount, respawnLimit, respawnDelay, i;
+&nbsp;
+    respawnCount = 0;
+    respawnLimit = getOption('maxRespawn', options);
+    respawnDelay = getOption('delayRespawn', options);
 &nbsp;
     cluster.on('online', <span class="fstat-no" title="function not covered" >function (worker) {</span>
-<span class="cstat-no" title="statement not covered" >        log.info('worker process ' + worker.process.pid + ' has started');</span>
+<span class="cstat-no" title="statement not covered" >        log.info('worker ' + worker.process.pid + ' started');</span>
     });
 &nbsp;
     cluster.on('exit', function (worker, code, signal) {
-        log.info('worker process ' + worker.process.pid + ' has died (' + (signal || code) + '), respawning');
-        cluster.fork();
+        var exitStatus = getExitStatus(code, signal);
+&nbsp;
+        if (worker.suicide) {
+            return log.info('worker ' + worker.process.pid + ' exited (' + exitStatus + ')');
+        }
+&nbsp;
+        respawnCount += 1;
+&nbsp;
+        if (respawnLimit &gt; 0 &amp;&amp; respawnCount &gt; respawnLimit) {
+            return log.error('exceeded respawn limit, worker ' + worker.process.pid + ' died (' + exitStatus + ')');
+        }
+&nbsp;
+        setTimeout(function () {
+            log.warn('worker ' + worker.process.pid + ' died (' + exitStatus + '), respawning');
+            cluster.fork();
+        }, respawnDelay);
     });
 &nbsp;
     for (i = 0; i &lt; count; i += 1) {
         cluster.fork();
     }
+}
+&nbsp;
+function getExitStatus (code, signal) {
+    if (check.assigned(signal)) {
+        return 'signal ' + signal;
+    }
+&nbsp;
+    return 'code ' + code;
 }
 &nbsp;
 function createServer (options, log) {
@@ -2114,7 +2037,7 @@ function getExtension (type, options, properties) {
 &nbsp;
     result = extension.initialise(options);
 &nbsp;
-    if (Array.isArray(properties)) {
+    if (check.array(properties)) {
         properties.forEach(function (property) {
             result[property] = extension[property];
         });
@@ -2253,7 +2176,7 @@ function checkLimit (limit, remoteAddress) {
     now = Date.now();
     lastRequest = limit.requests[remoteAddress];
 &nbsp;
-    if (check.positiveNumber(lastRequest) &amp;&amp; now &lt;= lastRequest + limit.time) {
+    if (check.positive(lastRequest) &amp;&amp; now &lt;= lastRequest + limit.time) {
         return false;
     }
 &nbsp;
@@ -2263,7 +2186,7 @@ function checkLimit (limit, remoteAddress) {
 }
 &nbsp;
 function getAccessControlOrigin (headers, origin) {
-    if (Array.isArray(origin)) {
+    if (check.array(origin)) {
         if (headers.origin &amp;&amp; contains(origin, headers.origin)) {
             return headers.origin;
         }
@@ -2367,12 +2290,12 @@ function normaliseRtData (data) {
     timeToLastByte = getOptionalSum(data, 't_resp', 't_page');
     timeToLoad = getOptionalDatum(data, 't_done');
 &nbsp;
-    check.verify.maybe.positiveNumber(start);
-    check.verify.maybe.positiveNumber(timeToFirstByte);
-    check.verify.maybe.positiveNumber(timeToLastByte);
-    check.verify.maybe.positiveNumber(timeToLoad);
+    check.assert.maybe.positive(start);
+    check.assert.maybe.positive(timeToFirstByte);
+    check.assert.maybe.positive(timeToLastByte);
+    check.assert.maybe.positive(timeToLoad);
 &nbsp;
-    if (check.positiveNumber(timeToFirstByte) || check.positiveNumber(timeToLastByte) || check.positiveNumber(timeToLoad)) {
+    if (check.positive(timeToFirstByte) || check.positive(timeToLastByte) || check.positive(timeToLoad)) {
         return {
             timestamps: {
                 start: start
@@ -2462,14 +2385,14 @@ function normaliseCategory (map, data, startKey) {
 &nbsp;
 function normaliseTimestamps (map, data) {
     return map.timestamps.reduce(function (result, timestamp) {
-        var value, verify;
+        var value, assert;
 &nbsp;
         if (data[timestamp.key]) {
             value = parseInt(data[timestamp.key]);
         }
 &nbsp;
-        verify = timestamp.optional ? check.verify.maybe : check.verify;
-        verify.positiveNumber(value);
+        assert = timestamp.optional ? check.assert.maybe : check.assert;
+        assert.positive(value);
 &nbsp;
         if (value) {
             result[timestamp.name] = value;
@@ -2481,18 +2404,18 @@ function normaliseTimestamps (map, data) {
 &nbsp;
 function normaliseEvents (map, data) {
     return map.events.reduce(function (result, event) {
-        var start, end, verify;
+        var start, end, assert;
 &nbsp;
         if (data[event.start] &amp;&amp; data[event.end]) {
             start = parseInt(data[event.start]);
             end = parseInt(data[event.end]);
         }
 &nbsp;
-        verify = event.optional ? check.verify.maybe : check.verify;
-        verify.number(start);
-        check.verify.not.negativeNumber(start);
-        verify.number(end);
-        check.verify.not.negativeNumber(end);
+        assert = event.optional ? check.assert.maybe : check.assert;
+        assert.number(start);
+        check.assert.not.negative(start);
+        assert.number(end);
+        check.assert.not.negative(end);
 &nbsp;
         if (check.number(start) &amp;&amp; check.number(end)) {
             result[event.name] = {
@@ -2509,15 +2432,15 @@ function normaliseDurations (map, data, startKey) {
     var start = parseInt(data[startKey]);
 &nbsp;
     return map.durations.reduce(<span class="fstat-no" title="function not covered" >function (result, duration) {</span>
-<span class="cstat-no" title="statement not covered" >        var value, verify;</span>
+<span class="cstat-no" title="statement not covered" >        var value, assert;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (data[duration.end]) {</span>
 <span class="cstat-no" title="statement not covered" >            value = parseInt(data[duration.end]) - start;</span>
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        verify = duration.optional ? check.verify.maybe : check.verify;</span>
-<span class="cstat-no" title="statement not covered" >        verify.number(value);</span>
-<span class="cstat-no" title="statement not covered" >        check.verify.not.negativeNumber(value);</span>
+<span class="cstat-no" title="statement not covered" >        assert = duration.optional ? check.assert.maybe : check.assert;</span>
+<span class="cstat-no" title="statement not covered" >        assert.number(value);</span>
+<span class="cstat-no" title="statement not covered" >        check.assert.not.negative(value);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (value) {</span>
 <span class="cstat-no" title="statement not covered" >            result[duration.name] = value;</span>
@@ -2529,7 +2452,7 @@ function normaliseDurations (map, data, startKey) {
 &nbsp;
 function normaliseRestimingData (data) {
     /*jshint camelcase:false */
-    if (Array.isArray(data.restiming)) {
+    if (check.array(data.restiming)) {
         return data.restiming.map(function (datum) {
             var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
 &nbsp;
@@ -2555,102 +2478,16 @@ function pass (log, response, status, bytes) {
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Jul 31 2014 10:52:05 GMT+0100 (BST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 09 2015 16:55:39 GMT+0000 (GMT)</div>
 </div>
-
 <script src="../prettify.js"></script>
-
-<script src="http://yui.yahooapis.com/3.6.0/build/yui/yui-min.js"></script>
 <script>
-
-    YUI().use('datatable', function (Y) {
-
-        var formatters = {
-          pct: function (o) {
-              o.className += o.record.get('classes')[o.column.key];
-              try {
-                  return o.value.toFixed(2) + '%';
-              } catch (ex) { return o.value + '%'; }
-          },
-          html: function (o) {
-              o.className += o.record.get('classes')[o.column.key];
-              return o.record.get(o.column.key + '_html');
-          }
-        },
-          defaultFormatter = function (o) {
-              o.className += o.record.get('classes')[o.column.key];
-              return o.value;
-          };
-
-        function getColumns(theadNode) {
-            var colNodes = theadNode.all('tr th'),
-                cols = [],
-                col;
-            colNodes.each(function (colNode) {
-                col = {
-                    key: colNode.getAttribute('data-col'),
-                    label: colNode.get('innerHTML') || ' ',
-                    sortable: !colNode.getAttribute('data-nosort'),
-                    className: colNode.getAttribute('class'),
-                    type: colNode.getAttribute('data-type'),
-                    allowHTML: colNode.getAttribute('data-html') === 'true' || colNode.getAttribute('data-fmt') === 'html'
-                };
-                col.formatter = formatters[colNode.getAttribute('data-fmt')] || defaultFormatter;
-                cols.push(col);
-            });
-            return cols;
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
         }
-
-        function getRowData(trNode, cols) {
-            var tdNodes = trNode.all('td'),
-                    i,
-                    row = { classes: {} },
-                    node,
-                    name;
-            for (i = 0; i < cols.length; i += 1) {
-                name = cols[i].key;
-                node = tdNodes.item(i);
-                row[name] = node.getAttribute('data-value') || node.get('innerHTML');
-                row[name + '_html'] = node.get('innerHTML');
-                row.classes[name] = node.getAttribute('class');
-                //Y.log('Name: ' + name + '; Value: ' + row[name]);
-                if (cols[i].type === 'number') { row[name] = row[name] * 1; }
-            }
-            //Y.log(row);
-            return row;
-        }
-
-        function getData(tbodyNode, cols) {
-            var data = [];
-            tbodyNode.all('tr').each(function (trNode) {
-                data.push(getRowData(trNode, cols));
-            });
-            return data;
-        }
-
-        function replaceTable(node) {
-            if (!node) { return; }
-            var cols = getColumns(node.one('thead')),
-                data = getData(node.one('tbody'), cols),
-                table,
-                parent = node.get('parentNode');
-
-            table = new Y.DataTable({
-                columns: cols,
-                data: data,
-                sortBy: 'file'
-            });
-            parent.set('innerHTML', '');
-            table.render(parent);
-        }
-
-        Y.on('domready', function () {
-            replaceTable(Y.one('div.coverage-summary table'));
-            if (typeof prettyPrint === 'function') {
-                prettyPrint();
-            }
-        });
-    });
+};
 </script>
+<script src="../sorter.js"></script>
 </body>
 </html>
