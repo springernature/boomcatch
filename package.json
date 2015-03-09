@@ -29,8 +29,8 @@
         "performance"
     ],
     "dependencies": {
-        "check-types": "2.1.x",
-        "commander": "2.1.x",
+        "check-types": "3.1.x",
+        "commander": "2.6.x",
         "get-off-my-log": "0.1.x",
         "qs": "0.6.x",
         "useragent": "2.0.x",
@@ -45,13 +45,13 @@
         "strong-fork-syslog": "1.2.x"
     },
     "devDependencies": {
-        "jshint": "2.4.x",
-        "mocha": "1.18.x",
-        "chai": "1.9.x",
+        "jshint": "2.6.x",
+        "mocha": "2.2.x",
+        "chai": "2.1.x",
         "mockery": "1.4.x",
-        "spooks": "0.5.x",
-        "istanbul": "0.2.x",
-        "jsdom": "0.10.x"
+        "spooks": "2.0.x",
+        "istanbul": "0.3.x",
+        "jsdom": "0.6.x"
     },
     "scripts": {
         "lint": "./node_modules/.bin/jshint src --config .jshintrc",

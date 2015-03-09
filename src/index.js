@@ -49,6 +49,8 @@ defaults = {
     maxRespawn: -1
 },
 
+urlRegex = /^https?:\/\/.+/,
+
 signals, normalisationMaps;
 
 /**
@@ -139,11 +141,11 @@ function verifyOptions (options) {
 function verifyOrigin (origin) {
     if (check.string(origin)) {
         if (origin !== '*' && origin !== 'null') {
-            check.assert.webUrl(origin, 'Invalid access control origin');
+            check.assert.match(origin, urlRegex);
         }
     } else if (check.array(origin)) {
         origin.forEach(function (o) {
-            check.assert.webUrl(o, 'Invalid access control origin');
+            check.assert.match(o, urlRegex);
         });
     } else if (origin) {
         throw new Error('Invalid access control origin');
@@ -177,7 +179,7 @@ function verifyForwarderOptions (options) {
             verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
             break;
         case 'http':
-            check.assert.webUrl(options.fwdUrl, 'Invalid forwarding URL');
+            check.assert.match(options.fwdUrl, urlRegex);
             check.assert.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
             break;
         default:
