@@ -42,7 +42,7 @@
         "ua-parser-js": "0.7.3"
     },
     "optionalDependencies": {
-        "rconsole": "0.2.x"
+        "strong-fork-syslog": "1.2.x"
     },
     "devDependencies": {
         "jshint": "2.4.x",

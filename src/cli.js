@@ -95,22 +95,29 @@ function getLog () {
 }
 
 function initialiseSyslog () {
-    try {
-        require('rconsole');
+    /*jshint bitwise:false */
 
-        console.set({
-            facility: cli.syslog,
-            title: 'boomcatch',
-            stdout: true,
-            stderr: true,
-            showLine: false,
-            showFile: false,
-            showTime: true
-        });
+    var syslog, logimpl;
+
+    try {
+        syslog = require('strong-fork-syslog');
+        syslog.init('boomcatch', syslog.LOG_PID | syslog.LOG_ODELAY, getFacility(syslog, cli.syslog));
+
+        logimpl = require('get-off-my-log');
+
+        return {
+            info: logimpl.initialise('boomcatch', syslog.log.bind(syslog, syslog.LOG_INFO)).info,
+            warn: logimpl.initialise('boomcatch', syslog.log.bind(syslog, syslog.LOG_WARNING)).warn,
+            error: logimpl.initialise('boomcatch', syslog.log.bind(syslog, syslog.LOG_ERROR)).error
+        };
     } catch (e) {
         console.log('Failed to initialise syslog, exiting.');
         process.exit(1);
     }
+}
+
+function getFacility (syslog, facility) {
+    return syslog['LOG_' + facility.toUpperCase()];
 }
 
 function getFallbackLog () {
