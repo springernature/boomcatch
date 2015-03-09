@@ -87,14 +87,13 @@ function runServer () {
 
 function getLog () {
     if (cli.syslog) {
-        initialiseSyslog();
-        return console;
+        return getSyslog();
     }
     
     return getFallbackLog();
 }
 
-function initialiseSyslog () {
+function getSyslog () {
     /*jshint bitwise:false */
 
     var syslog, logimpl;
