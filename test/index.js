@@ -31,6 +31,10 @@ mockery.registerAllowable(modulePath);
 mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
 mockery.registerAllowable('qs');
+mockery.registerAllowable('./lib/');
+mockery.registerAllowable('./stringify');
+mockery.registerAllowable('./utils');
+mockery.registerAllowable('./parse');
 mockery.registerAllowable('fs');
 
 process.setMaxListeners(249);
