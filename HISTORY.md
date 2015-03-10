@@ -1,5 +1,9 @@
 # History
 
+## 2.2.0
+
+* Enable HTTPS support.
+
 ## 2.1.0
 
 * Support for node.js 0.12.
