@@ -35,15 +35,19 @@ mockery.registerAllowable('./lib/');
 mockery.registerAllowable('./stringify');
 mockery.registerAllowable('./utils');
 mockery.registerAllowable('./parse');
-mockery.registerAllowable('fs');
 
-process.setMaxListeners(249);
+process.setMaxListeners(500);
 
 suite('index:', function () {
-    var log, restrict, cluster, isTooBusy;
+    var log, results, restrict, cluster, isTooBusy;
 
     setup(function () {
         log = {};
+        results = {
+            existsSync: [],
+            statSync: [],
+            readFileSync: []
+        };
         cluster = spooks.obj({
             archetype: { fork: nop, on: nop },
             log: log
@@ -53,6 +57,16 @@ suite('index:', function () {
             archetype: { createServer: nop, listen: nop },
             log: log,
             chains: { createServer: true }
+        }));
+        mockery.registerMock('https', spooks.obj({
+            archetype: { options: {}, createServer: nop, listen: nop },
+            log: log,
+            chains: { createServer: true }
+        }));
+        mockery.registerMock('fs', spooks.obj({
+            archetype: { existsSync: nop, statSync: nop, readFileSync: nop },
+            log: log,
+            results: results
         }));
         mockery.registerMock('./validators/permissive', spooks.obj({
             archetype: { initialise: nop },
@@ -194,6 +208,8 @@ suite('index:', function () {
         mockery.deregisterMock('./mappers/statsd');
         mockery.deregisterMock('./filters/unfiltered');
         mockery.deregisterMock('./validators/permissive');
+        mockery.deregisterMock('fs');
+        mockery.deregisterMock('https');
         mockery.deregisterMock('http');
         mockery.disable();
         log = undefined;
@@ -1022,6 +1038,266 @@ suite('index:', function () {
                     workers: null,
                     delayRespawn: null,
                     maxRespawn: null
+                });
+            });
+        });
+
+        test('listen throws if HTTPS PFX is not a string', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    https: true,
+                    httpsPfx: { toString: function () { return 'wibble' } },
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen does not throw if HTTPS PFX is string', function () {
+            assert.doesNotThrow(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    https: true,
+                    httpsPfx: 'wibble',
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if HTTPS private key path is not a string', function () {
+            results.existsSync[0] = true;
+            results.statSync[0] = { isFile: function () { return true; } };
+
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    https: true,
+                    httpsKey: { toString: function () { return 'wibble' } },
+                    httpsCert: 'wobble',
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if HTTPS certificate path is not a string', function () {
+            results.existsSync[0] = true;
+            results.statSync[0] = { isFile: function () { return true; } };
+
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    https: true,
+                    httpsKey: 'wibble',
+                    httpsCert: { toString: function () { return 'wobble' } },
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if HTTPS private key path is not found', function () {
+            results.existsSync[0] = false;
+            results.existsSync[1] = true;
+            results.statSync[0] = { isFile: function () { return true; } };
+
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    https: true,
+                    httpsKey: 'wibble',
+                    httpsCert: 'wobble',
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if HTTPS certificate path is not found', function () {
+            results.existsSync[0] = true;
+            results.statSync[0] = { isFile: function () { return true; } };
+            results.statSync[1] = { isFile: function () { return false; } };
+
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    https: true,
+                    httpsKey: 'wibble',
+                    httpsCert: 'wobble',
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen does not throw if HTTPS private key and certificate paths are found', function () {
+            results.existsSync[0] = true;
+            results.statSync[0] = { isFile: function () { return true; } };
+
+            assert.doesNotThrow(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    https: true,
+                    httpsKey: 'wibble',
+                    httpsCert: 'wobble',
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -3075,6 +3351,117 @@ suite('index:', function () {
                 test('request.socket.destroy was called once', function () {
                     assert.strictEqual(log.counts.destroy, 1);
                 });
+            });
+        });
+
+        suite('call listen with HTTPS PFX options:', function () {
+            setup(function () {
+                boomcatch.listen({
+                    https: true,
+                    httpsPfx: 'foo foo pfx foo',
+                    httpsPass: 'passphrase bar'
+                });
+            });
+
+            test('https.createServer was called once', function () {
+                assert.strictEqual(log.counts.createServer, 1);
+                assert.strictEqual(log.these.createServer[0], require('https'));
+            });
+
+            test('https.createServer was called correctly', function () {
+                assert.lengthOf(log.args.createServer[0], 2);
+                assert.isObject(log.args.createServer[0][0]);
+                assert.lengthOf(Object.keys(log.args.createServer[0][0]), 2);
+                assert.strictEqual(log.args.createServer[0][0].pfx, 'foo foo pfx foo');
+                assert.strictEqual(log.args.createServer[0][0].passphrase, 'passphrase bar');
+                assert.isFunction(log.args.createServer[0][1]);
+            });
+
+            test('https.listen was called once', function () {
+                assert.strictEqual(log.counts.listen, 1);
+                assert.strictEqual(log.these.listen[0], require('https'));
+            });
+
+            test('https.listen was called correctly', function () {
+                assert.lengthOf(log.args.listen[0], 2);
+                assert.strictEqual(log.args.listen[0][0], 443);
+                assert.strictEqual(log.args.listen[0][1], '0.0.0.0');
+            });
+        });
+
+        suite('call listen with HTTPS key/cert options:', function () {
+            setup(function () {
+                results.existsSync[0] = true;
+                results.statSync[0] = { isFile: function () { return true; } };
+                results.readFileSync[0] = 'first result from readFileSync';
+                results.readFileSync[1] = 'readFileSync second result';
+
+                boomcatch.listen({
+                    host: 'boomcatch.local',
+                    port: 8008,
+                    https: true,
+                    httpsKey: 'key foo',
+                    httpsCert: 'cert bar',
+                    httpsPass: 'baz passphrase'
+                });
+            });
+
+            test('fs.existsSync was called twice', function () {
+                assert.strictEqual(log.counts.existsSync, 2);
+                assert.strictEqual(log.these.existsSync[0], require('fs'));
+                assert.strictEqual(log.these.existsSync[1], require('fs'));
+            });
+
+            test('fs.existsSync was called correctly first time', function () {
+                assert.lengthOf(log.args.existsSync[0], 1);
+                assert.strictEqual(log.args.existsSync[0][0], 'key foo');
+            });
+
+            test('fs.existsSync was called correctly second time', function () {
+                assert.lengthOf(log.args.existsSync[1], 1);
+                assert.strictEqual(log.args.existsSync[1][0], 'cert bar');
+            });
+
+            test('fs.statSync was called twice', function () {
+                assert.strictEqual(log.counts.statSync, 2);
+                assert.strictEqual(log.these.statSync[0], require('fs'));
+                assert.strictEqual(log.these.statSync[1], require('fs'));
+            });
+
+            test('fs.statSync was called correctly first time', function () {
+                assert.lengthOf(log.args.statSync[0], 1);
+                assert.strictEqual(log.args.statSync[0][0], 'key foo');
+            });
+
+            test('fs.statSync was called correctly second time', function () {
+                assert.lengthOf(log.args.statSync[1], 1);
+                assert.strictEqual(log.args.statSync[1][0], 'cert bar');
+            });
+
+            test('https.createServer was called once', function () {
+                assert.strictEqual(log.counts.createServer, 1);
+                assert.strictEqual(log.these.createServer[0], require('https'));
+            });
+
+            test('https.createServer was called correctly', function () {
+                assert.lengthOf(log.args.createServer[0], 2);
+                assert.isObject(log.args.createServer[0][0]);
+                assert.lengthOf(Object.keys(log.args.createServer[0][0]), 3);
+                assert.strictEqual(log.args.createServer[0][0].key, 'first result from readFileSync');
+                assert.strictEqual(log.args.createServer[0][0].cert, 'readFileSync second result');
+                assert.strictEqual(log.args.createServer[0][0].passphrase, 'baz passphrase');
+                assert.isFunction(log.args.createServer[0][1]);
+            });
+
+            test('https.listen was called once', function () {
+                assert.strictEqual(log.counts.listen, 1);
+                assert.strictEqual(log.these.listen[0], require('https'));
+            });
+
+            test('https.listen was called correctly', function () {
+                assert.lengthOf(log.args.listen[0], 2);
+                assert.strictEqual(log.args.listen[0][0], 8008);
+                assert.strictEqual(log.args.listen[0][1], 'boomcatch.local');
             });
         });
 

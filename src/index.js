@@ -21,6 +21,7 @@
 
 var check = require('check-types'),
     http = require('http'),
+    https = require('https'),
     url = require('url'),
     qs = require('qs'),
     fs = require('fs'),
@@ -30,6 +31,7 @@ var check = require('check-types'),
 defaults = {
     host: '0.0.0.0',
     port: 80,
+    https: false,
     path: '/beacon',
     referer: /.*/,
     origin: '*',
@@ -58,14 +60,24 @@ signals, normalisationMaps;
  *
  * Forwards performance metrics calculated from Boomerang beacon requests.
  *
- * @option host {string}         HTTP host name to accept connections on. Defaults to
+ * @option host {string}         Host name to accept connections on. Defaults to
  *                               '0.0.0.0' (INADDR_ANY).
- * @option port {number}         HTTP port to accept connections on. Defaults to 80.
+ * @option port {number}         Port to accept connections on. Defaults to 80 for
+ *                               HTTP or 443 for HTTPS.
+ * @option https {boolean}       Start the server in HTTPS mode. Defaults to false.
+ * @option httpsPfx {string}     PFX/PKCX12 string containing private key, cert and
+ *                               CA certs (HTTPS only).
+ * @option httpsKey {string}     Path to private key file, ignored if `httpsPfx` is
+ *                               set (HTTPS only).
+ * @option httpsCert {string}    Path to certificate file, ignored if `httpsPfx` is
+ *                               set (HTTPS only).
+ * @option httpsPass {string}    Passphrase for `httpsPfx` or `httpsKey` options
+ *                               (HTTPS only).
  * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
- * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
+ * @option referer {regexp}      Referers to accept requests from. Defaults to `.*`.
  * @option origin {string|array} URL(s) for the Access-Control-Allow-Origin header.
- * @option limit {number}        Minimum elapsed time between requests from the same IP
- *                               address. Defaults to 0.
+ * @option limit {number}        Minimum elapsed time between requests from the same
+ *                               IP address. Defaults to 0.
  * @option maxSize {number}      Maximum body size for POST requests.
  * @option log {object}          Object with `info` and `error` log functions.
  * @option validator {string}    Validator used to accept or reject beacon requests,
@@ -75,15 +87,18 @@ signals, normalisationMaps;
  * @option mapper {string}       Data mapper used to transform data before forwarding,
  *                               loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
- * @option svgTemplate {string}  Path to alternative SVG handlebars template file (SVG mapper only).
- * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper only).
+ * @option svgTemplate {string}  Path to alternative SVG handlebars template file (SVG
+ *                               mapper only).
+ * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper
+ *                               only).
  * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
  *                               Defaults to 'udp'.
- * @option fwdHost {string}      Host name to forward mapped data to (UDP only).
- * @option fwdPort {number}      Port to forward mapped data on (UDP only).
- * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP only).
- * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
- * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
+ * @option fwdHost {string}      Host name to forward mapped data to (UDP forwarder only).
+ * @option fwdPort {number}      Port to forward mapped data on (UDP forwarder only).
+ * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP
+ *                               forwarder only).
+ * @option fwdUrl {string}       URL to forward mapped data to (HTTP forwarder only).
+ * @option fwdMethod {string}    Method to forward mapped data with (HTTP forwarder only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
  * @option delayRespawn {number} Number of milliseconds to delay respawning. Defaults to 0.
@@ -134,6 +149,7 @@ function verifyOptions (options) {
     verifyOrigin(options.origin);
     verifyLog(options.log);
 
+    verifyHttpsOptions(options);
     verifyMapperOptions(options);
     verifyForwarderOptions(options);
 }
@@ -162,35 +178,21 @@ function verifyLog (log) {
     }
 }
 
-function verifyMapperOptions (options) {
-    check.assert.maybe.unemptyString(options.mapper, 'Invalid data mapper');
-    check.assert.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
-}
+function verifyHttpsOptions (options) {
+    if (options.https) {
+        if (options.httpsPfx) {
+            check.assert.unemptyString(options.httpsPfx);
+        } else {
+            verifyFile(false, options.httpsKey, 'Invalid private key path');
+            verifyFile(false, options.httpsCert, 'Invalid certificate path');
+        }
 
-function verifyForwarderOptions (options) {
-    check.assert.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
-
-    switch (options.forwarder) {
-        case 'waterfall-svg':
-            verifyFile(options.svgTemplate, 'Invalid SVG template path');
-            verifyFile(options.svgSettings, 'Invalid SVG settings path');
-            break;
-        case 'file':
-            verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
-            break;
-        case 'http':
-            check.assert.match(options.fwdUrl, urlRegex);
-            check.assert.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
-            break;
-        default:
-            check.assert.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
-            check.assert.maybe.positive(options.fwdPort, 'Invalid forwarding port');
-            check.assert.maybe.positive(options.fwdSize, 'Invalid forwarding packet size');
+        check.assert.maybe.unemptyString(options.httpsPass);
     }
 }
 
-function verifyFile (path, message) {
-    verifyFs(true, path, 'isFile', message);
+function verifyFile (isOptional, path, message) {
+    verifyFs(isOptional, path, 'isFile', message);
 }
 
 function verifyFs (isOptional, path, method, message) {
@@ -211,6 +213,33 @@ function verifyFs (isOptional, path, method, message) {
     }
 
     throw new Error(message);
+}
+
+function verifyMapperOptions (options) {
+    check.assert.maybe.unemptyString(options.mapper, 'Invalid data mapper');
+    check.assert.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
+}
+
+function verifyForwarderOptions (options) {
+    check.assert.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
+
+    switch (options.forwarder) {
+        case 'waterfall-svg':
+            verifyFile(true, options.svgTemplate, 'Invalid SVG template path');
+            verifyFile(true, options.svgSettings, 'Invalid SVG settings path');
+            break;
+        case 'file':
+            verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
+            break;
+        case 'http':
+            check.assert.match(options.fwdUrl, urlRegex);
+            check.assert.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
+            break;
+        default:
+            check.assert.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
+            check.assert.maybe.positive(options.fwdPort, 'Invalid forwarding port');
+            check.assert.maybe.positive(options.fwdSize, 'Invalid forwarding packet size');
+    }
 }
 
 function verifyDirectory (path, message) {
@@ -299,7 +328,7 @@ function getExitStatus (code, signal) {
 }
 
 function createServer (options, log) {
-    var host, port, path;
+    var host, port, path, handler, server;
 
     host = getHost(options);
     port = getPort(options);
@@ -307,21 +336,27 @@ function createServer (options, log) {
 
     log.info('listening for ' + host + ':' + port + path);
 
-    http.createServer(
-        handleRequest.bind(
-            null,
-            log,
-            path,
-            getReferer(options),
-            getLimit(options),
-            getOrigin(options),
-            getMaxSize(options),
-            getValidator(options),
-            getFilter(options),
-            getMapper(options),
-            getForwarder(options)
-        )
-    ).listen(port, host);
+    handler = handleRequest.bind(
+        null,
+        log,
+        path,
+        getReferer(options),
+        getLimit(options),
+        getOrigin(options),
+        getMaxSize(options),
+        getValidator(options),
+        getFilter(options),
+        getMapper(options),
+        getForwarder(options)
+    );
+
+    if (options.https) {
+        server = https.createServer(getHttpsOptions(options), handler);
+    } else {
+        server = http.createServer(handler);
+    }
+
+    server.listen(port, host);
 }
 
 function getHost (options) {
@@ -329,7 +364,15 @@ function getHost (options) {
 }
 
 function getPort (options) {
-    return getOption('port', options);
+    if (options.port) {
+        return options.port;
+    }
+
+    if (options.https) {
+        return 443;
+    }
+
+    return 80;
 }
 
 function getPath (options) {
@@ -397,6 +440,21 @@ function getMapper (options) {
 
 function getForwarder (options) {
     return getExtension('forwarder', options);
+}
+
+function getHttpsOptions (options) {
+    if (options.httpsPfx) {
+        return {
+            pfx: options.httpsPfx,
+            passphrase: options.httpsPass
+        };
+    }
+
+    return {
+        key: fs.readFileSync(options.httpsKey),
+        cert: fs.readFileSync(options.httpsCert),
+        passphrase: options.httpsPass
+    };
 }
 
 function handleRequest (log, path, referer, limit, origin, maxSize, validator, filter, mapper, forwarder, request, response) {
