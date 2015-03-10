@@ -31,6 +31,7 @@ var check = require('check-types'),
 defaults = {
     host: '0.0.0.0',
     port: 80,
+    https: false,
     path: '/beacon',
     referer: /.*/,
     origin: '*',
@@ -47,22 +48,7 @@ defaults = {
     forwarder: 'udp',
     workers: 0,
     delayRespawn: 0,
-    maxRespawn: -1,
-    key: '',
-    cert: '',
-    pfx: '',
-    passphrase: '',
-    ca: [],
-    crl: [],
-    ciphers: '',
-    handshakeTimeout: 0,
-    honorCipherOrder: 0,
-    requestCert: 0,
-    rejectUnauthorized: 0,
-    NPNProtocols: [],
-    SNICallback: function() {},
-    sessionIdContext: '',
-    secureProtocol: ''
+    maxRespawn: -1
 },
 
 urlRegex = /^https?:\/\/.+/,
@@ -74,14 +60,24 @@ signals, normalisationMaps;
  *
  * Forwards performance metrics calculated from Boomerang beacon requests.
  *
- * @option host {string}         HTTP host name to accept connections on. Defaults to
+ * @option host {string}         Host name to accept connections on. Defaults to
  *                               '0.0.0.0' (INADDR_ANY).
- * @option port {number}         HTTP port to accept connections on. Defaults to 80.
+ * @option port {number}         Port to accept connections on. Defaults to 80
+ *                               for HTTP or 443 for HTTPS.
+ * @option https {boolean}       Start the server in HTTPS mode. Defaults to false.
+ * @option httpsPfx {string}     PFX/PKCX12 string containing private key, cert and
+ *                               CA certs (HTTPS only).
+ * @option httpsKey {string}     Path to private key file, ignored if `httpsPfx` is
+ *                               set (HTTPS only).
+ * @option httpsCert {string}    Path to certificate file, ignored if `httpsPfx` is
+ *                               set (HTTPS only).
+ * @option httpsPass {string}    Passphrase for `httpsPfx` or `httpsKey` options
+ *                               (HTTPS only).
  * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
- * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
+ * @option referer {regexp}      Referers to accept requests from. Defaults to `.*`.
  * @option origin {string|array} URL(s) for the Access-Control-Allow-Origin header.
- * @option limit {number}        Minimum elapsed time between requests from the same IP
- *                               address. Defaults to 0.
+ * @option limit {number}        Minimum elapsed time between requests from the same
+ *                               IP address. Defaults to 0.
  * @option maxSize {number}      Maximum body size for POST requests.
  * @option log {object}          Object with `info` and `error` log functions.
  * @option validator {string}    Validator used to accept or reject beacon requests,
@@ -91,43 +87,22 @@ signals, normalisationMaps;
  * @option mapper {string}       Data mapper used to transform data before forwarding,
  *                               loaded with `require`. Defaults to 'statsd'.
  * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
- * @option svgTemplate {string}  Path to alternative SVG handlebars template file (SVG mapper only).
- * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper only).
+ * @option svgTemplate {string}  Path to alternative SVG handlebars template file (SVG
+ *                               mapper only).
+ * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper
+ *                               only).
  * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
  *                               Defaults to 'udp'.
- * @option fwdHost {string}      Host name to forward mapped data to (UDP only).
- * @option fwdPort {number}      Port to forward mapped data on (UDP only).
- * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP only).
- * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
- * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
+ * @option fwdHost {string}      Host name to forward mapped data to (UDP forwarder only).
+ * @option fwdPort {number}      Port to forward mapped data on (UDP forwarder only).
+ * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP
+ *                               forwarder only).
+ * @option fwdUrl {string}       URL to forward mapped data to (HTTP forwarder only).
+ * @option fwdMethod {string}    Method to forward mapped data with (HTTP forwarder only).
  * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
  * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
  * @option delayRespawn {number} Number of milliseconds to delay respawning. Defaults to 0.
  * @option maxRespawn {number}   Maximum number of respawn attempts. Defaults to -1.
- * @option key {string}                    Private key for secure connection. Defaults to ''.
- * @option cert {string}                   Public key for secure connection. Defaults to ''.
- * @option pfx {string}                    String containing the private key, certificate and CA certs of the
- *                                         server in PFX or PKCS12 format. Defaults to ''.
- * @option passphrase {string}             Passphrase for the private key or pfx. Defaults to ''.
- * @option ca {array}                      Array of strings of trusted certificates in PEM format. Defaults to
- *                                         empty array.
- * @option crl {array}                     Array of strings of PEM encoded CRLs. Defaults to empty array.
- * @option ciphers {string}                String describing the ciphers to use or exclude. Defaults to
- *                                         "AES128-GCM-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH".
- * @option handshakeTimeout {milliseconds} Abort the connection if the SSL/TLS handshake does not
- *                                         finish in this many milliseconds. Defaults to 120.
- * @option honorCipherOrder {number}       Use the cipher order added with the ciphers argument. Defaults
- *                                         to 0.
- * @option requestCert {number}            If 1, the server will request a certificate from clients that connect
- *                                         and attempt to verify that certificate. Defaults to 0.
- * @option rejectUnauthorized {number}     If 1, the server will reject any connection which is not authorized
- *                                         with the list of supplied CAs. Defaults to 0.
- * @option NPNProtocols {array}            Array of possible NPN protocols. Defaults to empty array.
- * @option SNICallback {function}          Function that will be called if client supports SNI TLS extension.
- * @option sessionIdContext {string}       String containing a opaque identifier for session resumption.
- *                                         Defaults to MD5 hash value generated from command-line, otherwise,
- *                                         the default is not provided.
- * @option secureProtocol {string}         SSL method to use.
  */
 exports.listen = function (options) {
     var workers, log;
@@ -174,34 +149,9 @@ function verifyOptions (options) {
     verifyOrigin(options.origin);
     verifyLog(options.log);
 
+    verifyHttpsOptions(options);
     verifyMapperOptions(options);
     verifyForwarderOptions(options);
-
-    // Secure connection options
-    check.assert.maybe.unemptyString(options.key, 'Invalid key');
-    check.assert.maybe.unemptyString(options.cert, 'Invalid cert');
-
-    // At a minimum, key and cert are required for secure connection
-    if (check.unemptyString(options.key) && check.unemptyString(options.cert)) {
-        options.https = 1;
-    } else {
-        options.https = 0;
-    }
-
-    check.assert.maybe.unemptyString(options.pfx, 'Invalid pfx');
-    check.assert.maybe.unemptyString(options.passphrase, 'Invalid passphrase');
-    check.assert.maybe.array(options.ca, 'Invalid ca');
-    check.assert.maybe.array(options.crl, 'Invalid crl');
-    check.assert.maybe.unemptyString(options.ciphers, 'Invalid ciphers');
-    check.assert.maybe.number(options.handshakeTimeout, 'Invalid handshakeTimeout');
-    check.assert.not.negative(options.handshakeTimeout, 'Invalid handshakeTimeout');
-    check.assert.maybe.number(options.honorCipherOrder, 'Invalid honorCipherOrder');
-    check.assert.maybe.number(options.requestCert, 'Invalid requestCert');
-    check.assert.maybe.number(options.rejectUnauthorized, 'Invalid rejectUnauthorized');
-    check.assert.maybe.array(options.NPNProtocols, 'Invalid NPNProtocols');
-    check.assert.maybe.function(options.SNICallback, 'Invalid SNICallback');
-    check.assert.maybe.unemptyString(options.sessionIdContext, 'Invalid sessionIdContext');
-    check.assert.maybe.unemptyString(options.secureProtocol, 'Invalid secureProtocol');
 }
 
 function verifyOrigin (origin) {
@@ -225,6 +175,19 @@ function verifyLog (log) {
         check.assert.function(log.info, 'Invalid log.info function');
         check.assert.function(log.warn, 'Invalid log.warn function');
         check.assert.function(log.error, 'Invalid log.error function');
+    }
+}
+
+function verifyHttpsOptions (options) {
+    if (options.https) {
+        if (options.httpsPfx) {
+            check.assert.unemptyString(options.httpsPfx);
+        } else {
+            check.assert.unemptyString(options.httpsKey);
+            check.assert.unemptyString(options.httpsCert);
+        }
+
+        check.assert.maybe.unemptyString(options.httpsPass);
     }
 }
 
@@ -365,7 +328,7 @@ function getExitStatus (code, signal) {
 }
 
 function createServer (options, log) {
-    var host, port, path, request, httpsOptions, server;
+    var host, port, path, handler, server;
 
     host = getHost(options);
     port = getPort(options);
@@ -373,7 +336,7 @@ function createServer (options, log) {
 
     log.info('listening for ' + host + ':' + port + path);
 
-    request = handleRequest.bind(
+    handler = handleRequest.bind(
         null,
         log,
         path,
@@ -387,15 +350,10 @@ function createServer (options, log) {
         getForwarder(options)
     );
 
-    if (options.https === 1) {
-        httpsOptions = {
-            key: fs.readFileSync(options.key),
-            cert: fs.readFileSync(options.cert)
-        };
-
-        server = https.createServer(httpsOptions, request);
+    if (options.https) {
+        server = https.createServer(getHttpsOptions(options), handler);
     } else {
-        server = http.createServer(request);
+        server = http.createServer(handler);
     }
 
     server.listen(port, host);
@@ -474,6 +432,21 @@ function getMapper (options) {
 
 function getForwarder (options) {
     return getExtension('forwarder', options);
+}
+
+function getHttpsOptions (options) {
+    if (options.httpsPfx) {
+        return {
+            pfx: options.httpsPfx,
+            passphrase: options.httpsPass
+        };
+    }
+
+    return {
+        key: options.httpsKey,
+        cert: options.httpsCert,
+        passphrase: options.httpsPass
+    };
 }
 
 function handleRequest (log, path, referer, limit, origin, maxSize, validator, filter, mapper, forwarder, request, response) {
