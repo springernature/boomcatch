@@ -63,30 +63,30 @@ function getSettings (options) {
 }
 
 function verifySettings (settings) {
-    check.verify.positiveNumber(settings.width, 'Invalid SVG width');
-    check.verify.object(settings.offset, 'Invalid SVG offset');
-    check.verify.positiveNumber(settings.offset.x, 'Invalid SVG x offset');
-    check.verify.positiveNumber(settings.offset.x, 'Invalid SVG y offset');
-    check.verify.positiveNumber(settings.barHeight, 'Invalid SVG bar height');
-    check.verify.positiveNumber(settings.padding, 'Invalid SVG padding');
-    check.verify.array(settings.colours, 'Invalid SVG colours');
+    check.assert.positive(settings.width, 'Invalid SVG width');
+    check.assert.object(settings.offset, 'Invalid SVG offset');
+    check.assert.positive(settings.offset.x, 'Invalid SVG x offset');
+    check.assert.positive(settings.offset.x, 'Invalid SVG y offset');
+    check.assert.positive(settings.barHeight, 'Invalid SVG bar height');
+    check.assert.positive(settings.padding, 'Invalid SVG padding');
+    check.assert.array(settings.colours, 'Invalid SVG colours');
 
     if (settings.colours.length !== 6) {
         throw new Error('Incorrect number of SVG colours');
     }
 
     settings.colours.forEach(function (colour, index) {
-        check.verify.object(colour, 'Invalid SVG colour [' + index + ']');
-        check.verify.unemptyString(colour.name, 'Invalid SVG colour name [' + index + ']');
-        check.verify.unemptyString(colour.value, 'Invalid SVG colour value [' + index + ']');
-        check.verify.unemptyString(colour.fg, 'Invalid SVG foreground colour [' + index + ']');
+        check.assert.object(colour, 'Invalid SVG colour [' + index + ']');
+        check.assert.unemptyString(colour.name, 'Invalid SVG colour name [' + index + ']');
+        check.assert.unemptyString(colour.value, 'Invalid SVG colour value [' + index + ']');
+        check.assert.unemptyString(colour.fg, 'Invalid SVG foreground colour [' + index + ']');
     });
 }
 
 function map (template, settings, data, referer) {
     var resources;
 
-    if (!Array.isArray(data.restiming)) {
+    if (!check.array(data.restiming)) {
         return '';
     }
 

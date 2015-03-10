@@ -41,6 +41,8 @@ function parseCommandLine () {
         .option('-s, --silent', 'prevent the command from logging output to the console')
         .option('-y, --syslog <facility>', 'use syslog-compatible logging, with the specified facility level')
         .option('-w, --workers <count>', 'use a fixed number of worker processes to handle requests, default is -1 (one worker per CPU)', parseInt)
+        .option('-d, --delayRespawn <milliseconds>', 'length of time to delay before respawning worker processes, default is 0 (no delay)', parseInt)
+        .option('-a, --maxRespawn <count>', 'maximum number of times to respawn worker processes, default is -1 (unlimited)', parseInt)
         .option('-v, --validator <path>', 'validator to use, default is permissive')
         .option('-i, --filter <path>', 'filter to use, default is unfiltered')
         .option('-m, --mapper <path>', 'data mapper to use, default is statsd')
@@ -100,25 +102,17 @@ function runServer () {
 
 function getLog () {
     if (cli.syslog) {
-        initialiseSyslog();
-        return console;
+        return getSyslog();
     }
     
     return getFallbackLog();
 }
 
-function initialiseSyslog () {
+function getSyslog () {
     try {
-        require('rconsole');
-
-        console.set({
-            facility: cli.syslog,
-            title: 'boomcatch',
-            stdout: true,
-            stderr: true,
-            showLine: false,
-            showFile: false,
-            showTime: true
+        return new (require('ain2'))({
+            tag: 'boomcatch',
+            facility: cli.syslog
         });
     } catch (e) {
         console.log('Failed to initialise syslog, exiting.');

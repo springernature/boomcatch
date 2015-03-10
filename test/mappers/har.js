@@ -43,14 +43,16 @@ suite('mappers/har:', function () {
         useragent.lookup = spooks.fn({
             name: 'lookup',
             log: log,
-            result: {
-                toJSON: function () {
-                    log.counts.toJSON += 1;
-                    log.these.toJSON.push(this);
-                    log.args.toJSON.push(arguments);
-                    return browser;
+            results: [
+                {
+                    toJSON: function () {
+                        log.counts.toJSON += 1;
+                        log.these.toJSON.push(this);
+                        log.args.toJSON.push(arguments);
+                        return browser;
+                    }
                 }
-            }
+            ]
         });
         log.counts.toJSON = 0;
         log.these.toJSON = [];

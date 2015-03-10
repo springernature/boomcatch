@@ -19,7 +19,11 @@
 
 'use strict';
 
-var check = require('check-types'), mappers;
+var check, url, UserAgentParser, mappers;
+
+check = require('check-types');
+url = require('url');
+UserAgentParser = require('ua-parser-js');
 
 module.exports = {
     initialise: function (options) {
@@ -40,18 +44,111 @@ function normalisePrefix (prefix) {
     return '';
 }
 
-function map (prefix, data, referer) {
-    var result = '';
+function map (prefix, data, referer, userAgent) {
+    var result, refererPrefix, suffix;
+
+    result = '';
+    refererPrefix = getRefererPrefix(url.parse(referer));
+    suffix = getUserAgentSuffix(new UserAgentParser(userAgent));
 
     Object.keys(data).forEach(function (category) {
         var datum = data[category], mapper = mappers[category];
 
-        if (check.object(datum) && check.fn(mapper)) {
-            result += mapper(prefix + category + '.', datum, referer);
+        if (check.object(datum) && check.function(mapper)) {
+            result += mapper(prefix + refererPrefix + category + '.', suffix, datum);
         }
     });
 
     return result;
+}
+
+function getRefererPrefix (referer) {
+    // HACK: This function and the functions it calls are brittle and error-prone.
+    // TODO: Consider alternative methods for deriving this information, e.g. document metadata.
+    return getRefererEnvironment(referer.host) + '.' + getRefererProject(referer.pathname) + '.';
+}
+
+function getRefererEnvironment (domain) {
+    if (domain.indexOf('www.') === 0) {
+        return 'live';
+    }
+
+    if (domain.indexOf('staging-www.') === 0) {
+        return 'staging';
+    }
+
+    if (domain.indexOf('test-www.') === 0) {
+        return 'test';
+    }
+
+    return 'development';
+}
+
+function getRefererProject (path) {
+    var project;
+
+    if (!path || path === '/') {
+        return 'homepage';
+    }
+
+    project = path.substr(1);
+    if (project.indexOf('/') !== -1) {
+        project = project.substr(0, project.indexOf('/'));
+    }
+
+    return project.toLowerCase();
+}
+
+function getUserAgentSuffix (userAgent) {
+    return '.' + getUserAgentEngine(userAgent) + '.' +
+                 getUserAgentBrowser(userAgent) + '.' +
+                 getUserAgentBrowserVersion(userAgent) + '.' +
+                 getUserAgentDeviceType(userAgent) + '.' +
+                 getUserAgentDeviceVendor(userAgent) + '.' +
+                 getUserAgentOS(userAgent) + '.' +
+                 getUserAgentOSVersion(userAgent);
+}
+
+function getUserAgentEngine (userAgent) {
+    return getUserAgentComponent(userAgent, 'getEngine', 'name');
+}
+
+function getUserAgentComponent (userAgent, method, property, defaultResult) {
+    var component = userAgent[method]()[property];
+
+    if (component) {
+        return stripNonAlphanumerics(component).toLowerCase();
+    }
+
+    return defaultResult || 'unknown';
+}
+
+function stripNonAlphanumerics (string) {
+    return string.replace(/\W/g, '_');
+}
+
+function getUserAgentBrowser (userAgent) {
+    return getUserAgentComponent(userAgent, 'getBrowser', 'name');
+}
+
+function getUserAgentBrowserVersion (userAgent) {
+    return getUserAgentComponent(userAgent, 'getBrowser', 'version');
+}
+
+function getUserAgentDeviceType (userAgent) {
+    return getUserAgentComponent(userAgent, 'getDevice', 'type', 'desktop');
+}
+
+function getUserAgentDeviceVendor (userAgent) {
+    return getUserAgentComponent(userAgent, 'getDevice', 'vendor');
+}
+
+function getUserAgentOS (userAgent) {
+    return getUserAgentComponent(userAgent, 'getOS', 'name');
+}
+
+function getUserAgentOSVersion (userAgent) {
+    return getUserAgentComponent(userAgent, 'getOS', 'version');
 }
 
 mappers = {
@@ -59,30 +156,34 @@ mappers = {
     navtiming: mapNavtimingData
 };
 
-function mapRtData (prefix, data) {
-    return mapDurations(prefix, data);
+function mapRtData (prefix, suffix, data) {
+    return mapDurations(prefix, suffix, data);
 }
 
-function mapDurations (prefix, data) {
+function mapDurations (prefix, suffix, data) {
     return Object.keys(data.durations).map(function (metric) {
         var datum = data.durations[metric];
 
         if (check.number(datum)) {
-            return mapMetric(prefix, metric, datum);
+            return mapMetric(prefix, metric, suffix, datum);
         }
 
         return '';
     }).join('');
 }
 
-function mapMetric (prefix, name, value) {
-    return prefix + name + ':' + value + '|ms' + '\n';
+function mapMetric (prefix, name, suffix, value) {
+    if (value <= 0) {
+        return '';
+    }
+
+    return prefix + name + suffix + ':' + value + '|ms' + '\n';
 }
 
-function mapNavtimingData (prefix, data) {
-    return mapMetric(prefix, 'dns', data.events.dns.end - data.timestamps.start) +
-           mapMetric(prefix, 'firstbyte', data.events.response.start - data.timestamps.start) +
-           mapMetric(prefix, 'domload', data.events.domContent.start - data.timestamps.start) +
-           mapMetric(prefix, 'load', data.events.load.start - data.timestamps.start);
+function mapNavtimingData (prefix, suffix, data) {
+    return mapMetric(prefix, 'dns', suffix, data.events.dns.end - data.timestamps.start) +
+           mapMetric(prefix, 'firstbyte', suffix, data.events.response.start - data.timestamps.start) +
+           mapMetric(prefix, 'domload', suffix, data.events.domContent.start - data.timestamps.start) +
+           mapMetric(prefix, 'load', suffix, data.events.load.start - data.timestamps.start);
 }
 

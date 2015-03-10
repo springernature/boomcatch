@@ -1,5 +1,53 @@
 # History
 
+## 2.1.0
+
+* Support for node.js 0.12.
+* Update dependencies.
+* Syslog formatting change as a result of switch from rconsole to ain2.
+
+## 2.0.2
+
+* Improve logging when worker processes terminate.
+
+## 2.0.0
+
+* Add options `--delayRespawn` and `--maxRespawn`.
+* Don't respawn workers that have intentionally exited.
+* Logging tweaks.
+
+## 1.8.1
+
+* Normalise projects to lower case in the statsd-npg mapper.
+
+## 1.8.0
+
+* Remove engine version metadata from the statsd-npg data mapper.
+
+## 1.7.1
+
+* Fix broken chunking behaviour in UDP forwarder.
+* Re-use UDP sockets when chunking.
+
+## 1.7.0
+
+* Ignore zero values in statsd mappers.
+
+## 1.6.0
+
+* Modify the statsd-npg data mapper to incorporate referer and user agent information.
+
+## 1.5.2
+
+* Prevent mappers from failing requests if they return the empty string.
+
+## 1.5.1
+
+* Proper toleration of `beforeunload` beacon data.
+* Reversion of an earlier, [misguided attempt](https://github.com/nature/boomcatch/issues/33) to infer load times for `beforeunload` beacon data.
+* Add the user agent details to the log.
+* Improve accessibility in the SVG waterfall mapper.
+
 ## 1.5.0
 
 * Expose data type from mappers.

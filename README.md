@@ -7,8 +7,8 @@ beacon receiver for [boomerang].
 
 [![Build status][ci-image]][ci-status]
 
-* **boomcatch version**: *1.5.0*
-* **node.js versions**: *0.10, 0.11*
+* **boomcatch version**: *2.1.0*
+* **node.js versions**: *0.10, 0.12*
 
 ## Installation
 
@@ -93,6 +93,17 @@ Available options are:
   The number of worker processes to spawn.
   The default is -1
   (one worker per CPU).
+
+* `--delayRespawn <milliseconds>`:
+  The length of time to delay
+  before respawning worker processes.
+  The default is 0.
+
+* `--maxRespawn <count>`:
+  The maximum number of times
+  to respawn worker processes.
+  The default is -1
+  (unlimited).
 
 * `--validator <path>`:
   Validator used to accept or reject request data.

@@ -17,10 +17,9 @@
 
 'use strict';
 
-var assert, spooks, modulePath;
+var assert, modulePath;
 
 assert = require('chai').assert;
-spooks = require('spooks');
 
 modulePath = '../../src/mappers/statsd';
 
@@ -227,6 +226,30 @@ suite('mappers/statsd:', function () {
 
                 test('result was correct', function () {
                     assert.strictEqual(result, 'rt.load:10|ms\n');
+                });
+            });
+
+            suite('call mapper with zero value:', function () {
+                var result;
+
+                setup(function () {
+                    result = mapper({
+                        rt: {
+                            timestamps: {},
+                            events: {},
+                            durations: {
+                                load: 0
+                            }
+                        }
+                    });
+                });
+
+                teardown(function () {
+                    result = undefined;
+                });
+
+                test('result was correct', function () {
+                    assert.strictEqual(result, '');
                 });
             });
 

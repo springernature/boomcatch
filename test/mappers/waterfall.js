@@ -196,40 +196,40 @@ suite('mappers/waterfall:', function () {
                     test('h1 is correct', function () {
                         var h1 = document.querySelectorAll('h1');
 
-                        assert.strictEqual(h1.length, 1);
+                        assert.lengthOf(h1, 1);
                         assert.strictEqual(h1[0].innerHTML, 'baz');
                     });
 
                     test('svg seems correct', function () {
-                        assert.strictEqual(document.querySelectorAll('svg').length, 1);
-                        assert.strictEqual(document.querySelectorAll('g').length, 5);
-                        assert.strictEqual(document.querySelectorAll('svg > g').length, 2);
-                        assert.strictEqual(document.querySelectorAll('rect').length, 14);
-                        assert.strictEqual(document.querySelectorAll('text').length, 8);
-                        assert.strictEqual(document.querySelectorAll('line').length, 5);
+                        assert.lengthOf(document.querySelectorAll('svg'), 1);
+                        assert.lengthOf(document.querySelectorAll('g'), 5);
+                        assert.lengthOf(document.querySelectorAll('svg > g'), 2);
+                        assert.lengthOf(document.querySelectorAll('rect'), 14);
+                        assert.lengthOf(document.querySelectorAll('text'), 8);
+                        assert.lengthOf(document.querySelectorAll('line'), 5);
                         assert.notEqual(result.indexOf('<svg width="960px" height="98px" aria-describedby="colour-key">'), -1);
                         assert.notEqual(result.indexOf('<g transform="translate(0, 0)" data-resource="0">'), -1);
                         assert.notEqual(result.indexOf('<g transform="translate(0, 24)" data-resource="1">'), -1);
                     });
 
                     test('colour key seems correct', function () {
-                        assert.strictEqual(document.querySelectorAll('table.key').length, 1);
-                        assert.strictEqual(document.querySelectorAll('table.key th').length, 2);
-                        assert.strictEqual(document.querySelectorAll('table.key > tbody > tr').length, 6);
+                        assert.lengthOf(document.querySelectorAll('table.key'), 1);
+                        assert.lengthOf(document.querySelectorAll('table.key th'), 2);
+                        assert.lengthOf(document.querySelectorAll('table.key > tbody > tr'), 6);
                     });
 
                     test('raw data seems correct', function () {
-                        assert.strictEqual(document.querySelectorAll('[data-raw] table').length, 1);
-                        assert.strictEqual(document.querySelectorAll('[data-raw] th').length, 14);
-                        assert.strictEqual(document.querySelectorAll('[data-raw] table > tbody > tr').length, 2);
+                        assert.lengthOf(document.querySelectorAll('[data-raw] table'), 1);
+                        assert.lengthOf(document.querySelectorAll('[data-raw] th'), 14);
+                        assert.lengthOf(document.querySelectorAll('[data-raw] table > tbody > tr'), 2);
                     });
 
                     test('mouseover details seem correct', function () {
-                        assert.strictEqual(document.querySelectorAll('.resource-detail').length, 2);
-                        assert.strictEqual(document.querySelectorAll('.resource-detail .resource-type').length, 2);
-                        assert.strictEqual(document.querySelectorAll('.resource-detail .resource-start').length, 12);
-                        assert.strictEqual(document.querySelectorAll('.resource-detail .resource-duration').length, 12);
-                        assert.strictEqual(document.querySelectorAll('.resource-detail .resource-timing').length, 20);
+                        assert.lengthOf(document.querySelectorAll('.resource-detail'), 2);
+                        assert.lengthOf(document.querySelectorAll('.resource-detail .resource-type'), 2);
+                        assert.lengthOf(document.querySelectorAll('.resource-detail .resource-start'), 12);
+                        assert.lengthOf(document.querySelectorAll('.resource-detail .resource-duration'), 12);
+                        assert.lengthOf(document.querySelectorAll('.resource-detail .resource-timing'), 20);
                     });
                 });
             });

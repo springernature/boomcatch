@@ -40,7 +40,7 @@ suite('forwarders/file:', function () {
             join: spooks.fn({
                 name: 'join',
                 log: log,
-                result: 'mock path.join result'
+                results: [ 'mock path.join result' ]
             })
         });
         mockery.registerMock('fs', {

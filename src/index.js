@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals require, exports, process */
+/*globals require, exports, process, setTimeout */
 
 'use strict';
 
@@ -38,6 +38,7 @@ defaults = {
     maxSize: -1,
     log: {
         info: function () {},
+        warn: function () {},
         error: function () {}
     },
     validator: 'permissive',
@@ -45,6 +46,8 @@ defaults = {
     mapper: 'statsd',
     forwarder: 'udp',
     workers: 0,
+    delayRespawn: 0,
+    maxRespawn: -1,
     key: '',
     cert: '',
     pfx: '',
@@ -62,6 +65,8 @@ defaults = {
     secureProtocol: ''
 },
 
+urlRegex = /^https?:\/\/.+/,
+
 signals, normalisationMaps;
 
 /**
@@ -69,34 +74,36 @@ signals, normalisationMaps;
  *
  * Forwards performance metrics calculated from Boomerang beacon requests.
  *
- * @option host {string}                   HTTP host name to accept connections on. Defaults to
- *                                         '0.0.0.0' (INADDR_ANY).
- * @option port {number}                   HTTP port to accept connections on. Defaults to 80.
- * @option path {string}                   URL path to accept requests to. Defaults to '/beacon'.
- * @option referer {regexp}                HTTP referers to accept requests from. Defaults to `.*`.
- * @option origin {string|array}           URL(s) for the Access-Control-Allow-Origin header.
- * @option limit {number}                  Minimum elapsed time between requests from the same IP
- *                                         address. Defaults to 0.
- * @option maxSize {number}                Maximum body size for POST requests.
- * @option log {object}                    Object with `info` and `error` log functions.
- * @option validator {string}              Validator used to accept or reject beacon requests,
- *                                         loaded with `require`. Defaults to 'permissive'.
- * @option filter {string}                 Filter used to purge unwanted data, loaded with `require`.
- *                                         Defaults to `unfiltered`.
- * @option mapper {string}                 Data mapper used to transform data before forwarding,
- *                                         loaded with `require`. Defaults to 'statsd'.
- * @option prefix {string}                 Prefix to use for mapped metric names. Defaults to ''.
- * @option svgTemplate {string}            Path to alternative SVG handlebars template file (SVG mapper only).
- * @option svgSettings {string}            Path to alternative SVG settings JSON file (SVG mapper only).
- * @option forwarder {string}              Forwarder used to send data, loaded with `require`.
- *                                         Defaults to 'udp'.
- * @option fwdHost {string}                Host name to forward mapped data to (UDP only).
- * @option fwdPort {number}                Port to forward mapped data on (UDP only).
- * @option fwdSize {bytes}                 Maximum allowable packet size for data forwarding (UDP only).
- * @option fwdUrl {string}                 URL to forward mapped data to (HTTP only).
- * @option fwdMethod {string}              Method to forward mapped data with (HTTP only).
- * @option fwdDir {string}                 Directory to write mapped data to (file forwarder only).
- * @option workers {number}                Number of child worker processes to fork. Defaults to 0.
+ * @option host {string}         HTTP host name to accept connections on. Defaults to
+ *                               '0.0.0.0' (INADDR_ANY).
+ * @option port {number}         HTTP port to accept connections on. Defaults to 80.
+ * @option path {string}         URL path to accept requests to. Defaults to '/beacon'.
+ * @option referer {regexp}      HTTP referers to accept requests from. Defaults to `.*`.
+ * @option origin {string|array} URL(s) for the Access-Control-Allow-Origin header.
+ * @option limit {number}        Minimum elapsed time between requests from the same IP
+ *                               address. Defaults to 0.
+ * @option maxSize {number}      Maximum body size for POST requests.
+ * @option log {object}          Object with `info` and `error` log functions.
+ * @option validator {string}    Validator used to accept or reject beacon requests,
+ *                               loaded with `require`. Defaults to 'permissive'.
+ * @option filter {string}       Filter used to purge unwanted data, loaded with `require`.
+ *                               Defaults to `unfiltered`.
+ * @option mapper {string}       Data mapper used to transform data before forwarding,
+ *                               loaded with `require`. Defaults to 'statsd'.
+ * @option prefix {string}       Prefix to use for mapped metric names. Defaults to ''.
+ * @option svgTemplate {string}  Path to alternative SVG handlebars template file (SVG mapper only).
+ * @option svgSettings {string}  Path to alternative SVG settings JSON file (SVG mapper only).
+ * @option forwarder {string}    Forwarder used to send data, loaded with `require`.
+ *                               Defaults to 'udp'.
+ * @option fwdHost {string}      Host name to forward mapped data to (UDP only).
+ * @option fwdPort {number}      Port to forward mapped data on (UDP only).
+ * @option fwdSize {bytes}       Maximum allowable packet size for data forwarding (UDP only).
+ * @option fwdUrl {string}       URL to forward mapped data to (HTTP only).
+ * @option fwdMethod {string}    Method to forward mapped data with (HTTP only).
+ * @option fwdDir {string}       Directory to write mapped data to (file forwarder only).
+ * @option workers {number}      Number of child worker processes to fork. Defaults to 0.
+ * @option delayRespawn {number} Number of milliseconds to delay respawning. Defaults to 0.
+ * @option maxRespawn {number}   Maximum number of respawn attempts. Defaults to -1.
  * @option key {string}                    Private key for secure connection. Defaults to ''.
  * @option cert {string}                   Public key for secure connection. Defaults to ''.
  * @option pfx {string}                    String containing the private key, certificate and CA certs of the
@@ -142,7 +149,7 @@ exports.listen = function (options) {
         createSignalHandlers(log);
 
         if (workers > 0) {
-            return createWorkers(workers, log);
+            return createWorkers(workers, options, log);
         }
     }
 
@@ -150,15 +157,19 @@ exports.listen = function (options) {
 };
 
 function verifyOptions (options) {
-    check.verify.maybe.unemptyString(options.host, 'Invalid host');
-    check.verify.maybe.positiveNumber(options.port, 'Invalid port');
-    check.verify.maybe.unemptyString(options.path, 'Invalid path');
-    check.verify.maybe.instance(options.referer, RegExp, 'Invalid referer');
-    check.verify.maybe.positiveNumber(options.limit, 'Invalid limit');
-    check.verify.maybe.positiveNumber(options.maxSize, 'Invalid max size');
-    check.verify.maybe.unemptyString(options.validator, 'Invalid validator');
-    check.verify.maybe.number(options.workers, 'Invalid workers');
-    check.verify.not.negativeNumber(options.workers, 'Invalid workers');
+    check.assert.maybe.unemptyString(options.host, 'Invalid host');
+    check.assert.maybe.positive(options.port, 'Invalid port');
+    check.assert.maybe.unemptyString(options.path, 'Invalid path');
+    check.assert.maybe.instance(options.referer, RegExp, 'Invalid referer');
+    check.assert.maybe.positive(options.limit, 'Invalid limit');
+    check.assert.maybe.positive(options.maxSize, 'Invalid max size');
+    check.assert.maybe.unemptyString(options.validator, 'Invalid validator');
+    check.assert.maybe.unemptyString(options.filter, 'Invalid filter');
+    check.assert.maybe.number(options.workers, 'Invalid workers');
+    check.assert.not.negative(options.workers, 'Invalid workers');
+    check.assert.maybe.number(options.delayRespawn, 'Invalid worker respawn delay');
+    check.assert.not.negative(options.delayRespawn, 'Invalid worker respawn delay');
+    check.assert.maybe.number(options.maxRespawn, 'Invalid worker respawn limit');
 
     verifyOrigin(options.origin);
     verifyLog(options.log);
@@ -196,11 +207,11 @@ function verifyOptions (options) {
 function verifyOrigin (origin) {
     if (check.string(origin)) {
         if (origin !== '*' && origin !== 'null') {
-            check.verify.webUrl(origin, 'Invalid access control origin');
+            check.assert.match(origin, urlRegex);
         }
-    } else if (Array.isArray(origin)) {
+    } else if (check.array(origin)) {
         origin.forEach(function (o) {
-            check.verify.webUrl(o, 'Invalid access control origin');
+            check.assert.match(o, urlRegex);
         });
     } else if (origin) {
         throw new Error('Invalid access control origin');
@@ -208,21 +219,22 @@ function verifyOrigin (origin) {
 }
 
 function verifyLog (log) {
-    check.verify.maybe.object(log, 'Invalid log object');
+    check.assert.maybe.object(log, 'Invalid log object');
 
     if (check.object(log)) {
-        check.verify.fn(log.info, 'Invalid log.info function');
-        check.verify.fn(log.error, 'Invalid log.error function');
+        check.assert.function(log.info, 'Invalid log.info function');
+        check.assert.function(log.warn, 'Invalid log.warn function');
+        check.assert.function(log.error, 'Invalid log.error function');
     }
 }
 
 function verifyMapperOptions (options) {
-    check.verify.maybe.unemptyString(options.mapper, 'Invalid data mapper');
-    check.verify.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
+    check.assert.maybe.unemptyString(options.mapper, 'Invalid data mapper');
+    check.assert.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
 }
 
 function verifyForwarderOptions (options) {
-    check.verify.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
+    check.assert.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
 
     switch (options.forwarder) {
         case 'waterfall-svg':
@@ -233,13 +245,13 @@ function verifyForwarderOptions (options) {
             verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
             break;
         case 'http':
-            check.verify.webUrl(options.fwdUrl, 'Invalid forwarding URL');
-            check.verify.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
+            check.assert.match(options.fwdUrl, urlRegex);
+            check.assert.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
             break;
         default:
-            check.verify.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
-            check.verify.maybe.positiveNumber(options.fwdPort, 'Invalid forwarding port');
-            check.verify.maybe.positiveNumber(options.fwdSize, 'Invalid forwarding packet size');
+            check.assert.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
+            check.assert.maybe.positive(options.fwdPort, 'Invalid forwarding port');
+            check.assert.maybe.positive(options.fwdSize, 'Invalid forwarding packet size');
     }
 }
 
@@ -254,7 +266,7 @@ function verifyFs (isOptional, path, method, message) {
         return;
     }
 
-    check.verify.unemptyString(path, message);
+    check.assert.unemptyString(path, message);
 
     if (fs.existsSync(path)) {
         stat = fs.statSync(path);
@@ -309,21 +321,47 @@ function handleTerminalSignal (log, signal, value) {
     process.exit(128 + value);
 }
 
-function createWorkers (count, log) {
-    var i;
+function createWorkers (count, options, log) {
+    var respawnCount, respawnLimit, respawnDelay, i;
+
+    respawnCount = 0;
+    respawnLimit = getOption('maxRespawn', options);
+    respawnDelay = getOption('delayRespawn', options);
 
     cluster.on('online', function (worker) {
-        log.info('worker process ' + worker.process.pid + ' has started');
+        log.info('worker ' + worker.process.pid + ' started');
     });
 
     cluster.on('exit', function (worker, code, signal) {
-        log.info('worker process ' + worker.process.pid + ' has died (' + (signal || code) + '), respawning');
-        cluster.fork();
+        var exitStatus = getExitStatus(code, signal);
+
+        if (worker.suicide) {
+            return log.info('worker ' + worker.process.pid + ' exited (' + exitStatus + ')');
+        }
+
+        respawnCount += 1;
+
+        if (respawnLimit > 0 && respawnCount > respawnLimit) {
+            return log.error('exceeded respawn limit, worker ' + worker.process.pid + ' died (' + exitStatus + ')');
+        }
+
+        setTimeout(function () {
+            log.warn('worker ' + worker.process.pid + ' died (' + exitStatus + '), respawning');
+            cluster.fork();
+        }, respawnDelay);
     });
 
     for (i = 0; i < count; i += 1) {
         cluster.fork();
     }
+}
+
+function getExitStatus (code, signal) {
+    if (check.assigned(signal)) {
+        return 'signal ' + signal;
+    }
+
+    return 'code ' + code;
 }
 
 function createServer (options, log) {
@@ -417,7 +455,7 @@ function getExtension (type, options, properties) {
 
     result = extension.initialise(options);
 
-    if (Array.isArray(properties)) {
+    if (check.array(properties)) {
         properties.forEach(function (property) {
             result[property] = extension[property];
         });
@@ -467,6 +505,7 @@ function handleRequest (log, path, referer, limit, origin, maxSize, validator, f
 function logRequest (log, request) {
     log.info(
         'referer=' + (request.headers.referer || '') + ' ' +
+        'user-agent=' + request.headers['user-agent'] + ' ' +
         'address=' + request.socket.remoteAddress + '[' + (request.headers['x-forwarded-for'] || '') + ']' + ' ' +
         'method=' + request.method + ' ' +
         'url=' + request.url
@@ -555,7 +594,7 @@ function checkLimit (limit, remoteAddress) {
     now = Date.now();
     lastRequest = limit.requests[remoteAddress];
 
-    if (check.positiveNumber(lastRequest) && now <= lastRequest + limit.time) {
+    if (check.positive(lastRequest) && now <= lastRequest + limit.time) {
         return false;
     }
 
@@ -565,7 +604,7 @@ function checkLimit (limit, remoteAddress) {
 }
 
 function getAccessControlOrigin (headers, origin) {
-    if (Array.isArray(origin)) {
+    if (check.array(origin)) {
         if (headers.origin && contains(origin, headers.origin)) {
             return headers.origin;
         }
@@ -612,7 +651,7 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
 
         mappedData = mapper(filter(normaliseData(data)), referer, userAgent, remoteAddress);
         if (mappedData === '') {
-            throw null;
+            return pass(log, response, 204, 0);
         }
 
         log.info('sending ' + mappedData);
@@ -662,20 +701,19 @@ function normaliseData (data) {
 function normaliseRtData (data) {
     /*jshint camelcase:false */
 
-    var start, end, timeToFirstByte, timeToLastByte, timeToLoad;
+    var start, timeToFirstByte, timeToLastByte, timeToLoad;
 
-    start = getOptionalDatum(data, 'rt.tstart') || getOptionalDatum(data, 'rt.bstart');
-    end = getOptionalDatum(data, 'rt.end');
+    start = getOptionalDatum(data, 'rt.tstart');
     timeToFirstByte = getOptionalDatum(data, 't_resp');
     timeToLastByte = getOptionalSum(data, 't_resp', 't_page');
-    timeToLoad = getOptionalDatum(data, 't_done') || end - start;
+    timeToLoad = getOptionalDatum(data, 't_done');
 
-    if (
-        check.maybe.positiveNumber(start) &&
-        check.maybe.positiveNumber(timeToFirstByte) &&
-        check.maybe.positiveNumber(timeToLastByte) &&
-        check.positiveNumber(timeToLoad)
-    ) {
+    check.assert.maybe.positive(start);
+    check.assert.maybe.positive(timeToFirstByte);
+    check.assert.maybe.positive(timeToLastByte);
+    check.assert.maybe.positive(timeToLoad);
+
+    if (check.positive(timeToFirstByte) || check.positive(timeToLastByte) || check.positive(timeToLoad)) {
         return {
             timestamps: {
                 start: start
@@ -765,14 +803,14 @@ function normaliseCategory (map, data, startKey) {
 
 function normaliseTimestamps (map, data) {
     return map.timestamps.reduce(function (result, timestamp) {
-        var value, verify;
+        var value, assert;
 
         if (data[timestamp.key]) {
             value = parseInt(data[timestamp.key]);
         }
 
-        verify = timestamp.optional ? check.verify.maybe : check.verify;
-        verify.positiveNumber(value);
+        assert = timestamp.optional ? check.assert.maybe : check.assert;
+        assert.positive(value);
 
         if (value) {
             result[timestamp.name] = value;
@@ -784,18 +822,18 @@ function normaliseTimestamps (map, data) {
 
 function normaliseEvents (map, data) {
     return map.events.reduce(function (result, event) {
-        var start, end, verify;
+        var start, end, assert;
 
         if (data[event.start] && data[event.end]) {
             start = parseInt(data[event.start]);
             end = parseInt(data[event.end]);
         }
 
-        verify = event.optional ? check.verify.maybe : check.verify;
-        verify.number(start);
-        check.verify.not.negativeNumber(start);
-        verify.number(end);
-        check.verify.not.negativeNumber(end);
+        assert = event.optional ? check.assert.maybe : check.assert;
+        assert.number(start);
+        check.assert.not.negative(start);
+        assert.number(end);
+        check.assert.not.negative(end);
 
         if (check.number(start) && check.number(end)) {
             result[event.name] = {
@@ -812,15 +850,15 @@ function normaliseDurations (map, data, startKey) {
     var start = parseInt(data[startKey]);
 
     return map.durations.reduce(function (result, duration) {
-        var value, verify;
+        var value, assert;
 
         if (data[duration.end]) {
             value = parseInt(data[duration.end]) - start;
         }
 
-        verify = duration.optional ? check.verify.maybe : check.verify;
-        verify.number(value);
-        check.verify.not.negativeNumber(value);
+        assert = duration.optional ? check.assert.maybe : check.assert;
+        assert.number(value);
+        check.assert.not.negative(value);
 
         if (value) {
             result[duration.name] = value;
@@ -832,17 +870,24 @@ function normaliseDurations (map, data, startKey) {
 
 function normaliseRestimingData (data) {
     /*jshint camelcase:false */
-    if (Array.isArray(data.restiming)) {
-        return data.restiming.map(function (datum) {
-            var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
 
-            if (result) {
-                result.name = datum.rt_name;
-                result.type = datum.rt_in_type;
+    var result;
+
+    if (data.restiming) {
+        result = [];
+
+        Object.keys(data.restiming).forEach(function (key) {
+            var datum = normaliseCategory(normalisationMaps.restiming, data.restiming[key], 'rt_st');
+
+            if (datum) {
+                datum.name = data.restiming[key].rt_name;
+                datum.type = data.restiming[key].rt_in_type;
             }
 
-            return result;
+            result.push(datum);
         });
+
+        return result;
     }
 }
 

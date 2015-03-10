@@ -31,8 +31,13 @@ mockery.registerAllowable(modulePath);
 mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
 mockery.registerAllowable('qs');
+mockery.registerAllowable('./lib/');
+mockery.registerAllowable('./stringify');
+mockery.registerAllowable('./utils');
+mockery.registerAllowable('./parse');
+mockery.registerAllowable('fs');
 
-process.setMaxListeners(233);
+process.setMaxListeners(249);
 
 suite('index:', function () {
     var log, restrict, cluster, isTooBusy;
@@ -58,99 +63,117 @@ suite('index:', function () {
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'validator',
-                    log: log,
-                    result: true
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'validator',
+                        log: log,
+                        results: [ true ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('./filters/unfiltered', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: function (data) {
-                    log.counts.filter += 1;
-                    log.args.filter.push(arguments);
-                    log.these.filter.push(this);
-                    return data;
-                }
+                initialise: [
+                    function (data) {
+                        log.counts.filter += 1;
+                        log.args.filter.push(arguments);
+                        log.these.filter.push(this);
+                        return data;
+                    }
+                ]
             }
         }));
         mockery.registerMock('./mappers/statsd', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'mapper',
-                    log: log,
-                    result: 'default mapped data'
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'mapper',
+                        log: log,
+                        results: [ 'default mapped data' ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('./forwarders/udp', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'forwarder',
-                    log: log
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'forwarder',
+                        log: log
+                    })
+                ]
             }
         }));
         mockery.registerMock('./validators/restrictive', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: function () {
-                    log.counts.validator += 1;
-                    log.these.validator.push(this);
-                    log.args.validator.push(arguments);
-                    return !restrict;
-                }
+                initialise: [
+                    function () {
+                        log.counts.validator += 1;
+                        log.these.validator.push(this);
+                        log.args.validator.push(arguments);
+                        return !restrict;
+                    }
+                ]
             }
         }));
         mockery.registerMock('./filters/filtered', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'filter',
-                    log: log,
-                    result: {}
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'filter',
+                        log: log,
+                        results: [ {} ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('./mappers/mapper', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'mapper',
-                    log: log,
-                    result: 'alternative mapped data'
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'mapper',
+                        log: log,
+                        results: [ 'alternative mapped data' ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('./forwarders/forwarder', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'forwarder',
-                    log: log
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'forwarder',
+                        log: log
+                    })
+                ]
             }
         }));
         mockery.registerMock('./mappers/failing', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'mapper',
-                    log: log,
-                    result: ''
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'mapper',
+                        log: log,
+                        results: [ '' ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('toobusy-js', function () {
@@ -429,7 +452,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -441,21 +468,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -470,7 +484,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -481,7 +499,9 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdSize: 256,
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
-                    workers: 2
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -496,7 +516,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -508,21 +532,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -537,7 +548,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -549,21 +564,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -578,7 +580,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'baz',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -590,21 +596,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -619,7 +612,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: '100',
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -631,21 +628,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -660,7 +644,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: '1024',
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -672,26 +660,13 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
 
-        test('listen throws if log is object', function () {
+        test('listen throws if log.info is not function', function () {
             assert.throws(function () {
                 boomcatch.listen({
                     host: '127.0.0.1',
@@ -701,7 +676,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: {},
+                    log: {
+                        info: {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -713,21 +692,72 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if log.warn is not function', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: {},
+                        error: function () {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
+                });
+            });
+        });
+
+        test('listen throws if log.error is not function', function () {
+            assert.throws(function () {
+                boomcatch.listen({
+                    host: '127.0.0.1',
+                    port: 80,
+                    path: '/foo',
+                    referer: /bar/,
+                    origin: 'http://example.com/',
+                    limit: 100,
+                    maxSize: 1024,
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: {}
+                    },
+                    validator: 'restrictive',
+                    filter: 'filtered',
+                    mapper: 'mapper',
+                    prefix: 'prefix',
+                    forwarder: 'forwarder',
+                    fwdHost: '192.168.50.4',
+                    fwdPort: 8125,
+                    fwdSize: 256,
+                    fwdUrl: 'http://example.com/',
+                    fwdMethod: 'POST',
+                    workers: 2,
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -742,7 +772,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: '',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -754,21 +788,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -783,7 +804,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: '',
                     mapper: 'mapper',
@@ -795,21 +820,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -824,7 +836,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: '',
@@ -836,21 +852,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -865,7 +868,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -877,21 +884,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -906,7 +900,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -918,21 +916,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -947,7 +932,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -959,21 +948,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -988,7 +964,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -1000,21 +980,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -1029,7 +996,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -1041,21 +1012,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -1070,7 +1028,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -1082,21 +1044,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: '4',
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -1111,7 +1060,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -1123,26 +1076,13 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: -1,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
 
-        test('listen throws if key is integer', function () {
+        test('listen throws if delayRespawn is string', function () {
             assert.throws(function () {
                 boomcatch.listen({
                     host: '127.0.0.1',
@@ -1152,7 +1092,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -1164,26 +1108,13 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: 9,
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: '200',
+                    maxRespawn: -1
                 });
             });
         });
 
-        test('listen throws if cert is integer', function () {
+        test('listen throws if delayRespawn is negative number', function () {
             assert.throws(function () {
                 boomcatch.listen({
                     host: '127.0.0.1',
@@ -1193,7 +1124,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -1205,26 +1140,13 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: 9,
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
+                    delayRespawn: -1,
+                    maxRespawn: -1
                 });
             });
         });
 
-        test('listen throws if pfx is integer', function () {
+        test('listen throws if maxRespawn is string', function () {
             assert.throws(function () {
                 boomcatch.listen({
                     host: '127.0.0.1',
@@ -1234,7 +1156,11 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     origin: 'http://example.com/',
                     limit: 100,
                     maxSize: 1024,
-                    log: function () {},
+                    log: {
+                        info: function () {},
+                        warn: function () {},
+                        error: function () {}
+                    },
                     validator: 'restrictive',
                     filter: 'filtered',
                     mapper: 'mapper',
@@ -1246,677 +1172,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: 9,
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if passphrase is integer', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: 9,
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if ca is string', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: 'test',
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if ca is integer', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: 9,
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if crl is string', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: 'test',
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if crl is integer', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: 9,
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if ciphers is integer', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: 9,
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if handshakeTimeout is string', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 'test',
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if honorCipherOrder is string', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 'test',
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if requestCert is string', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 'test',
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if rejectUnauthorized is string', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 'test',
-                    NPNProtocols: [],
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if NPNProtocols is string', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: 'test',
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if NPNProtocols is integer', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: 9,
-                    SNICallback: function() {},
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if SNICallback is string', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: 'test',
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if SNICallback is integer', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: 9,
-                    sessionIdContext: '',
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if sessionIdContext is integer', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function () {},
-                    sessionIdContext: 9,
-                    secureProtocol: ''
-                });
-            });
-        });
-
-        test('listen throws if sessionIdContext is integer', function () {
-            assert.throws(function () {
-                boomcatch.listen({
-                    host: '127.0.0.1',
-                    port: 80,
-                    path: '/foo',
-                    referer: /bar/,
-                    origin: 'http://example.com/',
-                    limit: 100,
-                    maxSize: 1024,
-                    log: function () {},
-                    validator: 'restrictive',
-                    filter: 'filtered',
-                    mapper: 'mapper',
-                    prefix: 'prefix',
-                    forwarder: 'forwarder',
-                    fwdHost: '192.168.50.4',
-                    fwdPort: 8125,
-                    fwdSize: '256',
-                    fwdUrl: 'http://example.com/',
-                    fwdMethod: 'POST',
-                    workers: 2,
-                    key: '',
-                    cert: '',
-                    pfx: '',
-                    passphrase: '',
-                    ca: [],
-                    crl: [],
-                    ciphers: '',
-                    handshakeTimeout: 0,
-                    honorCipherOrder: 0,
-                    requestCert: 0,
-                    rejectUnauthorized: 0,
-                    NPNProtocols: [],
-                    SNICallback: function () {},
-                    sessionIdContext: '',
-                    secureProtocol: 9
+                    delayRespawn: 100,
+                    maxRespawn: '-1'
                 });
             });
         });
@@ -1933,6 +1190,7 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     maxSize: 1024,
                     log: {
                         info: function () {},
+                        warn: function () {},
                         error: function () {}
                     },
                     validator: 'restrictive',
@@ -1946,32 +1204,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: 'http://example.com/',
                     fwdMethod: 'POST',
                     workers: 2,
-                    key: '/path/to/key',
-                    cert: '/path/to/cert',
-                    pfx: 'key-string',
-                    passphrase: 'passphrase',
-                    ca: [
-                        "ca1",
-                        "ca2"
-                    ],
-                    crl: [
-                        "crl1",
-                        "crl2"
-                    ],
-                    ciphers: 'mock-cipher-sting',
-                    handshakeTimeout: 1,
-                    honorCipherOrder: 1,
-                    requestCert: 1,
-                    rejectUnauthorized: 1,
-                    NPNProtocols: [
-                        "protocol1",
-                        "protocol2"
-                    ],
-                    SNICallback: function() {
-                        console.log('test')
-                    },
-                    sessionIdContext: 'contextID',
-                    secureProtocol: 'SSLv3_method'
+                    delayRespawn: 100,
+                    maxRespawn: -1
                 });
             });
         });
@@ -1998,21 +1232,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     fwdUrl: null,
                     fwdMethod: null,
                     workers: null,
-                    key: null,
-                    cert: null,
-                    pfx: null,
-                    passphrase: null,
-                    ca: null,
-                    crl: null,
-                    ciphers: null,
-                    handshakeTimeout: null,
-                    honorCipherOrder: null,
-                    requestCert: null,
-                    rejectUnauthorized: null,
-                    NPNProtocols: null,
-                    SNICallback: null,
-                    sessionIdContext: null,
-                    secureProtocol: null
+                    delayRespawn: null,
+                    maxRespawn: null
                 });
             });
         });
@@ -2410,7 +1631,7 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
 
                 setup(function () {
                     request = {
-                        url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&r=wibble&nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=0&nt_red_end=0&nt_fet_st=40&nt_dns_st=50&nt_dns_end=60&nt_con_st=70&nt_con_end=80&nt_ssl_st=90&nt_req_st=100&nt_res_st=110&nt_res_end=120&nt_domloading=130&nt_domint=140&nt_domcontloaded_st=150&nt_domcontloaded_end=160&nt_domcomp=170&nt_load_st=180&nt_nav_type=foo&nt_red_cnt=0',
+                        url: '/beacon?rt.tstart=1&r=wibble&nt_nav_st=10&nt_unload_st=20&nt_unload_end=30&nt_red_st=0&nt_red_end=0&nt_fet_st=40&nt_dns_st=50&nt_dns_end=60&nt_con_st=70&nt_con_end=80&nt_ssl_st=90&nt_req_st=100&nt_res_st=110&nt_res_end=120&nt_domloading=130&nt_domint=140&nt_domcontloaded_st=150&nt_domcontloaded_end=160&nt_domcomp=170&nt_load_st=180&nt_nav_type=foo&nt_red_cnt=0',
                         method: 'GET',
                         headers: {
                             referer: 'wibble',
@@ -2841,9 +2062,7 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                     });
 
                     test('mapper was called correctly', function () {
-                        assert.lengthOf(Object.keys(log.args.mapper[0][0].rt), 4);
-                        assert.strictEqual(log.args.mapper[0][0].rt.timestamps.start, 1000);
-                        assert.strictEqual(log.args.mapper[0][0].rt.durations.load, 99000);
+                        assert.isUndefined(log.args.mapper[0][0].rt);
                     });
                 });
             });
@@ -3250,6 +2469,10 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                             name: 'info',
                             log: log
                         }),
+                        warn: spooks.fn({
+                            name: 'info',
+                            log: log
+                        }),
                         error: spooks.fn({
                             name: 'error',
                             log: log
@@ -3325,7 +2548,8 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                         headers: {
                             referer: 'foo.bar.baz.qux',
                             origin: 'http://bar',
-                            'content-type': 'application/x-www-form-urlencoded'
+                            'content-type': 'application/x-www-form-urlencoded',
+                            'user-agent': 'wibble'
                         },
                         on: spooks.fn({
                             name: 'on',
@@ -3368,7 +2592,7 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                 });
 
                 test('log.info was called correctly', function () {
-                    assert.strictEqual(log.args.info[1][0], 'referer=foo.bar.baz.qux address=foo.bar[] method=POST url=/foo/bar');
+                    assert.strictEqual(log.args.info[1][0], 'referer=foo.bar.baz.qux user-agent=wibble address=foo.bar[] method=POST url=/foo/bar');
                 });
 
                 test('request.on was called twice', function () {
@@ -5013,8 +4237,8 @@ TWL20RlpV/ePUJ8Q4hFyYch0/bhK6zBByw==\
                         assert.strictEqual(log.counts.forwarder, 0);
                     });
 
-                    test('response.setHeader was called once', function () {
-                        assert.strictEqual(log.counts.setHeader, 2);
+                    test('response.setHeader was not called', function () {
+                        assert.strictEqual(log.counts.setHeader, 1);
                     });
 
                     test('response.end was called once', function () {
@@ -5022,15 +4246,15 @@ TWL20RlpV/ePUJ8Q4hFyYch0/bhK6zBByw==\
                     });
 
                     test('response.end was called correctly', function () {
-                        assert.strictEqual(log.args.end[0][0], '{ "error": "Invalid data" }');
+                        assert.lengthOf(log.args.end[0], 0);
                     });
 
                     test('response.statusCode was set correctly', function () {
-                        assert.strictEqual(response.statusCode, 400);
+                        assert.strictEqual(response.statusCode, 204);
                     });
 
-                    test('request.socket.destroy was called once', function () {
-                        assert.strictEqual(log.counts.destroy, 1);
+                    test('request.socket.destroy was not called', function () {
+                        assert.strictEqual(log.counts.destroy, 0);
                     });
                 });
             });
@@ -5041,7 +4265,23 @@ TWL20RlpV/ePUJ8Q4hFyYch0/bhK6zBByw==\
                 cluster.isMaster = true;
 
                 boomcatch.listen({
-                    workers: 2
+                    log: {
+                        info: spooks.fn({
+                            name: 'info',
+                            log: log
+                        }),
+                        warn: spooks.fn({
+                            name: 'warn',
+                            log: log
+                        }),
+                        error: spooks.fn({
+                            name: 'error',
+                            log: log
+                        })
+                    },
+                    workers: 2,
+                    delayRespawn: 10,
+                    maxRespawn: 2
                 });
             });
 
@@ -5094,20 +4334,42 @@ TWL20RlpV/ePUJ8Q4hFyYch0/bhK6zBByw==\
                 assert.notEqual(log.args.on[0][1], log.args.on[1][1]);
             });
 
-            suite('exit worker:', function () {
+            test('log.info was called once', function () {
+                assert.strictEqual(log.counts.info, 1);
+            });
+
+            test('log.warn was not called', function () {
+                assert.strictEqual(log.counts.warn, 0);
+            });
+
+            test('log.error was not called', function () {
+                assert.strictEqual(log.counts.error, 0);
+            });
+
+            suite('kill worker:', function () {
                 var worker;
 
-                setup(function () {
+                setup(function (done) {
                     worker = {
                         process: {
                             pid: 19770610
                         }
                     };
-                    log.args.on[1][1](worker);
+                    log.args.on[1][1](worker, 77);
+                    setTimeout(done, 20);
                 });
 
                 teardown(function () {
                     worker = undefined;
+                });
+
+                test('log.warn was called once', function () {
+                    assert.strictEqual(log.counts.warn, 1);
+                });
+
+                test('log.warn was called correctly', function () {
+                    assert.lengthOf(log.args.warn[0], 1);
+                    assert.strictEqual(log.args.warn[0][0], 'worker 19770610 died (code 77), respawning');
                 });
 
                 test('cluster.fork was called once', function () {
@@ -5117,6 +4379,107 @@ TWL20RlpV/ePUJ8Q4hFyYch0/bhK6zBByw==\
                 test('cluster.fork was called correctly', function () {
                     assert.strictEqual(log.these.fork[2], cluster);
                     assert.lengthOf(log.args.fork[2], 0);
+                });
+
+                suite('kill worker:', function () {
+                    var worker;
+
+                    setup(function (done) {
+                        worker = {
+                            process: {
+                                pid: 'foo'
+                            }
+                        };
+                        log.args.on[1][1](worker, undefined, 'bar');
+                        setTimeout(done, 20);
+                    });
+
+                    teardown(function () {
+                        worker = undefined;
+                    });
+
+                    test('log.warn was called once', function () {
+                        assert.strictEqual(log.counts.warn, 2);
+                    });
+
+                    test('log.warn was called correctly', function () {
+                        assert.lengthOf(log.args.warn[1], 1);
+                        assert.strictEqual(log.args.warn[1][0], 'worker foo died (signal bar), respawning');
+                    });
+
+                    test('cluster.fork was called once', function () {
+                        assert.strictEqual(log.counts.fork, 4);
+                    });
+
+                    test('log.error was not called', function () {
+                        assert.strictEqual(log.counts.error, 0);
+                    });
+
+                    suite('kill worker:', function () {
+                        var worker;
+
+                        setup(function (done) {
+                            worker = {
+                                process: {
+                                    pid: 'wibble'
+                                }
+                            };
+                            log.args.on[1][1](worker, undefined, 'woo');
+                            setTimeout(done, 20);
+                        });
+
+                        teardown(function () {
+                            worker = undefined;
+                        });
+
+                        test('log.warn was not called', function () {
+                            assert.strictEqual(log.counts.warn, 2);
+                        });
+
+                        test('log.error was called once', function () {
+                            assert.strictEqual(log.counts.error, 1);
+                        });
+
+                        test('log.error was called correctly', function () {
+                            assert.lengthOf(log.args.error[0], 1);
+                            assert.strictEqual(log.args.error[0][0], 'exceeded respawn limit, worker wibble died (signal woo)');
+                        });
+
+                        test('cluster.fork was not called', function () {
+                            assert.strictEqual(log.counts.fork, 4);
+                        });
+                    });
+                });
+            });
+
+            suite('exit worker:', function () {
+                var worker;
+
+                setup(function () {
+                    worker = {
+                        process: {
+                            pid: 1
+                        },
+                        suicide: true
+                    };
+                    log.args.on[1][1](worker, null, 3);
+                });
+
+                teardown(function () {
+                    worker = undefined;
+                });
+
+                test('log.info was called once', function () {
+                    assert.strictEqual(log.counts.info, 2);
+                });
+
+                test('log.info was called correctly', function () {
+                    assert.lengthOf(log.args.info[1], 1);
+                    assert.strictEqual(log.args.info[1][0], 'worker 1 exited (signal 3)');
+                });
+
+                test('cluster.fork was not called', function () {
+                    assert.strictEqual(log.counts.fork, 2);
                 });
             });
         });
