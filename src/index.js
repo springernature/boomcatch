@@ -62,8 +62,8 @@ signals, normalisationMaps;
  *
  * @option host {string}         Host name to accept connections on. Defaults to
  *                               '0.0.0.0' (INADDR_ANY).
- * @option port {number}         Port to accept connections on. Defaults to 80
- *                               for HTTP or 443 for HTTPS.
+ * @option port {number}         Port to accept connections on. Defaults to 80 for
+ *                               HTTP or 443 for HTTPS.
  * @option https {boolean}       Start the server in HTTPS mode. Defaults to false.
  * @option httpsPfx {string}     PFX/PKCX12 string containing private key, cert and
  *                               CA certs (HTTPS only).
