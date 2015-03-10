@@ -31,6 +31,10 @@ mockery.registerAllowable(modulePath);
 mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
 mockery.registerAllowable('qs');
+mockery.registerAllowable('./lib/');
+mockery.registerAllowable('./stringify');
+mockery.registerAllowable('./utils');
+mockery.registerAllowable('./parse');
 mockery.registerAllowable('fs');
 
 process.setMaxListeners(249);
@@ -54,99 +58,117 @@ suite('index:', function () {
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'validator',
-                    log: log,
-                    result: true
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'validator',
+                        log: log,
+                        results: [ true ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('./filters/unfiltered', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: function (data) {
-                    log.counts.filter += 1;
-                    log.args.filter.push(arguments);
-                    log.these.filter.push(this);
-                    return data;
-                }
+                initialise: [
+                    function (data) {
+                        log.counts.filter += 1;
+                        log.args.filter.push(arguments);
+                        log.these.filter.push(this);
+                        return data;
+                    }
+                ]
             }
         }));
         mockery.registerMock('./mappers/statsd', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'mapper',
-                    log: log,
-                    result: 'default mapped data'
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'mapper',
+                        log: log,
+                        results: [ 'default mapped data' ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('./forwarders/udp', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'forwarder',
-                    log: log
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'forwarder',
+                        log: log
+                    })
+                ]
             }
         }));
         mockery.registerMock('./validators/restrictive', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: function () {
-                    log.counts.validator += 1;
-                    log.these.validator.push(this);
-                    log.args.validator.push(arguments);
-                    return !restrict;
-                }
+                initialise: [
+                    function () {
+                        log.counts.validator += 1;
+                        log.these.validator.push(this);
+                        log.args.validator.push(arguments);
+                        return !restrict;
+                    }
+                ]
             }
         }));
         mockery.registerMock('./filters/filtered', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'filter',
-                    log: log,
-                    result: {}
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'filter',
+                        log: log,
+                        results: [ {} ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('./mappers/mapper', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'mapper',
-                    log: log,
-                    result: 'alternative mapped data'
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'mapper',
+                        log: log,
+                        results: [ 'alternative mapped data' ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('./forwarders/forwarder', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'forwarder',
-                    log: log
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'forwarder',
+                        log: log
+                    })
+                ]
             }
         }));
         mockery.registerMock('./mappers/failing', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
-                initialise: spooks.fn({
-                    name: 'mapper',
-                    log: log,
-                    result: ''
-                })
+                initialise: [
+                    spooks.fn({
+                        name: 'mapper',
+                        log: log,
+                        results: [ '' ]
+                    })
+                ]
             }
         }));
         mockery.registerMock('toobusy-js', function () {

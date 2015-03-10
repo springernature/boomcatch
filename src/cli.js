@@ -87,25 +87,17 @@ function runServer () {
 
 function getLog () {
     if (cli.syslog) {
-        initialiseSyslog();
-        return console;
+        return getSyslog();
     }
     
     return getFallbackLog();
 }
 
-function initialiseSyslog () {
+function getSyslog () {
     try {
-        require('rconsole');
-
-        console.set({
-            facility: cli.syslog,
-            title: 'boomcatch',
-            stdout: true,
-            stderr: true,
-            showLine: false,
-            showFile: false,
-            showTime: true
+        return new (require('ain2'))({
+            tag: 'boomcatch',
+            facility: cli.syslog
         });
     } catch (e) {
         console.log('Failed to initialise syslog, exiting.');

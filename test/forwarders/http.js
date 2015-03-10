@@ -56,21 +56,21 @@ suite('forwarders/http:', function () {
             stringify: spooks.fn({
                 name: 'stringify',
                 log: log,
-                result: 'stringify result'
+                results: [ 'stringify result' ]
             })
         });
         mockery.registerMock('http', {
             request: spooks.fn({
                 name: 'http',
                 log: log,
-                result: request
+                results: [ request ]
             })
         });
         mockery.registerMock('https', {
             request: spooks.fn({
                 name: 'https',
                 log: log,
-                result: request
+                results: [ request ]
             })
         });
     });
