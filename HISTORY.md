@@ -1,5 +1,11 @@
 # History
 
+## 2.1.0
+
+* Support for node.js 0.12.
+* Update dependencies.
+* Syslog formatting change as a result of switch from rconsole to ain2.
+
 ## 2.0.2
 
 * Improve logging when worker processes terminate.
