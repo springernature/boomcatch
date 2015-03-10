@@ -793,17 +793,24 @@ function normaliseDurations (map, data, startKey) {
 
 function normaliseRestimingData (data) {
     /*jshint camelcase:false */
-    if (check.array(data.restiming)) {
-        return data.restiming.map(function (datum) {
-            var result = normaliseCategory(normalisationMaps.restiming, datum, 'rt_st');
 
-            if (result) {
-                result.name = datum.rt_name;
-                result.type = datum.rt_in_type;
+    var result;
+
+    if (data.restiming) {
+        result = [];
+
+        Object.keys(data.restiming).forEach(function (key) {
+            var datum = normaliseCategory(normalisationMaps.restiming, data.restiming[key], 'rt_st');
+
+            if (datum) {
+                datum.name = data.restiming[key].rt_name;
+                datum.type = data.restiming[key].rt_in_type;
             }
 
-            return result;
+            result.push(datum);
         });
+
+        return result;
     }
 }
 
