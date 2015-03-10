@@ -35,7 +35,6 @@ mockery.registerAllowable('./lib/');
 mockery.registerAllowable('./stringify');
 mockery.registerAllowable('./utils');
 mockery.registerAllowable('./parse');
-mockery.registerAllowable('fs');
 
 process.setMaxListeners(500);
 
