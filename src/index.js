@@ -178,8 +178,8 @@ function verifyOptions (options) {
     verifyForwarderOptions(options);
 
     // Secure connection options
-    check.verify.maybe.unemptyString(options.key, 'Invalid key');
-    check.verify.maybe.unemptyString(options.cert, 'Invalid cert');
+    check.assert.maybe.unemptyString(options.key, 'Invalid key');
+    check.assert.maybe.unemptyString(options.cert, 'Invalid cert');
 
     // At a minimum, key and cert are required for secure connection
     if (check.unemptyString(options.key) && check.unemptyString(options.cert)) {
@@ -188,20 +188,20 @@ function verifyOptions (options) {
         options.https = 0;
     }
 
-    check.verify.maybe.unemptyString(options.pfx, 'Invalid pfx');
-    check.verify.maybe.unemptyString(options.passphrase, 'Invalid passphrase');
-    check.verify.maybe.array(options.ca, 'Invalid ca');
-    check.verify.maybe.array(options.crl, 'Invalid crl');
-    check.verify.maybe.unemptyString(options.ciphers, 'Invalid ciphers');
-    check.verify.maybe.number(options.handshakeTimeout, 'Invalid handshakeTimeout');
-    check.verify.not.negativeNumber(options.handshakeTimeout, 'Invalid handshakeTimeout');
-    check.verify.maybe.number(options.honorCipherOrder, 'Invalid honorCipherOrder');
-    check.verify.maybe.number(options.requestCert, 'Invalid requestCert');
-    check.verify.maybe.number(options.rejectUnauthorized, 'Invalid rejectUnauthorized');
-    check.verify.maybe.array(options.NPNProtocols, 'Invalid NPNProtocols');
-    check.verify.maybe.fn(options.SNICallback, 'Invalid SNICallback');
-    check.verify.maybe.unemptyString(options.sessionIdContext, 'Invalid sessionIdContext');
-    check.verify.maybe.unemptyString(options.secureProtocol, 'Invalid secureProtocol');
+    check.assert.maybe.unemptyString(options.pfx, 'Invalid pfx');
+    check.assert.maybe.unemptyString(options.passphrase, 'Invalid passphrase');
+    check.assert.maybe.array(options.ca, 'Invalid ca');
+    check.assert.maybe.array(options.crl, 'Invalid crl');
+    check.assert.maybe.unemptyString(options.ciphers, 'Invalid ciphers');
+    check.assert.maybe.number(options.handshakeTimeout, 'Invalid handshakeTimeout');
+    check.assert.not.negative(options.handshakeTimeout, 'Invalid handshakeTimeout');
+    check.assert.maybe.number(options.honorCipherOrder, 'Invalid honorCipherOrder');
+    check.assert.maybe.number(options.requestCert, 'Invalid requestCert');
+    check.assert.maybe.number(options.rejectUnauthorized, 'Invalid rejectUnauthorized');
+    check.assert.maybe.array(options.NPNProtocols, 'Invalid NPNProtocols');
+    check.assert.maybe.function(options.SNICallback, 'Invalid SNICallback');
+    check.assert.maybe.unemptyString(options.sessionIdContext, 'Invalid sessionIdContext');
+    check.assert.maybe.unemptyString(options.secureProtocol, 'Invalid secureProtocol');
 }
 
 function verifyOrigin (origin) {

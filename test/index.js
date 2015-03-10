@@ -37,7 +37,7 @@ mockery.registerAllowable('./utils');
 mockery.registerAllowable('./parse');
 mockery.registerAllowable('fs');
 
-process.setMaxListeners(249);
+process.setMaxListeners(500);
 
 suite('index:', function () {
     var log, restrict, cluster, isTooBusy;
@@ -3305,6 +3305,10 @@ ee8f b239 5857 f52e 5ca0 3031 3021 3009\
                             name: 'info',
                             log: log
                         }),
+                        warn: spooks.fn({
+                            name: 'info',
+                            log: log
+                        }),
                         error: spooks.fn({
                             name: 'error',
                             log: log
@@ -3476,7 +3480,7 @@ TWL20RlpV/ePUJ8Q4hFyYch0/bhK6zBByw==\
                 });
 
                 test('log.info was called correctly', function () {
-                    assert.strictEqual(log.args.info[1][0], 'referer=foo.bar.baz.qux address=foo.bar[] method=POST url=/foo/bar');
+                    assert.strictEqual(log.args.info[1][0], 'referer=foo.bar.baz.qux user-agent=undefined address=foo.bar[] method=POST url=/foo/bar');
                 });
 
                 test('request.on was called twice', function () {
