@@ -183,43 +183,16 @@ function verifyHttpsOptions (options) {
         if (options.httpsPfx) {
             check.assert.unemptyString(options.httpsPfx);
         } else {
-            check.assert.unemptyString(options.httpsKey);
-            check.assert.unemptyString(options.httpsCert);
+            verifyFile(false, options.httpsKey, 'Invalid private key path');
+            verifyFile(false, options.httpsCert, 'Invalid certificate path');
         }
 
         check.assert.maybe.unemptyString(options.httpsPass);
     }
 }
 
-function verifyMapperOptions (options) {
-    check.assert.maybe.unemptyString(options.mapper, 'Invalid data mapper');
-    check.assert.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
-}
-
-function verifyForwarderOptions (options) {
-    check.assert.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
-
-    switch (options.forwarder) {
-        case 'waterfall-svg':
-            verifyFile(options.svgTemplate, 'Invalid SVG template path');
-            verifyFile(options.svgSettings, 'Invalid SVG settings path');
-            break;
-        case 'file':
-            verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
-            break;
-        case 'http':
-            check.assert.match(options.fwdUrl, urlRegex);
-            check.assert.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
-            break;
-        default:
-            check.assert.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
-            check.assert.maybe.positive(options.fwdPort, 'Invalid forwarding port');
-            check.assert.maybe.positive(options.fwdSize, 'Invalid forwarding packet size');
-    }
-}
-
-function verifyFile (path, message) {
-    verifyFs(true, path, 'isFile', message);
+function verifyFile (isOptional, path, message) {
+    verifyFs(isOptional, path, 'isFile', message);
 }
 
 function verifyFs (isOptional, path, method, message) {
@@ -240,6 +213,33 @@ function verifyFs (isOptional, path, method, message) {
     }
 
     throw new Error(message);
+}
+
+function verifyMapperOptions (options) {
+    check.assert.maybe.unemptyString(options.mapper, 'Invalid data mapper');
+    check.assert.maybe.unemptyString(options.prefix, 'Invalid metric prefix');
+}
+
+function verifyForwarderOptions (options) {
+    check.assert.maybe.unemptyString(options.forwarder, 'Invalid forwarder');
+
+    switch (options.forwarder) {
+        case 'waterfall-svg':
+            verifyFile(true, options.svgTemplate, 'Invalid SVG template path');
+            verifyFile(true, options.svgSettings, 'Invalid SVG settings path');
+            break;
+        case 'file':
+            verifyDirectory(options.fwdDir, 'Invalid forwarding directory');
+            break;
+        case 'http':
+            check.assert.match(options.fwdUrl, urlRegex);
+            check.assert.maybe.unemptyString(options.fwdMethod, 'Invalid forwarding method');
+            break;
+        default:
+            check.assert.maybe.unemptyString(options.fwdHost, 'Invalid forwarding host');
+            check.assert.maybe.positive(options.fwdPort, 'Invalid forwarding port');
+            check.assert.maybe.positive(options.fwdSize, 'Invalid forwarding packet size');
+    }
 }
 
 function verifyDirectory (path, message) {
@@ -451,8 +451,8 @@ function getHttpsOptions (options) {
     }
 
     return {
-        key: options.httpsKey,
-        cert: options.httpsCert,
+        key: fs.readFileSync(options.httpsKey),
+        cert: fs.readFileSync(options.httpsCert),
         passphrase: options.httpsPass
     };
 }
