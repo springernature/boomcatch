@@ -364,7 +364,15 @@ function getHost (options) {
 }
 
 function getPort (options) {
-    return getOption('port', options);
+    if (options.port) {
+        return options.port;
+    }
+
+    if (options.https) {
+        return 443;
+    }
+
+    return 80;
 }
 
 function getPath (options) {
