@@ -37,7 +37,7 @@ function parseCommandLine () {
         .option('-x, --httpsPfx <string>', 'PFX/PKCX12 string containing private key, certificate and CA certs (HTTPS only)')
         .option('-k, --httpsKey <path>', 'path to private key file, ignored if --httpsPfx is set (HTTPS only)')
         .option('-c, --httpsCert <path>', 'path to certificate file, ignored if --httpsPfx is set (HTTPS only)')
-        .option('-e, --httpsPass <string>', 'passphrase for --httpsPfx and --httpsKey options (HTTPS only)')
+        .option('-e, --httpsPass <string>', 'passphrase for --httpsPfx or --httpsKey options (HTTPS only)')
         .option('-u, --path <path>', 'URL path to accept requests to, default is /beacon')
         .option('-r, --referer <regex>', 'referers to accept requests from, default is .*', parseRegExp)
         .option('-o, --origin <origin>', 'URL(s) for the Access-Control-Allow-Origin header, default is * (any origin), specify null to force same origin', parseOrigin)

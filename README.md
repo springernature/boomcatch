@@ -55,7 +55,34 @@ Available options are:
 
 * `--port <port>`:
   Port to accept HTTP connections on.
-  The default is 80.
+  Defaults to
+  80 for HTTP or
+  443 for HTTPS.
+
+* `--https`:
+  Start the server
+  in HTTPS mode.
+
+* `--httpsPfx`:
+  PFX/PKCX12 string
+  containing the private key,
+  certificate and
+  CA certs
+  for HTTPS mode.
+
+* `--httpsKey`:
+  Path to private key file
+  for HTTPS mode.
+  Ignored if `--httpsPfx` is set.
+
+* `--httpsCert`:
+  Path to certificate file
+  for HTTPS mode.
+  Ignored if `--httpsPfx` is set.
+
+* `--httpsPass`:
+  Passphrase for
+  `--httpsPfx` or `--httpsKey` options.
 
 * `--path <path>`:
   URL path to accept requests to.
@@ -168,7 +195,11 @@ var path = require('path'),
 
 boomcatch.listen({
     host: 'rum.example.com',                  // Defaults to '0.0.0.0' (INADDR_ANY)
-    port: 8080,                               // Defaults to 80
+    port: 8080,                               // Defaults to 80 for HTTP or 443 for HTTPS
+    https: true,                              // Defaults to false
+    httpsKey: 'foo.key',
+    httpsCert: 'bar.cert',
+    httpsPass: 'baz',
     path: '/perf',                            // Defaults to '/beacon'
     referer: /^\w+\.example\.com$/,           // Defaults to /.*/
     origin: [                                 // Defaults to '*'
