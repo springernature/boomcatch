@@ -53,6 +53,25 @@ defaults = {
 
 urlRegex = /^https?:\/\/.+/,
 
+tlsCiphers = [
+    'ECDHE-RSA-AES256-SHA384',
+    'DHE-RSA-AES256-SHA384',
+    'ECDHE-RSA-AES256-SHA256',
+    'DHE-RSA-AES256-SHA256',
+    'ECDHE-RSA-AES128-SHA256',
+    'DHE-RSA-AES128-SHA256',
+    'HIGH',
+    '!aNULL',
+    '!eNULL',
+    '!EXPORT',
+    '!DES',
+    '!RC4',
+    '!MD5',
+    '!PSK',
+    '!SRP',
+    '!CAMELLIA'
+].join(':'),
+
 signals, normalisationMaps;
 
 /**
@@ -446,14 +465,18 @@ function getHttpsOptions (options) {
     if (options.httpsPfx) {
         return {
             pfx: options.httpsPfx,
-            passphrase: options.httpsPass
+            passphrase: options.httpsPass,
+            ciphers: tlsCiphers,
+            honorCipherOrder: true
         };
     }
 
     return {
         key: fs.readFileSync(options.httpsKey),
         cert: fs.readFileSync(options.httpsCert),
-        passphrase: options.httpsPass
+        passphrase: options.httpsPass,
+        ciphers: tlsCiphers,
+        honorCipherOrder: true
     };
 }
 

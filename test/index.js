@@ -3371,9 +3371,11 @@ suite('index:', function () {
             test('https.createServer was called correctly', function () {
                 assert.lengthOf(log.args.createServer[0], 2);
                 assert.isObject(log.args.createServer[0][0]);
-                assert.lengthOf(Object.keys(log.args.createServer[0][0]), 2);
+                assert.lengthOf(Object.keys(log.args.createServer[0][0]), 4);
                 assert.strictEqual(log.args.createServer[0][0].pfx, 'foo foo pfx foo');
                 assert.strictEqual(log.args.createServer[0][0].passphrase, 'passphrase bar');
+                assert.strictEqual(log.args.createServer[0][0].ciphers, 'ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA');
+                assert.isTrue(log.args.createServer[0][0].honorCipherOrder);
                 assert.isFunction(log.args.createServer[0][1]);
             });
 
@@ -3446,10 +3448,12 @@ suite('index:', function () {
             test('https.createServer was called correctly', function () {
                 assert.lengthOf(log.args.createServer[0], 2);
                 assert.isObject(log.args.createServer[0][0]);
-                assert.lengthOf(Object.keys(log.args.createServer[0][0]), 3);
+                assert.lengthOf(Object.keys(log.args.createServer[0][0]), 5);
                 assert.strictEqual(log.args.createServer[0][0].key, 'first result from readFileSync');
                 assert.strictEqual(log.args.createServer[0][0].cert, 'readFileSync second result');
                 assert.strictEqual(log.args.createServer[0][0].passphrase, 'baz passphrase');
+                assert.strictEqual(log.args.createServer[0][0].ciphers, 'ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA');
+                assert.isTrue(log.args.createServer[0][0].honorCipherOrder);
                 assert.isFunction(log.args.createServer[0][1]);
             });
 
