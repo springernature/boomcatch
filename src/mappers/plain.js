@@ -19,8 +19,7 @@
 
 'use strict';
 
-var packageInfo = require('../../package.json'),
-    useragent = require('useragent');
+var useragent = require('useragent');
 
 module.exports = {
     initialise: function (/*options*/) {

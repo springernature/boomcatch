@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals exports */
+/*globals exports, require */
 
 'use strict';
 var check = require('check-types');
@@ -75,17 +75,6 @@ function getOptionalSum (data, aKey, bKey) {
     }
 }
 
-function normaliseNavtimingData (data) {
-    /*jshint camelcase:false */
-    var result = normaliseCategory(normalisationMaps.navtiming, data, 'nt_nav_st');
-
-    if (result) {
-        result.type = data.nt_nav_type;
-    }
-
-    return result;
-}
-
 var normalisationMaps = {
     navtiming: {
         timestamps: [
@@ -123,6 +112,17 @@ var normalisationMaps = {
         durations: []
     }
 };
+
+function normaliseNavtimingData (data) {
+    /*jshint camelcase:false */
+    var result = normaliseCategory(normalisationMaps.navtiming, data, 'nt_nav_st');
+
+    if (result) {
+        result.type = data.nt_nav_type;
+    }
+
+    return result;
+}
 
 function normaliseCategory (map, data, startKey) {
     try {

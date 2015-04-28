@@ -72,7 +72,7 @@ tlsCiphers = [
     '!CAMELLIA'
 ].join(':'),
 
-signals, normalisationMaps;
+signals;
 
 /**
  * Public function `listen`.
