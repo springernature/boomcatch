@@ -1,8 +1,12 @@
 # History
 
+## 2.2.1
+
+* Remove arbitrary limit on the number of POST request body parameters (thanks @emaV).
+
 ## 2.2.0
 
-* Enable HTTPS support.
+* Enable HTTPS support (thanks @tollmanz).
 
 ## 2.1.0
 
