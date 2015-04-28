@@ -690,7 +690,7 @@ function parseData (request, state) {
         return JSON.parse(state.body);
     }
 
-    return qs.parse(state.body, {parameterLimit: 10000});
+    return qs.parse(state.body, { parameterLimit: Infinity });
 }
 
 function normaliseData (data) {
