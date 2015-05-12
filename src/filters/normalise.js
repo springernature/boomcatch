@@ -18,6 +18,7 @@
 /*globals exports, require */
 
 'use strict';
+
 var check = require('check-types');
 
 exports.initialise = function () {
