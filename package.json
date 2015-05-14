@@ -29,33 +29,32 @@
         "performance"
     ],
     "dependencies": {
-        "check-types": "3.1.x",
-        "commander": "2.6.x",
-        "get-off-my-log": "0.1.x",
-        "qs": "2.3.x",
-        "useragent": "2.1.x",
-        "yamlparser": "0.0.x",
-        "request": "2.53.x",
-        "node-uuid": "1.4.x",
-        "toobusy-js": "0.4.x",
-        "handlebars": "3.0.x",
-        "ua-parser-js": "0.7.x"
+        "check-types": "~3.2",
+        "commander": "~2.8",
+        "get-off-my-log": "~0.1",
+        "qs": "~2.4",
+        "useragent": "~2.1",
+        "yamlparser": "~0.0",
+        "request": "~2.55",
+        "node-uuid": "~1.4",
+        "toobusy-js": "~0.4",
+        "handlebars": "~3.0",
+        "ua-parser-js": "~0.7"
     },
     "optionalDependencies": {
-        "ain2": "1.5.x"
+        "ain2": "~1.5"
     },
     "devDependencies": {
-        "jshint": "2.6.x",
-        "mocha": "2.2.x",
-        "chai": "2.1.x",
-        "mockery": "1.4.x",
-        "spooks": "2.0.x",
-        "istanbul": "0.3.x",
-        "jsdom": "1.5.x"
+        "jshint": "~2.6",
+        "mocha": "~2.2",
+        "chai": "~2.3",
+        "mockery": "~1.4",
+        "spooks": "~2.0",
+        "jsdom": "~1.5"
     },
     "scripts": {
-        "lint": "./node_modules/.bin/jshint src --config .jshintrc",
-        "test": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --ui tdd --reporter spec --recursive --colors test"
+        "lint": "jshint src --config .jshintrc",
+        "test": "mocha --ui tdd --reporter spec --recursive --colors test"
     }
 }
 
