@@ -43,7 +43,7 @@ defaults = {
         error: function () {}
     },
     validator: 'permissive',
-    filter: 'normalise',
+    filter: 'unfiltered',
     mapper: 'statsd',
     forwarder: 'udp',
     workers: 0,

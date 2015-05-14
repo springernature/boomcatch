@@ -23,7 +23,8 @@ var packageInfo = require('../../package.json'),
     check = require('check-types'),
     useragent = require('useragent'),
     url = require('url'),
-    querystring = require('querystring');
+    querystring = require('querystring'),
+    normalise = require('../normalise');
 
 module.exports = {
     initialise: function (/*options*/) {
@@ -36,6 +37,9 @@ module.exports = {
 };
 
 function map (data, referer, userAgent) {
+    // HACK: Until mappers are changed to work on the raw data, issue #55.
+    data = normalise(data);
+
     if (!data.navtiming || !data.restiming) {
         return '';
     }

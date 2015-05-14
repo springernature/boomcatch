@@ -15,17 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
-/*globals exports, require */
+/*globals module, require */
 
 'use strict';
 
 var check = require('check-types');
 
-exports.initialise = function () {
-    return function (data) { return normaliseData (data); };
-};
+module.exports = normalise;
 
-function normaliseData (data) {
+function normalise (data) {
     return {
         rt: normaliseRtData(data),
         navtiming: normaliseNavtimingData(data),

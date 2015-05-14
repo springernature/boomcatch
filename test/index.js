@@ -81,7 +81,7 @@ suite('index:', function () {
                 ]
             }
         }));
-        mockery.registerMock('./filters/normalise', spooks.obj({
+        mockery.registerMock('./filters/unfiltered', spooks.obj({
             archetype: { initialise: nop },
             log: log,
             results: {
@@ -206,7 +206,7 @@ suite('index:', function () {
         mockery.deregisterMock('./validators/restrictive');
         mockery.deregisterMock('./forwarders/udp');
         mockery.deregisterMock('./mappers/statsd');
-        mockery.deregisterMock('./filters/normalise');
+        mockery.deregisterMock('./filters/unfiltered');
         mockery.deregisterMock('./validators/permissive');
         mockery.deregisterMock('fs');
         mockery.deregisterMock('https');
@@ -1318,7 +1318,7 @@ suite('index:', function () {
             });
 
             test('filter.initialise was called correctly', function () {
-                assert.strictEqual(log.these.initialise[1], require('./filters/normalise'));
+                assert.strictEqual(log.these.initialise[1], require('./filters/unfiltered'));
                 assert.lengthOf(log.args.initialise[1], 1);
                 assert.isObject(log.args.initialise[1][0]);
             });

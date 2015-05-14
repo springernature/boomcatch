@@ -76,36 +76,32 @@ suite('mappers/waterfall:', function () {
 
                 setup(function () {
                     result = mapper({
-                        rt: {
-                            timestamps: {
-                                start: 0
-                            },
-                            durations: {
-                                firstbyte: 1,
-                                lastbyte: 2,
-                                load: 3
-                            }
-                        },
-                        navtiming: {
-                            type: '4',
-                            timestamps: {
-                                start: 5,
-                                fetchStart: 6,
-                                sslStart: 7,
-                                requestStart: 8,
-                                domInteractive: 9
-                            },
-                            events: {
-                                unload: { start: 10, end: 11 },
-                                redirect: { start: 12, end: 13 },
-                                dns: { start: 14, end: 15 },
-                                connect: { start: 16, end: 17 },
-                                response: { start: 18, end: 19 },
-                                dom: { start: 20, end: 21 },
-                                domContent: { start: 22, end: 23 },
-                                load: { start: 24, end: 25 }
-                            }
-                        }
+                        'rt.tstart': '1',
+                        t_resp: '2',
+                        t_page: '3',
+                        t_done: '4',
+                        nt_nav_type: 'wibble',
+                        nt_nav_st: '5',
+                        nt_fet_st: '6',
+                        nt_ssl_st: '7',
+                        nt_req_st: '8',
+                        nt_domint: '9',
+                        nt_unload_st: '10',
+                        nt_unload_end: '11',
+                        nt_red_st: '12',
+                        nt_red_end: '13',
+                        nt_dns_st: '14',
+                        nt_dns_end: '15',
+                        nt_con_st: '16',
+                        nt_con_end: '17',
+                        nt_res_st: '18',
+                        nt_res_end: '19',
+                        nt_domloading: '20',
+                        nt_domcomp: '21',
+                        nt_domcontloaded_st: '22',
+                        nt_domcontloaded_end: '23',
+                        nt_load_st: '24',
+                        nt_load_end: '25'
                     }, 'foo');
                 });
 
@@ -123,40 +119,40 @@ suite('mappers/waterfall:', function () {
 
                 setup(function () {
                     result = mapper({
-                        restiming: [
-                            {
-                                name: 'foo',
-                                type: 'css',
-                                timestamps: {
-                                    start: 1,
-                                    fetchStart: 2,
-                                    sslStart: 3,
-                                    requestStart: 4
-                                },
-                                events: {
-                                    redirect: { start: 5, end: 6 },
-                                    dns: { start: 6, end: 8 },
-                                    connect: { start: 7, end: 10 },
-                                    response: { start: 8, end: 12 }
-                                }
+                        restiming: {
+                            0: {
+                                rt_st: '1',
+                                rt_fet_st: '2',
+                                rt_scon_st: '3',
+                                rt_req_st: '4',
+                                rt_red_st: '5',
+                                rt_red_end: '6',
+                                rt_dns_st: '7',
+                                rt_dns_end: '8',
+                                rt_con_st: '9',
+                                rt_con_end: '10',
+                                rt_res_st: '11',
+                                rt_res_end: '12',
+                                rt_name: 'foo',
+                                rt_in_type: 'css'
                             },
-                            {
-                                name: 'bar',
-                                type: 'img',
-                                timestamps: {
-                                    start: 9,
-                                    fetchStart: 10,
-                                    sslStart: 11,
-                                    requestStart: 12
-                                },
-                                events: {
-                                    redirect: { start: 130, end: 180 },
-                                    dns: { start: 140, end: 200 },
-                                    connect: { start: 150, end: 220 },
-                                    response: { start: 160, end: 240 }
-                                }
+                            1: {
+                                rt_st: '9',
+                                rt_fet_st: '10',
+                                rt_scon_st: '11',
+                                rt_req_st: '12',
+                                rt_red_st: '130',
+                                rt_red_end: '180',
+                                rt_dns_st: '140',
+                                rt_dns_end: '200',
+                                rt_con_st: '150',
+                                rt_con_end: '220',
+                                rt_res_st: '160',
+                                rt_res_end: '240',
+                                rt_name: 'bar',
+                                rt_in_type: 'img'
                             }
-                        ]
+                        }
                     }, 'baz');
                 });
 
