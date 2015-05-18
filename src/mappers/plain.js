@@ -32,15 +32,12 @@ module.exports = {
 };
 
 function map (data, referer, userAgent) {
-
-    var out = { 
-      data: data,
-      referrer: referer,
-      userAgent: userAgent,
-      browser: getBrowser(userAgent)
-    };
-    return JSON.stringify(out);
-
+    return JSON.stringify({
+        data: data,
+        referrer: referer,
+        userAgent: userAgent,
+        browser: getBrowser(userAgent)
+    });
 }
 
 function getBrowser (userAgent) {
