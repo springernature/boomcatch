@@ -34,7 +34,7 @@ module.exports = {
 function map (data, referer, userAgent) {
     return JSON.stringify({
         data: data,
-        referrer: referer,
+        referer: referer,
         userAgent: userAgent,
         browser: getBrowser(userAgent)
     });
