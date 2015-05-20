@@ -1,5 +1,10 @@
 # History
 
+## 3.0.0
+
+* Breaking change: remove the normalisation step.
+* Add `unmapped` mapper.
+
 ## 2.2.1
 
 * Remove arbitrary limit on the number of POST request body parameters (thanks @emaV).
