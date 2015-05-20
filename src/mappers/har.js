@@ -16,6 +16,7 @@
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
 /*globals require, module */
+/*jshint camelcase:false */
 
 'use strict';
 
@@ -36,7 +37,7 @@ module.exports = {
 };
 
 function map (data, referer, userAgent) {
-    if (!data.navtiming || !data.restiming) {
+    if (!data.nt_nav_st || !data.restiming) {
         return '';
     }
 
@@ -50,7 +51,7 @@ function map (data, referer, userAgent) {
             browser: getBrowser(userAgent),
             // HACK: The title must be set by the client with BOOMR.addVar(),
             //       otherwise we fall back to using the page URL.
-            pages: getPages(data.navtiming, data.title || referer),
+            pages: getPages(data, data.title || referer),
             entries: getEntries(data.restiming)
         }
     });
@@ -68,7 +69,7 @@ function getBrowser (userAgent) {
 function getPages (data, title) {
     return [
         {
-            startedDateTime: getTime(data.timestamps.start),
+            startedDateTime: getTime(data.nt_nav_st),
             id: '0',
             title: title || '',
             pageTimings: getPageTimings(data)
@@ -78,24 +79,29 @@ function getPages (data, title) {
 
 function getTime (unixTime) {
     var time = new Date();
-    time.setTime(unixTime);
+    time.setTime(parseInt(unixTime));
     return time.toISOString();
 }
 
 function getPageTimings (data) {
     return {
-        onContentLoad: data.events.domContent.start,
-        onLoad: data.events.load.start
+        onContentLoad: parseInt(data.nt_domcontloaded_st),
+        onLoad: parseInt(data.nt_load_st)
     };
 }
 
 function getEntries (data) {
-    return data.map(function (datum) {
-        var timings = getTimings(datum);
+    var result = [];
 
-        return {
+    Object.keys(data).forEach(function (key) {
+        var datum, timings;
+
+        datum = data[key];
+        timings = getTimings(datum);
+
+        result.push({
             pageref: '0',
-            startedDateTime: getTime(datum.timestamps.start),
+            startedDateTime: getTime(datum.rt_st),
             time: Object.keys(timings).reduce(function (sum, name) {
                 if (name === 'ssl' || check.not.positive(timings[name])) {
                     return sum;
@@ -107,18 +113,20 @@ function getEntries (data) {
             response: getResponse(datum),
             cache: getCache(datum),
             timings: timings
-        };
+        });
     });
+
+    return result;
 }
 
 function getRequest (data) {
     return {
         method: '',
-        url: data.name,
+        url: data.rt_name,
         httpVersion: '',
         cookies: [],
         headers: [],
-        queryString: getQueryString(data.name),
+        queryString: getQueryString(data.rt_name),
         headerSize: -1,
         bodySize: -1
     };
@@ -162,39 +170,27 @@ function getCache (/*data*/) {
 
 function getTimings (data) {
     return {
-        blocked: data.timestamps.fetchStart - data.timestamps.start,
-        dns: getOptionalEventDuration(data, 'dns'),
-        connect: getOptionalEventDuration(data, 'connect'),
+        blocked: parseInt(data.rt_fet_st) - parseInt(data.rt_st),
+        dns: getOptionalDuration(data.rt_dns_st, data.rt_dns_end),
+        connect: getOptionalDuration(data.rt_con_st, data.rt_con_end),
         // HACK: The resource timing API doesn't provide us with separate
         //       metrics for `send` and `wait`, so we're assigning all of
         //       the time to `send` and setting `wait` to zero.
-        send: getOptionalEventDifference(data, 'response', 'start', 'requestStart'),
+        send: getOptionalDuration(data.rt_req_st, data.rt_res_st),
         wait: 0,
-        receive: getOptionalEventDuration(data, 'response'),
-        ssl: getOptionalEventDifference(data, 'connect', 'end', 'sslStart')
+        receive: getOptionalDuration(data.rt_res_st, data.rt_res_end),
+        ssl: getOptionalDuration(data.rt_scon_st, data.rt_con_end)
     };
 }
 
-function getOptionalEventDuration (data, eventName) {
-    var event = data.events[eventName];
+function getOptionalDuration (start, end) {
+    start = parseInt(start);
+    end = parseInt(end);
 
-    if (!event) {
+    if (check.not.number(start) || check.not.number(end)) {
         return -1;
     }
 
-    return event.end - event.start;
-}
-
-function getOptionalEventDifference (data, eventName, eventProperty, timestampName) {
-    var event, timestamp;
-
-    event = data.events[eventName];
-    timestamp = data.timestamps[timestampName];
-
-    if (!event || check.not.positive(timestamp)) {
-        return -1;
-    }
-
-    return event[eventProperty] - timestamp;
+    return end - start;
 }
 

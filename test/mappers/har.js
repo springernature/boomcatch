@@ -27,6 +27,7 @@ modulePath = '../../src/mappers/har';
 
 mockery.registerAllowable(modulePath);
 mockery.registerAllowable('../../package.json');
+mockery.registerAllowable('../normalise');
 mockery.registerAllowable('check-types');
 mockery.registerAllowable('url');
 mockery.registerAllowable('querystring');
@@ -144,26 +145,28 @@ suite('mappers/har:', function () {
 
                 setup(function () {
                     result = mapper({
-                        navtiming: {
-                            type: '0',
-                            timestamps: {
-                                start: 1,
-                                fetchStart: 2,
-                                sslStart: 3,
-                                requestStart: 4,
-                                domInteractive: 5
-                            },
-                            events: {
-                                unload: { start: 6, end: 7 },
-                                redirect: { start: 8, end: 9 },
-                                dns: { start: 10, end: 11 },
-                                connect: { start: 12, end: 13 },
-                                response: { start: 14, end: 15 },
-                                dom: { start: 16, end: 17 },
-                                domContent: { start: 18, end: 19 },
-                                load: { start: 20, end: 21 }
-                            }
-                        }
+                        nt_nav_type: '0',
+                        nt_nav_st: '1',
+                        nt_fet_st: '2',
+                        nt_ssl_st: '3',
+                        nt_req_st: '4',
+                        nt_domint: '5',
+                        nt_unload_st: '6',
+                        nt_unload_end: '7',
+                        nt_red_st: '8',
+                        nt_red_end: '9',
+                        nt_dns_st: '10',
+                        nt_dns_end: '11',
+                        nt_con_st: '12',
+                        nt_con_end: '13',
+                        nt_res_st: '14',
+                        nt_res_end: '15',
+                        nt_domloading: '16',
+                        nt_domcomp: '17',
+                        nt_domcontloaded_st: '18',
+                        nt_domcontloaded_end: '19',
+                        nt_load_st: '20',
+                        nt_load_end: '21'
                     }, 'foo', 'bar');
                 });
 
@@ -189,40 +192,40 @@ suite('mappers/har:', function () {
 
                 setup(function () {
                     result = mapper({
-                        restiming: [
-                            {
-                                name: 'http://www.example.com/foo?bar=baz#qux',
-                                type: 'css',
-                                timestamps: {
-                                    start: 1,
-                                    fetchStart: 2,
-                                    sslStart: 3,
-                                    requestStart: 4
-                                },
-                                events: {
-                                    redirect: { start: 5, end: 6 },
-                                    dns: { start: 7, end: 8 },
-                                    connect: { start: 10, end: 11 },
-                                    response: { start: 12, end: 13 }
-                                }
+                        restiming: {
+                            0: {
+                                rt_name: 'http://www.example.com/foo?bar=baz#qux',
+                                rt_in_type: 'css',
+                                rt_st: '1',
+                                rt_fet_st: '2',
+                                rt_scon_st: '3',
+                                rt_req_st: '4',
+                                rt_red_st: '5',
+                                rt_red_end: '6',
+                                rt_dns_st: '7',
+                                rt_dns_end: '8',
+                                rt_con_st: '10',
+                                rt_con_end: '11',
+                                rt_res_st: '12',
+                                rt_res_end: '13'
                             },
-                            {
-                                name: 'https://nature.com/wibble?k=v&l=w',
-                                type: 'img',
-                                timestamps: {
-                                    start: 14,
-                                    fetchStart: 15,
-                                    sslStart: 16,
-                                    requestStart: 17
-                                },
-                                events: {
-                                    redirect: { start: 18, end: 19 },
-                                    dns: { start: 20, end: 21 },
-                                    connect: { start: 22, end: 23 },
-                                    response: { start: 24, end: 25 }
-                                }
+                            1: {
+                                rt_name: 'https://nature.com/wibble?k=v&l=w',
+                                rt_in_type: 'img',
+                                rt_st: '14',
+                                rt_fet_st: '15',
+                                rt_scon_st: '16',
+                                rt_req_st: '17',
+                                rt_red_st: '18',
+                                rt_red_end: '19',
+                                rt_dns_st: '20',
+                                rt_dns_end: '21',
+                                rt_con_st: '22',
+                                rt_con_end: '23',
+                                rt_res_st: '24',
+                                rt_res_end: '25'
                             }
-                        ]
+                        }
                     }, 'foo', 'bar');
                 });
 
@@ -252,61 +255,62 @@ suite('mappers/har:', function () {
                         major: 'bar'
                     };
                     result = mapper({
-                        title: 'wibble',
-                        navtiming: {
-                            type: '0',
-                            timestamps: {
-                                start: 1,
-                                fetchStart: 2,
-                                sslStart: 3,
-                                requestStart: 4,
-                                domInteractive: 5
+                        nt_nav_type: '0',
+                        nt_nav_st: '1',
+                        nt_fet_st: '2',
+                        nt_ssl_st: '3',
+                        nt_req_st: '4',
+                        nt_domint: '5',
+                        nt_unload_st: '6',
+                        nt_unload_end: '12',
+                        nt_red_st: '7',
+                        nt_red_end: '14',
+                        nt_dns_st: '8',
+                        nt_dns_end: '16',
+                        nt_con_st: '9',
+                        nt_con_end: '18',
+                        nt_res_st: '10',
+                        nt_res_end: '20',
+                        nt_domloading: '11',
+                        nt_domcomp: '22',
+                        nt_domcontloaded_st: '12',
+                        nt_domcontloaded_end: '24',
+                        nt_load_st: '13',
+                        nt_load_end: '26',
+                        restiming: {
+                            0: {
+                                rt_name: 'http://www.example.com/foo?bar=baz#qux',
+                                rt_in_type: 'img',
+                                rt_st: '14',
+                                rt_fet_st: '15',
+                                rt_scon_st: '16',
+                                rt_req_st: '17',
+                                rt_red_st: '18',
+                                rt_red_end: '36',
+                                rt_dns_st: '19',
+                                rt_dns_end: '38',
+                                rt_con_st: '20',
+                                rt_con_end: '40',
+                                rt_res_st: '21',
+                                rt_res_end: '42'
                             },
-                            events: {
-                                unload: { start: 6, end: 12 },
-                                redirect: { start: 7, end: 14 },
-                                dns: { start: 8, end: 16 },
-                                connect: { start: 9, end: 18 },
-                                response: { start: 10, end: 20 },
-                                dom: { start: 11, end: 22 },
-                                domContent: { start: 12, end: 24 },
-                                load: { start: 13, end: 26 }
+                            1: {
+                                rt_name: 'https://nature.com/wibble?k=v&l=w',
+                                rt_in_type: 'css',
+                                rt_st: '220',
+                                rt_fet_st: '230',
+                                rt_scon_st: '240',
+                                rt_req_st: '250',
+                                rt_red_st: '280',
+                                rt_red_end: '560',
+                                rt_dns_st: '290',
+                                rt_dns_end: '580',
+                                rt_con_st: '300',
+                                rt_con_end: '600',
+                                rt_res_st: '310',
+                                rt_res_end: '620'
                             }
-                        },
-                        restiming: [
-                            {
-                                name: 'http://www.example.com/foo?bar=baz#qux',
-                                type: 'img',
-                                timestamps: {
-                                    start: 14,
-                                    fetchStart: 15,
-                                    sslStart: 16,
-                                    requestStart: 17
-                                },
-                                events: {
-                                    redirect: { start: 18, end: 36 },
-                                    dns: { start: 19, end: 38 },
-                                    connect: { start: 20, end: 40 },
-                                    response: { start: 21, end: 42 }
-                                }
-                            },
-                            {
-                                name: 'https://nature.com/wibble?k=v&l=w',
-                                type: 'css',
-                                timestamps: {
-                                    start: 220,
-                                    fetchStart: 230,
-                                    sslStart: 240,
-                                    requestStart: 250
-                                },
-                                events: {
-                                    redirect: { start: 280, end: 560 },
-                                    dns: { start: 290, end: 580 },
-                                    connect: { start: 300, end: 600 },
-                                    response: { start: 310, end: 320 }
-                                }
-                            }
-                        ]
+                        }
                     }, 'baz', 'qux');
                 });
 
@@ -401,7 +405,7 @@ suite('mappers/har:', function () {
                     test('data.log.pages[0] is correct', function () {
                         assert.strictEqual(data.log.pages[0].startedDateTime, '1970-01-01T00:00:00.001Z');
                         assert.strictEqual(data.log.pages[0].id, '0');
-                        assert.strictEqual(data.log.pages[0].title, 'wibble');
+                        assert.strictEqual(data.log.pages[0].title, 'baz');
                         assert.isObject(data.log.pages[0].pageTimings);
                         assert.lengthOf(Object.keys(data.log.pages[0].pageTimings), 2);
                         assert.strictEqual(data.log.pages[0].pageTimings.onContentLoad, 12);
@@ -484,7 +488,7 @@ suite('mappers/har:', function () {
                     test('data.log.entries[1] is correct', function () {
                         assert.strictEqual(data.log.entries[1].pageref, '0');
                         assert.strictEqual(data.log.entries[1].startedDateTime, '1970-01-01T00:00:00.220Z');
-                        assert.strictEqual(data.log.entries[1].time, 670);
+                        assert.strictEqual(data.log.entries[1].time, 970);
                     });
 
                     test('data.log.entries[1].request is correct', function () {
@@ -502,7 +506,7 @@ suite('mappers/har:', function () {
                         assert.strictEqual(data.log.entries[1].timings.connect, 300);
                         assert.strictEqual(data.log.entries[1].timings.send, 60);
                         assert.strictEqual(data.log.entries[1].timings.wait, 0);
-                        assert.strictEqual(data.log.entries[1].timings.receive, 10);
+                        assert.strictEqual(data.log.entries[1].timings.receive, 310);
                         assert.strictEqual(data.log.entries[1].timings.ssl, 360);
                     });
                 });
@@ -517,35 +521,34 @@ suite('mappers/har:', function () {
                         major: 'browser version'
                     };
                     result = mapper({
-                        navtiming: {
-                            type: '0',
-                            timestamps: {
-                                start: 100,
-                                fetchStart: 200,
-                                sslStart: 300,
-                                requestStart: 400,
-                                domInteractive: 500
-                            },
-                            events: {
-                                unload: { start: 600, end: 1200 },
-                                redirect: { start: 700, end: 1400 },
-                                dns: { start: 800, end: 1600 },
-                                connect: { start: 900, end: 1800 },
-                                response: { start: 1000, end: 2000 },
-                                dom: { start: 1100, end: 2200 },
-                                domContent: { start: 1200, end: 2400 },
-                                load: { start: 1300, end: 2600 }
-                            }
-                        },
+                        nt_nav_type: '0',
+                        nt_nav_st: '100',
+                        nt_fet_st: '200',
+                        nt_ssl_st: '300',
+                        nt_req_st: '400',
+                        nt_domint: '500',
+                        nt_unload_st: '600',
+                        nt_unload_end: '1200',
+                        nt_red_st: '700',
+                        nt_red_end: '1400',
+                        nt_dns_st: '800',
+                        nt_dns_end: '1600',
+                        nt_con_st: '900',
+                        nt_con_end: '1800',
+                        nt_res_st: '1000',
+                        nt_res_end: '2000',
+                        nt_domloading: '1100',
+                        nt_domcomp: '2200',
+                        nt_domcontloaded_st: '1200',
+                        nt_domcontloaded_end: '2400',
+                        nt_load_st: '1300',
+                        nt_load_end: '2600',
                         restiming: [
                             {
-                                name: 'http://example.com/?a=b&c=d',
-                                type: 'css',
-                                timestamps: {
-                                    start: 1400,
-                                    fetchStart: 1500
-                                },
-                                events: {}
+                                rt_name: 'http://example.com/?a=b&c=d',
+                                rt_in_type: 'css',
+                                rt_st: '1400',
+                                rt_fet_st: '1500'
                             }
                         ]
                     }, 'referer', 'user agent');

@@ -24,6 +24,7 @@ var fs = require('fs'),
     path = require('path'),
     check = require('check-types'),
     handlebars = require('handlebars'),
+    normalise = require('../../normalise'),
     packageInfo = require('../../../package.json');
 
 module.exports = {
@@ -85,6 +86,8 @@ function verifySettings (settings) {
 
 function map (template, settings, data, referer) {
     var resources;
+
+    data = normalise(data);
 
     if (!check.array(data.restiming)) {
         return '';

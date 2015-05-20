@@ -19,11 +19,12 @@
 
 'use strict';
 
-var check, url, UserAgentParser, mappers;
+var check, url, UserAgentParser, normalise, mappers;
 
 check = require('check-types');
 url = require('url');
 UserAgentParser = require('ua-parser-js');
+normalise = require('../normalise');
 
 module.exports = {
     initialise: function (options) {
@@ -50,6 +51,8 @@ function map (prefix, data, referer, userAgent) {
     result = '';
     refererPrefix = getRefererPrefix(url.parse(referer));
     suffix = getUserAgentSuffix(new UserAgentParser(userAgent));
+
+    data = normalise(data);
 
     Object.keys(data).forEach(function (category) {
         var datum = data[category], mapper = mappers[category];

@@ -19,7 +19,10 @@
 
 'use strict';
 
-var check = require('check-types');
+var check, normalise;
+
+check = require('check-types');
+normalise = require('../normalise');
 
 module.exports = {
     initialise: function (options) {
@@ -42,6 +45,8 @@ function normalisePrefix (prefix) {
 
 function map (prefix, data, referer) {
     var result = '';
+
+    data = normalise(data);
 
     Object.keys(data).forEach(function (category) {
         var mapper;
