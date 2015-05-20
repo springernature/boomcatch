@@ -1595,7 +1595,6 @@ suite('index:', function () {
                         assert.lengthOf(log.args.mapper[0], 4);
                         assert.isObject(log.args.mapper[0][0]);
                         assert.lengthOf(Object.keys(log.args.mapper[0][0]), 5);
-                        url: '/beacon?rt.tstart=1&t_resp=2&t_page=3&t_done=4&r=wibble',
                         assert.strictEqual(log.args.mapper[0][0]['rt.tstart'], '1');
                         assert.strictEqual(log.args.mapper[0][0].t_resp, '2');
                         assert.strictEqual(log.args.mapper[0][0].t_page, '3');
