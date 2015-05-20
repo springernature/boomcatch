@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Copyright © 2014 Nature Publishing Group
+// Copyright © 2014, 2015 Nature Publishing Group
 //
 // This file is part of boomcatch.
 //

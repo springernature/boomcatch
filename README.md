@@ -271,7 +271,7 @@ npm test
 
 [GPL 3][license]
 
-Copyright © 2014 Nature Publishing Group
+Copyright © 2014, 2015 Nature Publishing Group
 
 [boomerang]: https://github.com/lognormal/boomerang
 [blog]: http://cruft.io/posts/introducing-boomcatch/
