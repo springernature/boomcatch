@@ -46,7 +46,6 @@ function normalisePrefix (prefix) {
 function map (prefix, data, referer) {
     var result = '';
 
-    // HACK: Until mappers are changed to work on the raw data, issue #55.
     data = normalise(data);
 
     Object.keys(data).forEach(function (category) {

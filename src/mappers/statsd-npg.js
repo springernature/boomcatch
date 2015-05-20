@@ -52,7 +52,6 @@ function map (prefix, data, referer, userAgent) {
     refererPrefix = getRefererPrefix(url.parse(referer));
     suffix = getUserAgentSuffix(new UserAgentParser(userAgent));
 
-    // HACK: Until mappers are changed to work on the raw data, issue #55.
     data = normalise(data);
 
     Object.keys(data).forEach(function (category) {
