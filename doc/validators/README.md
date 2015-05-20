@@ -63,9 +63,7 @@ are, in order:
 
 1. `data`:
    Request data,
-   parsed into an object
-   (note this is the naked request data,
-   before it is [normalised]).
+   parsed into an object.
 
 2. `referer`:
    URL of the page
@@ -89,6 +87,4 @@ if the request is okay,
 [mappers]: ../mappers/README.md
 [forwarders]: ../forwarders/README.md
 [option]: ../../README.md#from-the-command-line
-[normalised]: ../data.md
-
 

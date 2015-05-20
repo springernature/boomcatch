@@ -24,7 +24,7 @@ are:
    These functions
    filter out
    unwanted parts
-   of the [normalised data][data]
+   of the data
    before it is passed
    to the mapper.
 

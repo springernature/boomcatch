@@ -46,8 +46,7 @@ function (/* bound options, ... */ data) {
 ```
 
 Where `data`
-is the beacon data
-in [normalised format][data].
+is the beacon data.
 
 The filter function
 should return
@@ -58,5 +57,4 @@ the filtered data object.
 [mappers]: ../mappers/README.md
 [forwarders]: ../forwarders/README.md
 [option]: ../../README.md#from-the-command-line
-[data]: ../data.md
 

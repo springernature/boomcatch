@@ -46,7 +46,7 @@ passed to the mapper
 are, in order:
 
 1. `data`:
-   [Normalised] and filtered data.
+   Filtered data.
 
 2. `referer`:
    URL of the page
@@ -91,5 +91,4 @@ as `'\n'`.
 [har]: har.md
 [waterfall]: waterfall.md
 [src]: ../../src/mappers/statsd.js
-[normalised]: ../data.md
 

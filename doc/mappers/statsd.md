@@ -24,11 +24,9 @@ before sending.
 
 Currently,
 this mapper will only
-translate events and durations
-from the [normalised data structure][format].
-There is a plan to expand coverage
-to incorporate non-`start` timestamps
-at some point.
+translate data
+from the `rt`, `navtiming` and `restiming`
+boomerang plugins.
 
 Data from
 the round trip plugin
@@ -101,5 +99,4 @@ the base-36 encoded string.
 
 [statsd]: https://github.com/etsy/statsd
 [timers]: https://github.com/etsy/statsd/blob/master/docs/metric_types.md#timing
-[format]: ../data.md
 
