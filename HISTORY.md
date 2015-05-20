@@ -2,8 +2,8 @@
 
 ## 3.0.0
 
-* Breaking change: remove the normalisation step.
-* Add `unmapped` mapper.
+* Breaking change: remove the normalisation step (thanks @emaV).
+* Add `unmapped` mapper (thanks @emaV).
 
 ## 2.2.1
 
