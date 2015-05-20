@@ -190,6 +190,6 @@ function getOptionalDuration (start, end) {
         return -1;
     }
 
-    return parseInt(end) - parseInt(start);
+    return end - start;
 }
 
