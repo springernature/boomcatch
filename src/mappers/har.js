@@ -16,6 +16,7 @@
 // along with boomcatch. If not, see <http://www.gnu.org/licenses/>.
 
 /*globals require, module */
+/*jshint camelcase:false */
 
 'use strict';
 
