@@ -11,8 +11,8 @@ to be consumed by some other process.
 The choice of mapper
 can be specified at the command line,
 using the `-m` [option].
-Three mappers are availble out-of-the-box,
-[statsd], [statsd-npg], [har] and [waterfall].
+Five mappers are availble out-of-the-box,
+[statsd], [statsd-npg], [har], [waterfall] and [unmapped].
 
 Defining custom mappers is simple.
 The [source code for the statsd mapper][src]
@@ -90,5 +90,6 @@ as `'\n'`.
 [statsd-npg]: statsd-npg.md
 [har]: har.md
 [waterfall]: waterfall.md
+[unmapped]: unmapped.md
 [src]: ../../src/mappers/statsd.js
 
