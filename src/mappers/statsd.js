@@ -77,6 +77,10 @@ function mapRestimingMetrics (prefix, data, referer) {
 }
 
 function base36Encode (string) {
+    if (!string) {
+        return 'unknown';
+    }
+
     return Array.prototype.map.call(string, function (character) {
         return character.charCodeAt(0).toString(36);
     }).join('');

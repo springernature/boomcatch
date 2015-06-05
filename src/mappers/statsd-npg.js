@@ -49,7 +49,13 @@ function map (prefix, data, referer, userAgent) {
     var result, refererPrefix, suffix;
 
     result = '';
-    refererPrefix = getRefererPrefix(url.parse(referer));
+
+    if (referer) {
+        refererPrefix = getRefererPrefix(url.parse(referer));
+    } else {
+        refererPrefix = '';
+    }
+
     suffix = getUserAgentSuffix(new UserAgentParser(userAgent));
 
     data = normalise(data);
