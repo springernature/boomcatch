@@ -669,7 +669,9 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
         });
     } catch (error) {
         fail(log, request, response, 400, 'Invalid data');
-        console.log(error.stack);
+        if (error) {
+            console.log(error.stack);
+        }
     }
 }
 
