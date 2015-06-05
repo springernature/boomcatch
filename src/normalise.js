@@ -42,7 +42,8 @@ function normaliseRtData (data) {
     timeToLoad = getOptionalDatum(data, 't_done');
 
     check.assert.maybe.positive(start);
-    check.assert.maybe.positive(timeToFirstByte);
+    check.assert.maybe.number(timeToFirstByte);
+    check.assert.not.negative(timeToFirstByte);
     check.assert.maybe.positive(timeToLastByte);
     check.assert.maybe.positive(timeToLoad);
 
