@@ -1,5 +1,11 @@
 # History
 
+## 3.0.1
+
+* Improve error logging.
+* Fix bad referer-handling in statsd mappers.
+* Sane normalisation of zero t_resp values.
+
 ## 3.0.0
 
 * Breaking change: remove the normalisation step (thanks @emaV).
