@@ -65,7 +65,7 @@ function normaliseRtData (data) {
 
 function getOptionalDatum (data, key) {
     if (data[key]) {
-        return parseInt(data[key]);
+        return parseFloat(data[key]);
     }
 }
 
@@ -159,8 +159,8 @@ function normaliseEvents (map, data) {
         var start, end, assert;
 
         if (data[event.start] && data[event.end]) {
-            start = parseInt(data[event.start]);
-            end = parseInt(data[event.end]);
+            start = parseFloat(data[event.start]);
+            end = parseFloat(data[event.end]);
         }
 
         assert = event.optional ? check.assert.maybe : check.assert;
@@ -181,13 +181,13 @@ function normaliseEvents (map, data) {
 }
 
 function normaliseDurations (map, data, startKey) {
-    var start = parseInt(data[startKey]);
+    var start = parseFloat(data[startKey]);
 
     return map.durations.reduce(function (result, duration) {
         var value, assert;
 
         if (data[duration.end]) {
-            value = parseInt(data[duration.end]) - start;
+            value = parseFloat(data[duration.end]) - start;
         }
 
         assert = duration.optional ? check.assert.maybe : check.assert;
