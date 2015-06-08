@@ -67,6 +67,10 @@ function map (prefix, data, referer) {
 
 function mapRestimingMetrics (prefix, data, referer) {
     return data.map(function (resource, index) {
+        if (!resource) {
+            return '';
+        }
+
         return mapMetrics([
             prefix + base36Encode(referer),
             index,
