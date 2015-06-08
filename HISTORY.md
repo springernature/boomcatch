@@ -1,5 +1,10 @@
 # History
 
+## 3.0.2
+
+* Fix undefined dereference in statsd mapper.
+* Sanely handle floating point restiming data.
+
 ## 3.0.1
 
 * Improve error logging.
