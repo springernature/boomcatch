@@ -104,7 +104,8 @@ function getSyslog () {
             tag: 'boomcatch',
             facility: cli.syslog
         });
-    } catch (e) {
+    } catch (error) {
+        console.log(error.stack);
         console.log('Failed to initialise syslog, exiting.');
         process.exit(1);
     }

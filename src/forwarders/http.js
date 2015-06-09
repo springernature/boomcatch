@@ -72,7 +72,7 @@ function send (protocol, url, method, data, type, separator, callback) {
 
         request.on('error', callback);
     } catch (error) {
-        callback(error.message);
+        callback(error);
     }
 }
 

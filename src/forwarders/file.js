@@ -39,7 +39,7 @@ function send (directory, data, type, separator, callback) {
             }
         );
     } catch (error) {
-        callback(error.message);
+        callback(error);
     }
 }
 

@@ -63,7 +63,7 @@ function send (host, port, size, data, type, separator, callback) {
         });
     } catch (error) {
         socket.close();
-        callback(error.message);
+        callback(error);
     }
 
     function sendToSocket (data) {

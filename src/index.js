@@ -662,15 +662,17 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
 
         forwarder(mappedData, mapper.type, mapper.separator, function (error, bytesSent) {
             if (error) {
-                return fail(log, request, response, 502, error);
+                log.error(error.stack || error.message || error);
+                return fail(log, request, response, 502, 'Forwarder failed');
             }
 
             pass(log, response, state.successStatus, bytesSent);
         });
     } catch (error) {
         fail(log, request, response, 400, 'Invalid data');
+
         if (error) {
-            console.log(error.stack);
+            log.error(error.stack);
         }
     }
 }
