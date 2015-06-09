@@ -1,5 +1,9 @@
 # History
 
+## 3.0.4
+
+* Fix unhandled error when UDP sending fails.
+
 ## 3.0.3
 
 * Improve error logging.
