@@ -47,24 +47,17 @@ function normaliseSize (size) {
 }
 
 function send (host, port, size, data, type, separator, callback) {
-    var count = 0, length = 1, socket, chunks;
+    var count = 0, length = 1, socket, chunks, failed;
 
-    try {
-        socket = udp.createSocket('udp4');
+    socket = udp.createSocket('udp4');
 
-        if (data.length <= size) {
-            return sendToSocket(data);
-        }
-
-        chunks = chunkData(data, size, separator || '', []);
-        length = chunks.length;
-        chunks.forEach(function (chunk) {
-            sendToSocket(chunk);
-        });
-    } catch (error) {
-        socket.close();
-        callback(error);
+    if (data.length <= size) {
+        return sendToSocket(data);
     }
+
+    chunks = chunkData(data, size, separator || '', []);
+    length = chunks.length;
+    chunks.forEach(sendToSocket);
 
     function sendToSocket (data) {
         var buffer = new Buffer(data);
@@ -72,15 +65,19 @@ function send (host, port, size, data, type, separator, callback) {
     }
 
     function finish (error, bytesSent) {
-        if (error) {
-            throw new Error(error);
+        if (error && !failed) {
+            callback(error);
+            failed = true;
         }
 
         count += 1;
 
         if (count === length) {
             socket.close();
-            callback(null, bytesSent);
+
+            if (!failed) {
+                callback(null, bytesSent);
+            }
         }
     }
 }

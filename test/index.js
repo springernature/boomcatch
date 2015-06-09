@@ -1643,7 +1643,7 @@ suite('index:', function () {
                         });
 
                         test('response.end was called correctly', function () {
-                            assert.strictEqual(log.args.end[0][0], '{ "error": "wibble" }');
+                            assert.strictEqual(log.args.end[0][0], '{ "error": "Forwarder failed" }');
                         });
 
                         test('response.statusCode was set correctly', function () {
