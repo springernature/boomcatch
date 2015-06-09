@@ -1,5 +1,9 @@
 # History
 
+## 3.0.3
+
+* Improve error logging.
+
 ## 3.0.2
 
 * Fix undefined dereference in statsd mapper.
