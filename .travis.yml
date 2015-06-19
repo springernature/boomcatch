@@ -6,4 +6,5 @@ node_js:
 branches:
   only:
     - master
-
+notifications:
+  slack: thefeds:vG3hLYB07EwTYpQFp3TNUx82
