@@ -1,5 +1,10 @@
 # History
 
+## 3.1.0
+
+* Updating documentation to reflect the current Node.js support of 0.10 and later.
+* Switching out `jsdom` for `cheerio` within the tests
+
 ## 3.0.4
 
 * Fix unhandled error when UDP sending fails.
