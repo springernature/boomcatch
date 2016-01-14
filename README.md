@@ -8,7 +8,7 @@ beacon receiver for [boomerang].
 [![Build status][ci-image]][ci-status]
 
 * **boomcatch version**: *3.0.4*
-* **node.js versions**: *0.10 - 4.0*
+* **node.js versions**: *0.10 and later*
 
 ## Installation
 
