@@ -17,10 +17,10 @@
 
 'use strict';
 
-var assert, jsdom, packageInfo, modulePath;
+var assert, cheerio, packageInfo, modulePath;
 
 assert = require('chai').assert;
-jsdom = require('jsdom').jsdom;
+cheerio = require('cheerio');
 packageInfo = require('../../package.json');
 modulePath = '../../src/mappers/waterfall';
 
@@ -165,67 +165,67 @@ suite('mappers/waterfall:', function () {
                 });
 
                 suite('parse result:', function () {
-                    var document;
+                    var $;
 
                     setup(function () {
-                        document = jsdom(result).parentWindow.document;
+                        $ = cheerio.load(result);
                     });
 
                     teardown(function () {
-                        document = undefined;
+                        $ = undefined;
                     });
 
                     test('generator is correct', function () {
                         assert.strictEqual(
-                            document.querySelector('meta[name="generator"]').content,
+                            $('meta[name="generator"]').attr('content'),
                             'boomcatch ' + packageInfo.version
                         );
                     });
 
                     test('title is correct', function () {
                         assert.strictEqual(
-                            document.querySelector('title').innerHTML,
+                            $('title').text(),
                             'baz'
                         );
                     });
 
                     test('h1 is correct', function () {
-                        var h1 = document.querySelectorAll('h1');
+                        var h1 = $('h1');
 
                         assert.lengthOf(h1, 1);
-                        assert.strictEqual(h1[0].innerHTML, 'baz');
+                        assert.strictEqual(h1.text(), 'baz');
                     });
 
                     test('svg seems correct', function () {
-                        assert.lengthOf(document.querySelectorAll('svg'), 1);
-                        assert.lengthOf(document.querySelectorAll('g'), 5);
-                        assert.lengthOf(document.querySelectorAll('svg > g'), 2);
-                        assert.lengthOf(document.querySelectorAll('rect'), 14);
-                        assert.lengthOf(document.querySelectorAll('text'), 8);
-                        assert.lengthOf(document.querySelectorAll('line'), 5);
+                        assert.lengthOf($('svg'), 1);
+                        assert.lengthOf($('g'), 5);
+                        assert.lengthOf($('svg > g'), 2);
+                        assert.lengthOf($('rect'), 14);
+                        assert.lengthOf($('text'), 8);
+                        assert.lengthOf($('line'), 5);
                         assert.notEqual(result.indexOf('<svg width="960px" height="98px" aria-describedby="colour-key">'), -1);
                         assert.notEqual(result.indexOf('<g transform="translate(0, 0)" data-resource="0">'), -1);
                         assert.notEqual(result.indexOf('<g transform="translate(0, 24)" data-resource="1">'), -1);
                     });
 
                     test('colour key seems correct', function () {
-                        assert.lengthOf(document.querySelectorAll('table.key'), 1);
-                        assert.lengthOf(document.querySelectorAll('table.key th'), 2);
-                        assert.lengthOf(document.querySelectorAll('table.key > tbody > tr'), 6);
+                        assert.lengthOf($('table.key'), 1);
+                        assert.lengthOf($('table.key th'), 2);
+                        assert.lengthOf($('table.key > tbody > tr'), 6);
                     });
 
                     test('raw data seems correct', function () {
-                        assert.lengthOf(document.querySelectorAll('[data-raw] table'), 1);
-                        assert.lengthOf(document.querySelectorAll('[data-raw] th'), 14);
-                        assert.lengthOf(document.querySelectorAll('[data-raw] table > tbody > tr'), 2);
+                        assert.lengthOf($('[data-raw] table'), 1);
+                        assert.lengthOf($('[data-raw] th'), 14);
+                        assert.lengthOf($('[data-raw] table > tbody > tr'), 2);
                     });
 
                     test('mouseover details seem correct', function () {
-                        assert.lengthOf(document.querySelectorAll('.resource-detail'), 2);
-                        assert.lengthOf(document.querySelectorAll('.resource-detail .resource-type'), 2);
-                        assert.lengthOf(document.querySelectorAll('.resource-detail .resource-start'), 12);
-                        assert.lengthOf(document.querySelectorAll('.resource-detail .resource-duration'), 12);
-                        assert.lengthOf(document.querySelectorAll('.resource-detail .resource-timing'), 20);
+                        assert.lengthOf($('.resource-detail'), 2);
+                        assert.lengthOf($('.resource-detail .resource-type'), 2);
+                        assert.lengthOf($('.resource-detail .resource-start'), 12);
+                        assert.lengthOf($('.resource-detail .resource-duration'), 12);
+                        assert.lengthOf($('.resource-detail .resource-timing'), 20);
                     });
                 });
             });

@@ -50,7 +50,7 @@
         "chai": "~3.0.0",
         "mockery": "~1.4.0",
         "spooks": "~2.0.0",
-        "jsdom": "~2.0.0"
+        "cheerio": "~0.19.0"
     },
     "scripts": {
         "lint": "jshint src --config .jshintrc",
