@@ -1,5 +1,15 @@
 # History
 
+## 3.1.1
+
+* Update repository references to springernature
+* Update the license
+
+## 3.1.0
+
+* Updating documentation to reflect the current Node.js support of 0.10 and later.
+* Switching out `jsdom` for `cheerio` within the tests
+
 ## 3.1.0
 
 * Updating documentation to reflect the current Node.js support of 0.10 and later.
