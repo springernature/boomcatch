@@ -275,8 +275,8 @@ Copyright © 2014, 2015 Nature Publishing Group
 
 [boomerang]: https://github.com/lognormal/boomerang
 [blog]: http://cruft.io/posts/introducing-boomcatch/
-[ci-image]: https://secure.travis-ci.org/nature/boomcatch.png?branch=master
-[ci-status]: http://travis-ci.org/#!/nature/boomcatch
+[ci-image]: https://secure.travis-ci.org/springernature/boomcatch.png?branch=master
+[ci-status]: http://travis-ci.org/#!/springernature/boomcatch
 [node]: http://nodejs.org/download/
 [syslog]: http://en.wikipedia.org/wiki/Syslog
 [require]: http://nodejs.org/api/globals.html#globals_require

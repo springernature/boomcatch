@@ -2,8 +2,8 @@
     "name": "boomcatch",
     "version": "3.1.0",
     "description": "A standalone, node.js-based beacon receiver for boomerang.",
-    "homepage": "https://github.com/nature/boomcatch",
-    "bugs": "https://github.com/nature/boomcatch/issues",
+    "homepage": "https://github.com/springernature/boomcatch",
+    "bugs": "https://github.com/springernature/boomcatch/issues",
     "license": "GPL-3.0+",
     "author": "Nature Publishing Group (https://github.com/nature)",
     "main": "./src",
@@ -12,7 +12,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/nature/boomcatch.git"
+        "url": "https://github.com/springernature/boomcatch.git"
     },
     "keywords": [
         "boomerang",

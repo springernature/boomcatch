@@ -23,8 +23,7 @@
   if the change is one that you think
   needs some discussion.
 
-[readme]: https://github.com/nature/boomcatch/blob/master/README.md
-[authors]: https://github.com/nature/boomcatch/blob/master/AUTHORS
-[newissue]: https://github.com/nature/boomcatch/issues/new
-[issues]: https://github.com/nature/boomcatch/issues
-
+[readme]: https://github.com/springernature/boomcatch/blob/master/README.md
+[authors]: https://github.com/springernature/boomcatch/blob/master/AUTHORS
+[newissue]: https://github.com/springernature/boomcatch/issues/new
+[issues]: https://github.com/springernature/boomcatch/issues
