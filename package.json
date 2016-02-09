@@ -5,7 +5,7 @@
     "homepage": "https://github.com/springernature/boomcatch",
     "bugs": "https://github.com/springernature/boomcatch/issues",
     "license": "GPL-3.0+",
-    "author": "Nature Publishing Group (https://github.com/nature)",
+    "author": "Springer Nature (https://github.com/springernature)",
     "main": "./src",
     "bin": {
         "boomcatch": "./src/cli.js"
