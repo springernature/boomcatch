@@ -1,5 +1,9 @@
 # History
 
+## 3.1.2
+
+* Adds Travis test for node 6 and updates the refs for node 4 and 5
+
 ## 3.1.1
 
 * Update repository references to springernature
