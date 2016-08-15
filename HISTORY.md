@@ -1,5 +1,14 @@
 # History
 
+## 3.1.3
+
+* Update to handlebars 4 that fixes several security vulnerabilities:
+    - [https://nodesecurity.io/advisories/39](https://nodesecurity.io/advisories/39)
+    - [https://nodesecurity.io/advisories/48](https://nodesecurity.io/advisories/48)
+    - [https://nodesecurity.io/advisories/61](https://nodesecurity.io/advisories/61)
+    - [https://nodesecurity.io/advisories/77](https://nodesecurity.io/advisories/77)
+* Updates other packages to recent versions.
+
 ## 3.1.2
 
 * Adds Travis test for node 6 and updates the refs for node 4 and 5
