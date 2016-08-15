@@ -30,23 +30,23 @@
     ],
     "dependencies": {
         "check-types": "~3.2.0",
-        "commander": "~2.8.1",
+        "commander": "~2.9.0",
         "get-off-my-log": "~0.1.0",
         "qs": "~3.1.0",
-        "useragent": "~2.1.6",
+        "useragent": "~2.1.8",
         "yamlparser": "~0.0.2",
-        "request": "~2.57.0",
-        "node-uuid": "~1.4.3",
-        "toobusy-js": "~0.4.2",
-        "handlebars": "~3.0.3",
-        "ua-parser-js": "~0.7.7"
+        "request": "~2.74.0",
+        "node-uuid": "~1.4.7",
+        "toobusy-js": "~0.5.1",
+        "handlebars": "~4.0.5",
+        "ua-parser-js": "~0.7.10"
     },
     "optionalDependencies": {
-        "ain2": "~1.5.2"
+        "ain2": "~2.0.0"
     },
     "devDependencies": {
-        "jshint": "~2.8.0",
-        "mocha": "~2.2.5",
+        "jshint": "~2.9.0",
+        "mocha": "~3.0.2",
         "chai": "~3.0.0",
         "mockery": "~1.4.0",
         "spooks": "~2.0.0",
