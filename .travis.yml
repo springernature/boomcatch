@@ -1,12 +1,12 @@
 language: node_js
 node_js:
-  - "6"
-  - "5"
-  - "4"
-  - "0.12"
-  - "0.10"
+- '6'
+- '4'
+- '0.12'
+- '0.10'
 branches:
   only:
-    - master
+  - master
 notifications:
-  slack: thefeds:vG3hLYB07EwTYpQFp3TNUx82
+  slack:
+    secure: gjfBaYQEJYhlq/+xiwFLgDcLxF0opnFVmSUmkm60hVkmM8ndzAKORiuyirvxWtH/gNGvMUxkJ6Ow8TInuluMC89JpDbqH9OY+ZrjExkQxkC5L30GmxzPYRMqIx5qeYudMYXTugaV9OKAv/+f+k3ZaovUZbn5FgzP2Ggk18ecy5M=
