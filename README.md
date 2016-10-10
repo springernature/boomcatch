@@ -267,6 +267,10 @@ npm test
 
 [History]
 
+## Support
+
+You can have a look at the [Springer Nature Frontend Playbook][support] for an explanation of how we support our open source projects.
+
 ## License
 
 [GPL 3][license]
@@ -283,5 +287,6 @@ Copyright © 2014, 2015, 2016 Springer Nature
 [extensions]: doc/extensions.md
 [contrib]: CONTRIBUTING.md
 [history]: HISTORY.md
+[support]: https://github.com/springernature/frontend/blob/master/practices/open-source-support.md
 [license]: COPYING
 
