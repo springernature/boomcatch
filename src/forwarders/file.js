@@ -21,7 +21,7 @@
 
 var fs = require('fs'),
     path = require('path'),
-    uuid = require('node-uuid'),
+    uuid = require('uuid'),
     extensions;
 
 exports.initialise = function (options) {
