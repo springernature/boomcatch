@@ -1,5 +1,9 @@
 # History
 
+## 3.2.3 
+
+* Switch from deprecated `node-uuid` to `uuid` version 3.0.0 (thanks @marcbachmann)
+
 ## 3.1.3
 
 * Update to handlebars 4 that fixes several security vulnerabilities:
