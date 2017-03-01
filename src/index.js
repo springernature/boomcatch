@@ -680,7 +680,7 @@ function send (log, state, remoteAddress, validator, filter, mapper, forwarder, 
 function parseData (request, state) {
     if (request.method === 'GET') {
         state.successStatus = 204;
-        return qs.parse(url.parse(request.url).query);
+        return qs.parse(url.parse(request.url).query, { allowDots: true });
     }
 
     state.successStatus = 200;
