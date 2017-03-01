@@ -35,6 +35,11 @@ mockery.registerAllowable('./lib/');
 mockery.registerAllowable('./stringify');
 mockery.registerAllowable('./utils');
 mockery.registerAllowable('./parse');
+mockery.registerAllowable('./v1');
+mockery.registerAllowable('./v4');
+mockery.registerAllowable('./lib/rng');
+mockery.registerAllowable('./lib/bytesToUuid');
+mockery.registerAllowable('./formats');
 
 process.setMaxListeners(500);
 
