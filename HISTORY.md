@@ -1,5 +1,9 @@
 # History
 
+## 3.2.4
+
+* Update to `qs` that fixes a high severity vulnerability: [https://snyk.io/vuln/npm:qs:20170213](https://snyk.io/vuln/npm:qs:20170213)
+
 ## 3.2.3 
 
 * Switch from deprecated `node-uuid` to `uuid` version 3.0.0 (thanks @marcbachmann)
