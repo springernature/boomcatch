@@ -1,5 +1,9 @@
 # History
 
+## 3.2.5
+
+* Update to `qs` that fixes a high severity vulnerability: [https://snyk.io/vuln/npm:qs:20170213](https://snyk.io/vuln/npm:qs:20170213). A partial fix was released in versions 6.0.3, 6.1.1, 6.2.2, 6.3.1 but only 6.4.0 (released today) contains the final fix.
+
 ## 3.2.4
 
 * Update to `qs` that fixes a high severity vulnerability: [https://snyk.io/vuln/npm:qs:20170213](https://snyk.io/vuln/npm:qs:20170213)
