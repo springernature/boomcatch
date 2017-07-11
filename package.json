@@ -34,7 +34,7 @@
     "get-off-my-log": "~0.1.0",
     "handlebars": "~4.0.6",
     "qs": "~6.4.0",
-    "request": "~2.80.0",
+    "request": "~2.81.0",
     "toobusy-js": "~0.5.1",
     "ua-parser-js": "~0.7.12",
     "useragent": "~2.1.12",
