@@ -219,6 +219,25 @@ boomcatch.listen({
 });
 ```
 
+## Using Docker
+
+You can deploy this server using the [coder95/boomcatch](https://hub.docker.com/r/coder95/boomcatch/) Docker image.
+
+For example:
+
+```bash
+docker pull coder95/boomcatch
+
+docker run -d -p 9000:9000 --name boomcatch-web-server coder95/boomcatch \
+            --port 9000 \
+            --prefix "real_user_monitoring" \
+            --fwdHost exmaple.udp.server.com \
+            --fwdPort 8125
+```
+
+For Custom Building, the Docker File for [coder95/boomcatch](https://hub.docker.com/r/coder95/boomcatch/) image is available at [docker-boomcatch](https://github.com/aananthraj/docker-boomcatch) repository.
+
+
 ## Extensions
 
 Boomcatch implements
