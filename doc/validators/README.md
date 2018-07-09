@@ -37,7 +37,7 @@ The basic pattern
 is to export an interface
 that looks like this:
 
-```javscript
+```javascript
 {
     initialise: function (options) {
     }
