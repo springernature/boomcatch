@@ -235,7 +235,7 @@ and forwarders.
 
 ## Development
 
-Before sumitting any pull requests,
+Before submitting any pull requests,
 please ensure that you have
 adhered to the [contribution guidelines][contrib].
 
