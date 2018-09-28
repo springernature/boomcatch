@@ -152,7 +152,7 @@ suite('forwarders/file:', function () {
                     assert.strictEqual(log.these.writeFile[0], require('fs'));
                     assert.lengthOf(log.args.writeFile[0], 4);
                     assert.strictEqual(log.args.writeFile[0][0], 'mock path.join result');
-                    assert.strictEqual(log.args.writeFile[0][1], 'foo bar');
+                    assert.strictEqual(log.args.writeFile[0][1], 'foo bar\n');
                     assert.isObject(log.args.writeFile[0][2]);
                     assert.lengthOf(Object.keys(log.args.writeFile[0][2]), 1);
                     assert.strictEqual(log.args.writeFile[0][2].mode, 420);
