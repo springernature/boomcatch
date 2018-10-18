@@ -1,85 +1,35 @@
 # Mappers
 
-Mappers are the third stage
-of the [extension pipeline][extensions],
-called after [validators] and [filters]
-but before [forwarders].
-Their purpose is to transform beacon data
-into an appropriate format
-to be consumed by some other process.
+Mappers are the third stage of the [extension pipeline][extensions], called after [validators] and [filters] but before [forwarders]. Their purpose is to transform beacon data into an appropriate format to be consumed by some other process.
 
-The choice of mapper
-can be specified at the command line,
-using the `-m` [option].
-Five mappers are availble out-of-the-box,
-[statsd], [statsd-npg], [har], [waterfall] and [unmapped].
+The choice of mapper can be specified at the command line, using the `-m` [option]. Five mappers are available out-of-the-box, [statsd], [statsd-npg], [har], [waterfall] and [unmapped].
 
-Defining custom mappers is simple.
-The [source code for the statsd mapper][src]
-should be easy to follow,
-but the basic pattern
-is to export an interface
-that looks like this:
+Defining custom mappers is simple. The [source code for the statsd mapper][src] should be easy to follow, but the basic pattern is to export an interface that looks like this:
 
 ```javascript
 {
-    initialise: function (options) {
-    }
+	initialise: function (options) {
+	}
 }
 ```
 
-Where `initialise` is a function
-that takes an options object
-and returns the mapper function,
-bound to any pertinent options.
-The signature for
-the returned mapper function
-should look like this:
+Where `initialise` is a function that takes an options object and returns the mapper function, bound to any pertinent options. The signature for the returned mapper function should look like this:
 
 ```javascript
 function (/* bound options, ... */ data, referer, userAgent, remoteAddress) {
 }
 ```
 
-The remaining/unbound arguments
-passed to the mapper
-are, in order:
+The remaining/unbound arguments passed to the mapper are, in order:
 
-1. `data`:
-   Filtered data.
+1. `data`: Filtered data.
+2. `referer`: URL of the page that sent the beacon request.
+3. `userAgent`: User agent string of the client that sent the beacon request.
+4. `remoteAddress`: IP address of the client that sent the beacon request.
 
-2. `referer`:
-   URL of the page
-   that sent the beacon request.
+The result of the mapper function should be a string containing the mapped data.
 
-3. `userAgent`:
-   User agent string of the client
-   that sent the beacon request.
-
-4. `remoteAddress`:
-   IP address of the client
-   that sent the beacon request.
-
-The result of
-the mapper function
-should be a string
-containing the mapped data.
-
-In addition to
-the `initialise` function,
-mappers may optionally expose
-a `separator` property,
-which can be used by forwarders
-to ensure sane data-chunking behaviour
-in the event that
-they are required
-to break data
-across multiple packets
-before sending it on.
-For example,
-the `statsd` mapper
-defines `separator`
-as `'\n'`.
+In addition to the `initialise` function, mappers may optionally expose a `separator` property, which can be used by forwarders to ensure sane data-chunking behaviour in the event that they are required to break data across multiple packets before sending it on. For example, the `statsd` mapper defines `separator` as `'\n'`.
 
 [extensions]: ../extensions.md
 [validators]: ../validators/README.md
@@ -92,4 +42,3 @@ as `'\n'`.
 [waterfall]: waterfall.md
 [unmapped]: unmapped.md
 [src]: ../../src/mappers/statsd.js
-
