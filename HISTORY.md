@@ -1,18 +1,18 @@
 # History
 
-## 3.2.5
+## 3.2.5
 
 * Update to `qs` that fixes a high severity vulnerability: [https://snyk.io/vuln/npm:qs:20170213](https://snyk.io/vuln/npm:qs:20170213). A partial fix was released in versions 6.0.3, 6.1.1, 6.2.2, 6.3.1 but only 6.4.0 (released today) contains the final fix.
 
-## 3.2.4
+## 3.2.4
 
 * Update to `qs` that fixes a high severity vulnerability: [https://snyk.io/vuln/npm:qs:20170213](https://snyk.io/vuln/npm:qs:20170213)
 
-## 3.2.3 
+## 3.2.3
 
 * Switch from deprecated `node-uuid` to `uuid` version 3.0.0 (thanks @marcbachmann)
 
-## 3.1.3
+## 3.1.3
 
 * Update to handlebars 4 that fixes several security vulnerabilities:
     - [https://nodesecurity.io/advisories/39](https://nodesecurity.io/advisories/39)
@@ -21,7 +21,7 @@
     - [https://nodesecurity.io/advisories/77](https://nodesecurity.io/advisories/77)
 * Updates other packages to recent versions.
 
-## 3.1.2
+## 3.1.2
 
 * Adds Travis test for node 6 and updates the refs for node 4 and 5
 
@@ -29,11 +29,6 @@
 
 * Update repository references to springernature
 * Update the license
-
-## 3.1.0
-
-* Updating documentation to reflect the current Node.js support of 0.10 and later.
-* Switching out `jsdom` for `cheerio` within the tests
 
 ## 3.1.0
 
@@ -209,4 +204,3 @@
 ## 1.0.0
 
 * Initial release.
-
