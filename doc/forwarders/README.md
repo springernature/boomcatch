@@ -4,7 +4,7 @@ Forwarders are the fourth and final stage of the [extension pipeline][extensions
 
 The choice of forwarder can be specified at the command line, using the `-f` [option].
 
-Three forwarders are available out-of-the-box, [udp], [http], [file] and [console].
+Four forwarders are available out-of-the-box, [udp], [http], [file] and [console].
 
 Defining custom mappers is simple. The [source code for the udp forwarder][src] should be easy to follow, but the basic pattern is to export an interface that looks like this:
 
