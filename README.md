@@ -129,7 +129,9 @@ boomcatch.listen({
 
 Boomcatch implements four extension points to control how beacon requests are handled: validators, filters, mappers and forwarders.
 
-[Read more about them here][extensions].
+Several extensions are shipped as part of Boomcatch, or you can implement your own custom extensions.
+
+You can read more details in the [documentation about extensions][extensions].
 
 ## Development
 
