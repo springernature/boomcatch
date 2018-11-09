@@ -10,7 +10,7 @@ Those extension points, in order of invocation, are:
 
 2. [Filters]: These functions filter out unwanted parts of the data before it is passed to the mapper. One filter ([unfiltered]) is available by default.
 
-3. [Mappers]: These functions transform the data into a format suitable for consumption by some other process. Five mappers ([har], [statsd], [statsd-npg], [unmapped] and [waterfall]) are available out-of-the-box.
+3. [Mappers]: These functions transform the data into a format suitable for consumption by some other process. Four mappers ([har], [statsd], [unmapped] and [waterfall]) are available out-of-the-box.
 
 4. [Forwarders]: These functions conclude processing by sending the mapped data onto another process. Four forwarders ([console], [file], [http] and [udp]) are available out-of-the-box.
 
@@ -25,7 +25,6 @@ In each case, extensions are loaded with `require`, employing a two-pass approac
 [mappers]: mappers/README.md
 [har]: mappers/har.md
 [statsd]: mappers/statsd.md
-[statsd-npg]: mappers/statsd-npg.md
 [unmapped]: mappers/unmapped.md
 [waterfall]: mappers/waterfall.md
 [forwarders]: forwarders/README.md
