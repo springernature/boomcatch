@@ -2,7 +2,7 @@
 
 Mappers are the third stage of the [extension pipeline][extensions], called after [validators] and [filters] but before [forwarders]. Their purpose is to transform beacon data into an appropriate format to be consumed by some other process.
 
-The choice of mapper can be specified at the command line, using the `-m` [option]. Five mappers are available out-of-the-box, [statsd], [statsd-npg], [har], [waterfall] and [unmapped].
+The choice of mapper can be specified at the command line, using the `-m` [option]. Four mappers are available out-of-the-box, [statsd], [har], [waterfall] and [unmapped].
 
 Defining custom mappers is simple. The [source code for the statsd mapper][src] should be easy to follow, but the basic pattern is to export an interface that looks like this:
 
@@ -37,7 +37,6 @@ In addition to the `initialise` function, mappers may optionally expose a `separ
 [forwarders]: ../forwarders/README.md
 [option]: ../../README.md#from-the-command-line
 [statsd]: statsd.md
-[statsd-npg]: statsd-npg.md
 [har]: har.md
 [waterfall]: waterfall.md
 [unmapped]: unmapped.md
