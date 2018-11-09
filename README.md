@@ -127,7 +127,9 @@ boomcatch.listen({
 
 ## Extensions
 
-Boomcatch implements four extension points to control how beacon requests are handled: validators, filters, mappers and forwarders.
+Boomcatch implements four extension points to control how beacon requests are handled: validators, filters, mappers and forwarders. These extension points are invoked as a pipeline when a beacon request is received.
+
+![boomcatch extensions' diagram](https://github.com/springernature/boomcatch/blob/master/doc/boomcatch-extensions.png)
 
 Several extensions are shipped as part of Boomcatch, or you can implement your own custom extensions.
 

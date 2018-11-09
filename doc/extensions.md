@@ -1,6 +1,10 @@
 # Extensions
 
-Boomcatch provides four extension points, which are invoked as a pipeline when a beacon request is received. Those extension points, in order of invocation, are:
+Boomcatch provides four extension points, which are invoked as a pipeline when a beacon request is received.
+
+![boomcatch extensions' diagram](https://github.com/springernature/boomcatch/blob/master/doc/boomcatch-extensions.png)
+
+Those extension points, in order of invocation, are:
 
 1. [Validators]: These functions are predicates, which can check that the request meets your specific requirements, then signal whether to continue processing or fail the request. One validator ([permissive]) is available by default.
 
