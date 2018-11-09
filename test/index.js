@@ -3218,7 +3218,7 @@ suite('index:', function () {
                         process: {
                             pid: 1
                         },
-                        suicide: true
+                        exitedAfterDisconnect: true
                     };
                     log.args.on[1][1](worker, null, 3);
                 });

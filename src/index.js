@@ -317,7 +317,7 @@ function createWorkers (count, options, log) {
     cluster.on('exit', function (worker, code, signal) {
         var exitStatus = getExitStatus(code, signal);
 
-        if (worker.suicide) {
+        if (worker.exitedAfterDisconnect) {
             return log.info('worker ' + worker.process.pid + ' exited (' + exitStatus + ')');
         }
 
