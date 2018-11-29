@@ -132,17 +132,18 @@ suite('mappers/unmapped:', function () {
             });
 
             suite('call mapper:', function () {
-                var data, referer, userAgent, result;
+                var data, referer, userAgent, remoteAddress, result;
 
                 setup(function () {
                     data = {};
                     referer = {};
                     userAgent = {};
-                    result = mapper(data, referer, userAgent);
+                    remoteAddress = {};
+                    result = mapper(data, referer, userAgent, remoteAddress);
                 });
 
                 teardown(function () {
-                    data = referer = userAgent = result = undefined;
+                    data = referer = userAgent = remoteAddress = result = undefined;
                 });
 
                 test('useragent.lookup was called once', function () {
@@ -160,7 +161,8 @@ suite('mappers/unmapped:', function () {
                 });
 
                 test('result was correct', function () {
-                    assert.strictEqual(result, '{"data":{},"referer":{},"userAgent":{},"browser":{"name":{},"version":{}}}');
+                    assert.strictEqual(result,
+                        '{"data":{},"referer":{},"userAgent":{},"browser":{"name":{},"version":{}},"remoteAddress":{}}');
                 });
             });
         });
