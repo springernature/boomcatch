@@ -32,7 +32,7 @@ function send (directory, data, type, separator, callback) {
     try {
         fs.writeFile(
             path.join(directory, 'boomcatch-' + uuid.v4() + '.' + extensions[type || 'default']),
-            data,
+            data + '\n',
             { mode: 420 },
             function (error) {
                 callback(error, data.length);
