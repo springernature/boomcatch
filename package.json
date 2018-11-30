@@ -48,12 +48,14 @@
     "jshint": "~2.9.0",
     "mocha": "~3.0.2",
     "chai": "~3.0.0",
+    "nyc": "~13.0.1",
     "mockery": "~1.4.0",
     "spooks": "~2.0.0",
     "cheerio": "~0.19.0"
   },
   "scripts": {
     "lint": "jshint src --config .jshintrc",
-    "test": "mocha --ui tdd --reporter spec --recursive --colors test"
+    "test": "mocha --ui tdd --reporter spec --recursive --colors test",
+    "coverage": "nyc mocha --ui tdd --reporter spec --recursive --colors test"
   }
 }
