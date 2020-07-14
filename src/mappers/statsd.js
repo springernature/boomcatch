@@ -91,7 +91,24 @@ function base36Encode (string) {
 }
 
 function mapMetrics (prefix, data) {
-    return mapEvents(prefix, data) + mapDurations(prefix, data);
+	if (prefix === 'clicks.') {
+		return mapClick(data);
+	} else {
+		return mapEvents(prefix, data) + mapDurations(prefix, data);
+	}
+}
+
+function mapClick (data) {
+	var element = data.element;
+	var id = data.id;
+	if (id === '') {
+		id = 'none';
+	}
+	if (element === undefined) {
+		return '';
+	} else {
+		return 'CLICK - element ' + element + ' id - ' + id + ':' + 1 + '|c' + '\n';
+	}
 }
 
 function mapEvents (prefix, data) {
