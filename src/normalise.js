@@ -45,6 +45,7 @@ function normaliseClicksData (data) {
 		id: id
 	};
 }
+
 function normaliseRtData (data) {
     /*jshint camelcase:false */
 
