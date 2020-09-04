@@ -32,7 +32,7 @@
     "check-types": "~3.2.0",
     "commander": "~2.9.0",
     "get-off-my-log": "~0.1.0",
-    "handlebars": "~4.0.6",
+    "handlebars": "~4.7.6",
     "qs": "~6.4.0",
     "request": "~2.81.0",
     "toobusy-js": "~0.5.1",
