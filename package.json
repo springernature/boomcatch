@@ -36,7 +36,7 @@
     "qs": "~6.4.0",
     "request": "~2.81.0",
     "toobusy-js": "~0.5.1",
-    "ua-parser-js": "~0.7.12",
+    "ua-parser-js": "0.7.12",
     "useragent": "~2.1.12",
     "uuid": "~3.0.1",
     "yamlparser": "~0.0.2"
