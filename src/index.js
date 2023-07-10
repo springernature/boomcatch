@@ -689,9 +689,9 @@ function parseData (request, state) {
         state.body = state.body.substr(5);
     }
 
-    state.body = decodeURIComponent(state.body);
-
+    
     if (request.headers['content-type'] === 'text/plain') {
+		state.body = decodeURIComponent(state.body);
         return JSON.parse(state.body);
     }
 
