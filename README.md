@@ -5,7 +5,7 @@ A standalone, node.js-based beacon receiver for [boomerang]. [Read more][blog].
 ![Build Status](https://github.com/springernature/boomcatch/actions/workflows/test.yml/badge.svg)
 
 * **boomcatch version**: *3.2.5*
-* **node.js versions**: *0.10 and later*
+* **node.js versions**: *16.x and later*
 
 ## Installation
 
