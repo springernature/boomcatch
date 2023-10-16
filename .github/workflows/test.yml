@@ -12,16 +12,16 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-18.04
+          - ubuntu-latest
         node-version:
           - 16.x
     steps:
       - name: 'Set up Node.js ${{ matrix.node-version }}'
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: '${{ matrix.node-version }}'
       - name: 'Checkout repository'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install dependencies
         run: 'npm install'
       - name: Run tests and linting
