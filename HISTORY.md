@@ -1,5 +1,15 @@
 # History
 
+## 3.2.7
+
+* Update to `handlebars` that fixes high severity vulnerabilities.
+* Update to `ua-parser-js` that fixes a high severity vulnerability.
+* Update to `mockery`.
+* Updates to last available version of `request`.
+* Updates `useragent`
+* Update to `cheerio` that fixes a high severity vulnerability.
+* Update to `jshint` that fixes a high severity vulnerability.
+
 ## 3.2.6
 
 * Pin `ua-parseer-js` to a safe and known to be working version
