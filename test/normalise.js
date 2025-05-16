@@ -84,7 +84,7 @@ suite('filters/normalise:', function () {
 
             test('result was correct', function () {
                 assert.isObject(result);
-                assert.lengthOf(Object.keys(result), 3);
+                assert.lengthOf(Object.keys(result), 4);
                 assert.isUndefined(result.rt);
                 assert.isUndefined(result.navtiming);
                 assert.isUndefined(result.restiming);

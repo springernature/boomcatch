@@ -27,8 +27,23 @@ function normalise (data) {
     return {
         rt: normaliseRtData(data),
         navtiming: normaliseNavtimingData(data),
-        restiming: normaliseRestimingData(data)
+        restiming: normaliseRestimingData(data),
+		clicks: normaliseClicksData(data)
     };
+}
+
+function normaliseClicksData (data) {
+	/*jshint camelcase:false */
+
+	var element, id;
+
+	element = data.element;
+	id = data.id;
+
+	return {
+		element: element,
+		id: id
+	};
 }
 
 function normaliseRtData (data) {
