@@ -6,7 +6,7 @@
 * Update to `ua-parser-js` that fixes a high severity vulnerability.
 * Update to `mockery`.
 * Updates to last available version of `request`.
-* Updates `useragent`
+* Updates `useragent`.
 * Update to `cheerio` that fixes a high severity vulnerability.
 * Update to `jshint` that fixes a high severity vulnerability.
 
