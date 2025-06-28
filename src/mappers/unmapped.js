@@ -31,12 +31,13 @@ module.exports = {
     type: 'json'
 };
 
-function map (data, referer, userAgent) {
+function map (data, referer, userAgent, remoteAddress) {
     return JSON.stringify({
         data: data,
         referer: referer,
         userAgent: userAgent,
-        browser: getBrowser(userAgent)
+        browser: getBrowser(userAgent),
+        remoteAddress: remoteAddress
     });
 }
 
