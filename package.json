@@ -46,11 +46,11 @@
   },
   "devDependencies": {
     "jshint": "~2.13.6",
-    "mocha": "~3.0.2",
-    "chai": "~3.0.0",
-    "mockery": "~1.7.0",
+    "mocha": "~11.7.1",
+    "chai": "~5.2.0",
+    "mockery": "~2.1.0",
     "spooks": "~2.0.0",
-    "cheerio": "~0.22.0"
+    "cheerio": "~1.1.0"
   },
   "scripts": {
     "lint": "jshint src --config .jshintrc",
