@@ -47,7 +47,7 @@
   "devDependencies": {
     "jshint": "~2.13.6",
     "mocha": "~11.7.1",
-    "chai": "~5.2.0",
+    "chai": "~4.5.0",
     "mockery": "~2.1.0",
     "spooks": "~2.0.0",
     "cheerio": "~1.1.0"
