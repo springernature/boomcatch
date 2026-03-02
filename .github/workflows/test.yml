@@ -14,14 +14,18 @@ jobs:
         os:
           - ubuntu-latest
         node-version:
-          - 16.x
+          - 16
+          - 18
+          - 20
+          - 22
+          - 24
     steps:
       - name: 'Set up Node.js ${{ matrix.node-version }}'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # Equivalent to v6.2.0
         with:
           node-version: '${{ matrix.node-version }}'
       - name: 'Checkout repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # Equivalent to v6.0.2
       - name: Install dependencies
         run: 'npm install'
       - name: Run tests and linting
