@@ -1935,6 +1935,434 @@ suite('index:', function () {
                 });
             });
 
+            suite('POST with dot-notation keys (allowDots):', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'application/x-www-form-urlencoded',
+                            'user-agent': 'blah'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                suite('receive body with dot-notation keys:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('rt.tstart=1000&rt.end=2000&t_done=500');
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('dot-notation keys are parsed into nested objects', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.isObject(data.rt, 'rt should be a nested object');
+                            assert.strictEqual(data.rt.tstart, '1000');
+                            assert.strictEqual(data.rt.end, '2000');
+                            assert.strictEqual(data.t_done, '500');
+                        });
+
+                        test('POST produces same structure as GET for dot-notation', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.isObject(data.rt);
+                            assert.notProperty(data, 'rt.tstart', 'rt.tstart should not be a flat key');
+                            assert.notProperty(data, 'rt.end', 'rt.end should not be a flat key');
+                        });
+                    });
+                });
+            });
+
+            suite('POST with restiming containing encoded ampersands (issue #83):', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'application/x-www-form-urlencoded',
+                            'user-agent': 'blah'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                suite('receive body with restiming URL containing encoded ampersands:', function () {
+                    setup(function () {
+                        // restiming value contains a URL with query params (?primer=abc&fvd=n4&v=3)
+                        // The & in the URL is encoded as %26, which must NOT be decoded before qs.parse
+                        log.args.on[0][1]('rt.tstart=1000&t_done=500&restiming=%7B%22http%3A%2F%2Fexample.com%2Ffont%3Fprimer%3Dabc%26fvd%3Dn4%26v%3D3%22%3A%22100%22%7D');
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('restiming data is preserved as a single value', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.property(data, 'restiming');
+                            assert.isString(data.restiming, 'restiming should be a string (JSON)');
+                        });
+
+                        test('restiming contains the full URL with ampersands', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.include(data.restiming, 'primer=abc');
+                            assert.include(data.restiming, 'fvd=n4');
+                            assert.include(data.restiming, 'v=3');
+                        });
+
+                        test('ampersands in restiming URL did not split into extra top-level keys', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.notProperty(data, 'fvd', 'fvd should not be a top-level key');
+                            assert.notProperty(data, 'v', 'v should not be a top-level key');
+                            assert.notProperty(data, 'primer', 'primer should not be a top-level key');
+                        });
+                    });
+                });
+            });
+
+            suite('POST without data= prefix:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'application/x-www-form-urlencoded',
+                            'user-agent': 'blah'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                suite('receive body without data= prefix:', function () {
+                    setup(function () {
+                        log.args.on[0][1]('rt.tstart=1000&t_resp=200&t_done=500&nt_nav_st=100&nt_dns_st=140&nt_dns_end=150');
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('all fields are parsed correctly', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.lengthOf(Object.keys(data), 6);
+                            assert.isObject(data.rt);
+                            assert.strictEqual(data.rt.tstart, '1000');
+                            assert.strictEqual(data.t_resp, '200');
+                            assert.strictEqual(data.t_done, '500');
+                            assert.strictEqual(data.nt_nav_st, '100');
+                            assert.strictEqual(data.nt_dns_st, '140');
+                        });
+
+                        test('navtiming fields are not lost', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.strictEqual(data.nt_dns_end, '150');
+                        });
+                    });
+                });
+            });
+
+            suite('GET with dot-notation keys:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon?rt.tstart=1000&rt.bstart=1100&rt.end=2000&t_done=500',
+                        method: 'GET',
+                        headers: {
+                            referer: 'wibble',
+                            'user-agent': 'blah'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                suite('end request:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('dot-notation keys are parsed into nested objects', function () {
+                        var data = log.args.mapper[0][0];
+                        assert.isObject(data.rt, 'rt should be a nested object');
+                        assert.strictEqual(data.rt.tstart, '1000');
+                        assert.strictEqual(data.rt.bstart, '1100');
+                        assert.strictEqual(data.rt.end, '2000');
+                        assert.strictEqual(data.t_done, '500');
+                    });
+
+                    test('no flat dot-notation keys exist', function () {
+                        var data = log.args.mapper[0][0];
+                        assert.notProperty(data, 'rt.tstart');
+                        assert.notProperty(data, 'rt.bstart');
+                        assert.notProperty(data, 'rt.end');
+                    });
+                });
+            });
+
+            suite('GET with combined RT, navtiming, and restiming:', function () {
+                var request, response;
+
+                setup(function () {
+                    var restiming = encodeURIComponent('{"http://example.com/style.css":{"rt_st":100,"rt_dur":200}}');
+                    request = {
+                        url: '/beacon?rt.tstart=1000&t_resp=200&t_done=500&nt_nav_st=100&nt_dns_st=110&nt_dns_end=120&nt_load_st=300&nt_load_end=310&restiming=' + restiming,
+                        method: 'GET',
+                        headers: {
+                            referer: 'wibble',
+                            'user-agent': 'blah'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                suite('end request:', function () {
+                    setup(function () {
+                        log.args.on[1][1]();
+                    });
+
+                    test('mapper was called once', function () {
+                        assert.strictEqual(log.counts.mapper, 1);
+                    });
+
+                    test('RT data is present and nested', function () {
+                        var data = log.args.mapper[0][0];
+                        assert.isObject(data.rt);
+                        assert.strictEqual(data.rt.tstart, '1000');
+                    });
+
+                    test('round-trip timing fields are present', function () {
+                        var data = log.args.mapper[0][0];
+                        assert.strictEqual(data.t_resp, '200');
+                        assert.strictEqual(data.t_done, '500');
+                    });
+
+                    test('navtiming fields are present', function () {
+                        var data = log.args.mapper[0][0];
+                        assert.strictEqual(data.nt_nav_st, '100');
+                        assert.strictEqual(data.nt_dns_st, '110');
+                        assert.strictEqual(data.nt_dns_end, '120');
+                        assert.strictEqual(data.nt_load_st, '300');
+                        assert.strictEqual(data.nt_load_end, '310');
+                    });
+
+                    test('restiming data is present', function () {
+                        var data = log.args.mapper[0][0];
+                        assert.property(data, 'restiming');
+                    });
+                });
+            });
+
+            suite('POST with combined RT, navtiming, and restiming:', function () {
+                var request, response;
+
+                setup(function () {
+                    request = {
+                        url: '/beacon',
+                        method: 'POST',
+                        headers: {
+                            referer: 'wibble',
+                            'content-type': 'application/x-www-form-urlencoded',
+                            'user-agent': 'blah'
+                        },
+                        on: spooks.fn({
+                            name: 'on',
+                            log: log
+                        }),
+                        socket: {
+                            remoteAddress: 'foo.bar',
+                            destroy: spooks.fn({
+                                name: 'destroy',
+                                log: log
+                            })
+                        }
+                    };
+                    response = spooks.obj({
+                        archetype: { setHeader: nop, end: nop },
+                        log: log
+                    });
+                    log.args.createServer[0][0](request, response);
+                });
+
+                teardown(function () {
+                    request = response = undefined;
+                });
+
+                suite('receive combined beacon body:', function () {
+                    setup(function () {
+                        var restiming = encodeURIComponent('{"http://example.com/style.css":{"rt_st":100,"rt_dur":200}}');
+                        log.args.on[0][1]('rt.tstart=1000&t_resp=200&t_done=500&nt_nav_st=100&nt_dns_st=110&nt_dns_end=120&nt_load_st=300&nt_load_end=310&restiming=' + restiming);
+                    });
+
+                    suite('end request:', function () {
+                        setup(function () {
+                            log.args.on[1][1]();
+                        });
+
+                        test('mapper was called once', function () {
+                            assert.strictEqual(log.counts.mapper, 1);
+                        });
+
+                        test('RT data is present and nested', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.isObject(data.rt);
+                            assert.strictEqual(data.rt.tstart, '1000');
+                        });
+
+                        test('round-trip timing fields are present', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.strictEqual(data.t_resp, '200');
+                            assert.strictEqual(data.t_done, '500');
+                        });
+
+                        test('navtiming fields are present', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.strictEqual(data.nt_nav_st, '100');
+                            assert.strictEqual(data.nt_dns_st, '110');
+                            assert.strictEqual(data.nt_dns_end, '120');
+                            assert.strictEqual(data.nt_load_st, '300');
+                            assert.strictEqual(data.nt_load_end, '310');
+                        });
+
+                        test('restiming data is present', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.property(data, 'restiming');
+                        });
+
+                        test('POST produces same fields as equivalent GET', function () {
+                            var data = log.args.mapper[0][0];
+                            assert.notProperty(data, 'rt.tstart', 'rt.tstart should not be a flat key');
+                            assert.isObject(data.rt);
+                            assert.strictEqual(data.rt.tstart, '1000');
+                        });
+                    });
+                });
+            });
+
             suite('immediately repeated request:', function () {
                 var request, response;
 
@@ -3243,4 +3671,3 @@ suite('index:', function () {
         });
     });
 });
-
