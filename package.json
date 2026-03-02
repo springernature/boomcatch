@@ -54,6 +54,8 @@
   },
   "scripts": {
     "lint": "jshint src --config .jshintrc",
-    "test": "mocha --ui tdd --reporter spec --recursive --colors test"
+    "test": "mocha --ui tdd --reporter spec --recursive --colors test",
+    "test:integration": "./test-beacon.sh",
+    "test:all": "npm test && npm run test:integration"
   }
 }
