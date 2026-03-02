@@ -686,16 +686,15 @@ function parseData (request, state) {
     state.successStatus = 200;
 
     if (state.body.substr(0, 5) === 'data=') {
-        state.body = state.body.substr(5);
+        state.body = decodeURIComponent(state.body.substr(5));
     }
 
-    state.body = decodeURIComponent(state.body);
-
     if (request.headers['content-type'] === 'text/plain') {
+        state.body = decodeURIComponent(state.body);
         return JSON.parse(state.body);
     }
 
-    return qs.parse(state.body, { parameterLimit: Infinity });
+    return qs.parse(state.body, { allowDots: true, parameterLimit: Infinity });
 }
 
 function pass (log, response, status, bytes) {
