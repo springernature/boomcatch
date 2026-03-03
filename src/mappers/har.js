@@ -26,6 +26,8 @@ var packageInfo = require('../../package.json'),
     url = require('url'),
     querystring = require('querystring');
 
+var ResourceTimingDecompression = require("resourcetiming-compression").ResourceTimingDecompression;
+
 module.exports = {
     initialise: function (/*options*/) {
         // Asynchronously update the user agent database.
@@ -52,7 +54,7 @@ function map (data, referer, userAgent) {
             // HACK: The title must be set by the client with BOOMR.addVar(),
             //       otherwise we fall back to using the page URL.
             pages: getPages(data, data.title || referer),
-            entries: getEntries(data.restiming)
+            entries: ResourceTimingDecompression.decompressResources(JSON.parse(data.restiming))
         }
     });
 }
