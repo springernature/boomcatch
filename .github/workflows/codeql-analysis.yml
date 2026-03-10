@@ -1,8 +1,13 @@
-# ghas-management-template-version: 1.0
+# ghas-management-template-version: 1.1
 
 name: "CodeQL Advanced Security Scanning"
 
 on:
+  # Initial proposal is daily runs to avoid overloading runners, teams can uncomment below to enable on push and PR events
+  #  push:
+  #    branches: [ "main", "master" ]
+  #  pull_request:
+  #    branches: [ "main", "master" ]
   schedule:
     - cron: '18 4 * * *' # Randomized per repository, daily runs somewhere between 22:00 and 06:00 UTC
   workflow_dispatch:
@@ -17,7 +22,7 @@ env:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ee-runner
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
@@ -40,7 +45,7 @@ jobs:
         if: ${{ matrix.language == 'javascript-typescript' }}
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 24
+          node-version: 'lts/*' # Adapt if your project requires a specific version
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@0d579ffd059c29b07949a3cce3983f0780820c98 # v4.32.6
