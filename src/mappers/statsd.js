@@ -58,25 +58,25 @@ function map (prefix, data, referer) {
         }
 
         if (data[category]) {
-            result += mapper(prefix + category + '.', data[category], referer);
+            result += mapper(prefix, category + '.', data[category], referer);
         }
     });
 
     return result;
 }
 
-function mapRestimingMetrics (prefix, data, referer) {
+function mapRestimingMetrics (prefix, category, data, referer) {
     return data.map(function (resource, index) {
         if (!resource) {
             return '';
         }
 
         return mapMetrics([
-            prefix + base36Encode(referer),
+            prefix + category + base36Encode(referer),
             index,
             resource.type,
             base36Encode(resource.name)
-        ].join('.') + '.', resource);
+        ].join('.') + '.', category, resource);
     }).join('');
 }
 
@@ -90,8 +90,27 @@ function base36Encode (string) {
     }).join('');
 }
 
-function mapMetrics (prefix, data) {
-    return mapEvents(prefix, data) + mapDurations(prefix, data);
+function mapMetrics (prefix, category, data) {
+	if (category === 'clicks.') {
+		return mapClick(data);
+	} else if (category === 'restiming.') {
+		return mapEvents(prefix, data) + mapDurations(prefix, data);
+	} else {
+		return mapEvents(prefix + category, data) + mapDurations(prefix + category, data);
+	}
+}
+
+function mapClick (data) {
+	var element = data.element;
+	var id = data.id;
+	if (id === '') {
+		id = 'none';
+	}
+	if (element === undefined) {
+		return '';
+	} else {
+		return 'CLICK - element ' + element + ' id - ' + id + ':' + 1 + '|c' + '\n';
+	}
 }
 
 function mapEvents (prefix, data) {
